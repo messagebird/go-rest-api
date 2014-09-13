@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	CLIENT_VERSION = "1.0.0"
-	ENDPOINT       = "https://rest.messagebird.com"
+	ClientVersion = "1.0.1"
+	Endpoint      = "https://rest.messagebird.com"
 )
 
 type Recipient struct {
@@ -97,6 +97,11 @@ type Client struct {
 	AccessKey string
 }
 
+// Create a new Client.
+func New(AccessKey string) *Client {
+	return &Client{AccessKey}
+}
+
 // This function performs a call to MessageBird's HTTP API and expects JSON in
 // return. It then tries to unmarshal the JSON body of the response to the
 // specified struct.
@@ -104,13 +109,12 @@ func (c Client) request(v interface{}, path string, params *url.Values) error {
 	var request *http.Request
 
 	// Construct the URI of the request.
-	uri, err := url.Parse(ENDPOINT + "/" + path)
+	uri, err := url.Parse(Endpoint + "/" + path)
 	if err != nil {
 		return err
 	}
 
-	// Create an http.Client and construct a new request.
-	client := &http.Client{}
+	// Construct a new request.
 	if params == nil {
 		request, err = http.NewRequest("GET", uri.String(), nil)
 	} else {
@@ -123,14 +127,15 @@ func (c Client) request(v interface{}, path string, params *url.Values) error {
 	// Add a basic set of headers to the request.
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("Authorization", "AccessKey "+c.AccessKey)
-	request.Header.Add("User-Agent", "MessageBird/ApiClient/"+CLIENT_VERSION+" Go/"+runtime.Version())
+	request.Header.Add("User-Agent", "MessageBird/ApiClient/"+ClientVersion+" Go/"+runtime.Version())
 
 	// Add the Content-Type header if this is a POST request.
 	if params != nil {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	}
 
-	// Execute the HTTP request and wait for a response.
+	// Create an http.Client, execute the HTTP request and wait for a response.
+	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
 		return err
@@ -146,8 +151,7 @@ func (c Client) request(v interface{}, path string, params *url.Values) error {
 	}
 
 	// Convert the JSON body to the specified struct.
-	err = json.Unmarshal(body, v)
-	if err != nil {
+	if err = json.Unmarshal(body, v); err != nil {
 		return err
 	}
 
@@ -158,8 +162,7 @@ func (c Client) request(v interface{}, path string, params *url.Values) error {
 func (c Client) Balance() (*Balance, error) {
 	balance := &Balance{}
 
-	err := c.request(balance, "balance", nil)
-	if err != nil {
+	if err := c.request(balance, "balance", nil); err != nil {
 		return nil, err
 	}
 
@@ -170,8 +173,7 @@ func (c Client) Balance() (*Balance, error) {
 func (c Client) HLR(id string) (*HLR, error) {
 	hlr := &HLR{}
 
-	err := c.request(hlr, "hlr/"+id, nil)
-	if err != nil {
+	if err := c.request(hlr, "hlr/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -186,8 +188,7 @@ func (c Client) CreateHLR(msisdn string, reference string) (*HLR, error) {
 
 	hlr := &HLR{}
 
-	err := c.request(hlr, "hlr", params)
-	if err != nil {
+	if err := c.request(hlr, "hlr", params); err != nil {
 		return nil, err
 	}
 
@@ -198,16 +199,14 @@ func (c Client) CreateHLR(msisdn string, reference string) (*HLR, error) {
 func (c Client) Message(id string) (*Message, error) {
 	msg := &Message{}
 
-	err := c.request(msg, "messages/"+id, nil)
-	if err != nil {
+	if err := c.request(msg, "messages/"+id, nil); err != nil {
 		return nil, err
 	}
 
 	return msg, nil
 }
 
-// This function creates a new message, which is sent to one or more
-// recipients.
+// This function creates a new message, which is sent to one or more recipients.
 func (c Client) CreateMessage(originator string, recipients []string, body string, params *url.Values) (*Message, error) {
 	recips := strings.Join(recipients, ",")
 
@@ -224,25 +223,25 @@ func (c Client) CreateMessage(originator string, recipients []string, body strin
 
 	msg := &Message{}
 
-	err := c.request(msg, "messages", params)
-	if err != nil {
+	if err := c.request(msg, "messages", params); err != nil {
 		return nil, err
 	}
 
 	return msg, nil
 }
 
+// This function retrieves the information of a specific voice message.
 func (c Client) VoiceMessage(id string) (*VoiceMessage, error) {
 	vmsg := &VoiceMessage{}
 
-	err := c.request(vmsg, "voicemessages/"+id, nil)
-	if err != nil {
+	if err := c.request(vmsg, "voicemessages/"+id, nil); err != nil {
 		return nil, err
 	}
 
 	return vmsg, nil
 }
 
+// This function creates a new voice message
 func (c Client) CreateVoiceMessage(recipients []string, body string, params *url.Values) (*VoiceMessage, error) {
 	recips := strings.Join(recipients, ",")
 
@@ -257,8 +256,7 @@ func (c Client) CreateVoiceMessage(recipients []string, body string, params *url
 
 	vmsg := &VoiceMessage{}
 
-	err := c.request(vmsg, "voicemessages", params)
-	if err != nil {
+	if err := c.request(vmsg, "voicemessages", params); err != nil {
 		return nil, err
 	}
 

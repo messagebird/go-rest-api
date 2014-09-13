@@ -16,7 +16,7 @@ func main() {
 	}
 
 	// Create a MessageBird client with the specified AccessKey.
-	mb := &messagebird.Client{AccessKey: AccessKey}
+	mb := messagebird.New(AccessKey)
 
 	// Fetch the Message object.
 	message, err := mb.Message(MessageId)

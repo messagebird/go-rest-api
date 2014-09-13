@@ -29,7 +29,7 @@ import "github.com/messagebird/go-rest-api/messagebird"
 Then, create an instance of **messagebird.Client**:
 
 ```go
-mb := &messagebird.Client{AccessKey: "test_gshuPaZoeEG6ovbc8M79w0QyM"}
+mb := messagebird.New("test_gshuPaZoeEG6ovbc8M79w0QyM")
 ```
 
 Now you can query the API for information or send data. For example, if we want to request our balance information you'd do something like this:

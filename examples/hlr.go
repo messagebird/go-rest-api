@@ -16,7 +16,7 @@ func main() {
 	}
 
 	// Create a MessageBird client with the specified AccessKey.
-	mb := &messagebird.Client{AccessKey: AccessKey}
+	mb := messagebird.New(AccessKey)
 
 	// Fetch the HLR object.
 	hlr, err := mb.HLR("d26c94c0353bd8e171a3979h97860638")
