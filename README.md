@@ -74,4 +74,4 @@ Complete documentation, instructions, and examples are available at:
 
 License
 -------
-The MessageBird REST Client for Ruby is licensed under [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause). Copyright (c) 2014, MessageBird
+The MessageBird REST Client for Go is licensed under [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause). Copyright (c) 2014, MessageBird
