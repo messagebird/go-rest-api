@@ -20,7 +20,7 @@ If this doesn't work, you probably haven't set your [GOPATH](https://code.google
 
 Examples
 --------
-We have put some self-explanatory examples in the [examples](https://github.com/messagebird/go-rest-api/tree/master/examples) directory, but here is a quick example on how to get started. Assuming the **go get** installation worked, you can import the messagebird package like this:
+Here is a quick example on how to get started. Assuming the **go get** installation worked, you can import the messagebird package like this:
 
 ```go
 import messagebird "github.com/messagebird/go-rest-api"
