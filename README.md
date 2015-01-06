@@ -38,18 +38,14 @@ Now you can query the API for information or send data. For example, if we want 
 // Request the balance information, returned as a Balance object.
 balance, err := client.Balance()
 if err != nil {
-	fmt.Println(err)
-	os.Exit(1)
-}
+  // messagebird.ErrResponse means custom JSON errors.
+  if err == messagebird.ErrResponse {
+    for _, mbError := range object.Errors {
+      fmt.Printf("Error: %#v\n", mbError)
+    }
+  }
 
-// Check for errors returned as JSON.
-if len(balance.Errors) != 0 {
-	for _, error := range balance.Errors {
-		fmt.Println("  code        :", error.Code)
-		fmt.Println("  description :", error.Description)
-		fmt.Println("  parameter   :", error.Parameter)
-	}
-	os.Exit(1)
+  return
 }
 
 fmt.Println("  payment :", balance.Payment)
