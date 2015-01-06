@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	ClientVersion = "1.1.0"
+	ClientVersion = "2.0.0"
 	Endpoint      = "https://rest.messagebird.com"
 )
 
