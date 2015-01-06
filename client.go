@@ -39,15 +39,6 @@ func New(AccessKey string) *Client {
 	return &Client{AccessKey: AccessKey, HTTPClient: &http.Client{}}
 }
 
-// New creates a new MessageBird client object.
-func NewDebug(AccessKey string) *Client {
-	return &Client{
-		AccessKey:  AccessKey,
-		HTTPClient: &http.Client{},
-		DebugLog:   log.New(os.Stdout, "DEBUG", log.Lshortfile),
-	}
-}
-
 func (c *Client) request(v interface{}, path string, params *url.Values) error {
 	uri, err := url.Parse(Endpoint + "/" + path)
 	if err != nil {
