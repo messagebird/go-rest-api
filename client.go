@@ -8,257 +8,231 @@ package messagebird
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"runtime"
 	"strings"
-	"time"
 )
 
 const (
-	ClientVersion = "1.0.1"
+	ClientVersion = "1.1.0"
 	Endpoint      = "https://rest.messagebird.com"
 )
 
-type Recipient struct {
-	Recipient      int
-	Status         string
-	StatusDatetime *time.Time
-}
-
-type Recipients struct {
-	TotalCount               int
-	TotalSentCount           int
-	TotalDeliveredCount      int
-	TotalDeliveryFailedCount int
-	Items                    []Recipient
-}
-
-type Error struct {
-	Code        int
-	Description string
-	Parameter   string
-}
-
-type Balance struct {
-	Payment string
-	Type    string
-	Amount  int
-	Errors  []Error
-}
-
-type HLR struct {
-	Id              string
-	HRef            string
-	MSISDN          int
-	Reference       string
-	Status          string
-	CreatedDatetime *time.Time
-	StatusDatetime  *time.Time
-	Errors          []Error
-}
-
-type Message struct {
-	Id                string
-	HRef              string
-	Direction         string
-	Type              string
-	Originator        string
-	Body              string
-	Reference         string
-	Validity          string
-	Gateway           int
-	TypeDetails       map[string]interface{}
-	DataCoding        string
-	MClass            int
-	ScheduledDatetime *time.Time
-	CreatedDatetime   *time.Time
-	Recipients        Recipients
-	Errors            []Error
-}
-
-type VoiceMessage struct {
-	Id                string
-	HRef              string
-	Body              string
-	Reference         string
-	Language          string
-	Voice             string
-	Repeat            int
-	IfMachine         string
-	ScheduledDatetime *time.Time
-	CreatedDatetime   *time.Time
-	Recipients        Recipients
-	Errors            []Error
-}
+var (
+	ErrResponse           = errors.New("The MessageBird API returned an error")
+	ErrUnexpectedResponse = errors.New("The MessageBird API is currently unavailable")
+)
 
 type Client struct {
-	AccessKey string
+	AccessKey  string       // The API access key
+	HTTPClient *http.Client // The HTTP client to send requests on
+	DebugLog   *log.Logger  // Optional logger for debugging purposes
 }
 
-// Create a new Client.
+// New creates a new MessageBird client object.
 func New(AccessKey string) *Client {
-	return &Client{AccessKey}
+	return &Client{AccessKey: AccessKey, HTTPClient: &http.Client{}}
 }
 
-// This function performs a call to MessageBird's HTTP API and expects JSON in
-// return. It then tries to unmarshal the JSON body of the response to the
-// specified struct.
-func (c Client) request(v interface{}, path string, params *url.Values) error {
-	var request *http.Request
+// New creates a new MessageBird client object.
+func NewDebug(AccessKey string) *Client {
+	return &Client{
+		AccessKey:  AccessKey,
+		HTTPClient: &http.Client{},
+		DebugLog:   log.New(os.Stdout, "DEBUG", log.Lshortfile),
+	}
+}
 
-	// Construct the URI of the request.
+func (c *Client) request(v interface{}, path string, params *url.Values) error {
 	uri, err := url.Parse(Endpoint + "/" + path)
 	if err != nil {
 		return err
 	}
 
-	// Construct a new request.
-	if params == nil {
-		request, err = http.NewRequest("GET", uri.String(), nil)
+	var request *http.Request
+	if params != nil {
+		body := params.Encode()
+		if request, err = http.NewRequest("POST", uri.String(), strings.NewReader(body)); err != nil {
+			return err
+		}
+
+		if c.DebugLog != nil {
+			if unescapedBody, err := url.QueryUnescape(body); err == nil {
+				log.Printf("HTTP REQUEST: POST %s %s", uri.String(), unescapedBody)
+			} else {
+				log.Printf("HTTP REQUEST: POST %s %s", uri.String(), body)
+			}
+		}
+
+		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	} else {
-		request, err = http.NewRequest("POST", uri.String(), strings.NewReader(params.Encode()))
-	}
-	if err != nil {
-		return err
+		if request, err = http.NewRequest("GET", uri.String(), nil); err != nil {
+			return err
+		}
+
+		if c.DebugLog != nil {
+			log.Printf("HTTP REQUEST: GET %s", uri.String())
+		}
 	}
 
-	// Add a basic set of headers to the request.
 	request.Header.Add("Accept", "application/json")
 	request.Header.Add("Authorization", "AccessKey "+c.AccessKey)
 	request.Header.Add("User-Agent", "MessageBird/ApiClient/"+ClientVersion+" Go/"+runtime.Version())
 
-	// Add the Content-Type header if this is a POST request.
-	if params != nil {
-		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	}
-
-	// Create an http.Client, execute the HTTP request and wait for a response.
-	client := &http.Client{}
-	response, err := client.Do(request)
+	response, err := c.HTTPClient.Do(request)
 	if err != nil {
 		return err
 	}
 
-	// Be sure to close the filedescriptor when all is done.
 	defer response.Body.Close()
 
-	// Read out the entire body.
-	body, err := ioutil.ReadAll(response.Body)
+	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return err
 	}
 
-	// Convert the JSON body to the specified struct.
-	if err = json.Unmarshal(body, v); err != nil {
+	if c.DebugLog != nil {
+		log.Printf("HTTP RESPONSE: %s", string(responseBody))
+	}
+
+	// Status code 500 is a server error and means nothing can be done at this
+	// point.
+	if response.StatusCode == 500 {
+		return ErrUnexpectedResponse
+	}
+
+	if err = json.Unmarshal(responseBody, &v); err != nil {
 		return err
 	}
 
-	return nil
+	// Status codes 200 and 201 are indicative of being able to convert the
+	// response body to the struct that was specified.
+	if response.StatusCode == 200 || response.StatusCode == 201 {
+		return nil
+	}
+
+	// Anything else than a 200/201/500 should be a JSON error.
+	return ErrResponse
 }
 
-// This function retrieves your balance.
-func (c Client) Balance() (*Balance, error) {
+// Balance returns the balance information for the account that is associated
+// with the access key.
+func (c *Client) Balance() (*Balance, error) {
 	balance := &Balance{}
-
 	if err := c.request(balance, "balance", nil); err != nil {
+		if err == ErrResponse {
+			return balance, err
+		}
+
 		return nil, err
 	}
 
 	return balance, nil
 }
 
-// This function retrieves the information of a specific HLR.
-func (c Client) HLR(id string) (*HLR, error) {
+// HLR looks up an existing HLR object for the specified id that was previously
+// created by the NewHLR function.
+func (c *Client) HLR(id string) (*HLR, error) {
 	hlr := &HLR{}
-
 	if err := c.request(hlr, "hlr/"+id, nil); err != nil {
+		if err == ErrResponse {
+			return hlr, err
+		}
+
 		return nil, err
 	}
 
 	return hlr, nil
 }
 
-// This function creates a new HLR.
-func (c Client) CreateHLR(msisdn string, reference string) (*HLR, error) {
+// NewHLR retrieves the information of an existing HLR.
+func (c *Client) NewHLR(msisdn, reference string) (*HLR, error) {
 	params := &url.Values{
 		"msisdn":    {msisdn},
 		"reference": {reference}}
 
 	hlr := &HLR{}
-
 	if err := c.request(hlr, "hlr", params); err != nil {
+		if err == ErrResponse {
+			return hlr, err
+		}
+
 		return nil, err
 	}
 
 	return hlr, nil
 }
 
-// This function retrieves the information of a specific message.
-func (c Client) Message(id string) (*Message, error) {
-	msg := &Message{}
+// Message retrieves the information of an existing Message.
+func (c *Client) Message(id string) (*Message, error) {
+	message := &Message{}
+	if err := c.request(message, "messages/"+id, nil); err != nil {
+		if err == ErrResponse {
+			return message, err
+		}
 
-	if err := c.request(msg, "messages/"+id, nil); err != nil {
 		return nil, err
 	}
 
-	return msg, nil
+	return message, nil
 }
 
-// This function creates a new message, which is sent to one or more recipients.
-func (c Client) CreateMessage(originator string, recipients []string, body string, params *url.Values) (*Message, error) {
-	recips := strings.Join(recipients, ",")
-
-	if params == nil {
-		params = &url.Values{
-			"originator": {originator},
-			"body":       {body},
-			"recipients": {recips}}
-	} else {
-		params.Set("originator", originator)
-		params.Set("body", body)
-		params.Set("recipients", recips)
-	}
-
-	msg := &Message{}
-
-	if err := c.request(msg, "messages", params); err != nil {
+// NewMessage creates a new message for one or more recipients.
+func (c *Client) NewMessage(originator string, recipients []string, body string, msgParams *MessageParams) (*Message, error) {
+	params, err := paramsForMessage(msgParams)
+	if err != nil {
 		return nil, err
 	}
 
-	return msg, nil
+	params.Set("originator", originator)
+	params.Set("body", body)
+	params.Set("recipients", strings.Join(recipients, ","))
+
+	message := &Message{}
+	if err := c.request(message, "messages", params); err != nil {
+		if err == ErrResponse {
+			return message, err
+		}
+
+		return nil, err
+	}
+
+	return message, nil
 }
 
-// This function retrieves the information of a specific voice message.
-func (c Client) VoiceMessage(id string) (*VoiceMessage, error) {
-	vmsg := &VoiceMessage{}
+// VoiceMessage retrieves the information of an existing VoiceMessage.
+func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
+	message := &VoiceMessage{}
+	if err := c.request(message, "voicemessages/"+id, nil); err != nil {
+		if err == ErrResponse {
+			return message, err
+		}
 
-	if err := c.request(vmsg, "voicemessages/"+id, nil); err != nil {
 		return nil, err
 	}
 
-	return vmsg, nil
+	return message, nil
 }
 
-// This function creates a new voice message
-func (c Client) CreateVoiceMessage(recipients []string, body string, params *url.Values) (*VoiceMessage, error) {
-	recips := strings.Join(recipients, ",")
+// NewVoiceMessage creates a new voice message for one or more recipients.
+func (c Client) NewVoiceMessage(recipients []string, body string, params *VoiceMessageParams) (*VoiceMessage, error) {
+	urlParams := paramsForVoiceMessage(params)
+	urlParams.Set("body", body)
+	urlParams.Set("recipients", strings.Join(recipients, ","))
 
-	if params == nil {
-		params = &url.Values{
-			"body":       {body},
-			"recipients": {recips}}
-	} else {
-		params.Set("body", body)
-		params.Set("recipients", recips)
-	}
+	message := &VoiceMessage{}
+	if err := c.request(message, "voicemessages", urlParams); err != nil {
+		if err == ErrResponse {
+			return message, err
+		}
 
-	vmsg := &VoiceMessage{}
-
-	if err := c.request(vmsg, "voicemessages", params); err != nil {
 		return nil, err
 	}
 
-	return vmsg, nil
+	return message, nil
 }
