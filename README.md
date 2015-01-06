@@ -13,7 +13,7 @@ Installation
 The easiest way to use the MessageBird API in your Go project is to install it using *go get*:
 
 ```
-$ go get github.com/messagebird/go-rest-api/messagebird
+$ go get github.com/messagebird/go-rest-api
 ```
 
 If this doesn't work, you probably haven't set your [GOPATH](https://code.google.com/p/go-wiki/wiki/GOPATH) variable.
@@ -23,20 +23,20 @@ Examples
 We have put some self-explanatory examples in the [examples](https://github.com/messagebird/go-rest-api/tree/master/examples) directory, but here is a quick example on how to get started. Assuming the **go get** installation worked, you can import the messagebird package like this:
 
 ```go
-import "github.com/messagebird/go-rest-api/messagebird"
+import messagebird "github.com/messagebird/go-rest-api"
 ```
 
 Then, create an instance of **messagebird.Client**:
 
 ```go
-mb := messagebird.New("test_gshuPaZoeEG6ovbc8M79w0QyM")
+client := messagebird.New("test_gshuPaZoeEG6ovbc8M79w0QyM")
 ```
 
 Now you can query the API for information or send data. For example, if we want to request our balance information you'd do something like this:
 
 ```go
 // Request the balance information, returned as a Balance object.
-balance, err := mb.Balance()
+balance, err := client.Balance()
 if err != nil {
 	fmt.Println(err)
 	os.Exit(1)
@@ -74,4 +74,4 @@ Complete documentation, instructions, and examples are available at:
 
 License
 -------
-The MessageBird REST Client for Go is licensed under [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause). Copyright (c) 2014, MessageBird
+The MessageBird REST Client for Go is licensed under [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause). Copyright (c) 2014, 2015, MessageBird
