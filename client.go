@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	ClientVersion = "2.0.0"
+	ClientVersion = "2.0.1"
 	Endpoint      = "https://rest.messagebird.com"
 )
 
@@ -210,7 +210,7 @@ func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 }
 
 // NewVoiceMessage creates a new voice message for one or more recipients.
-func (c Client) NewVoiceMessage(recipients []string, body string, params *VoiceMessageParams) (*VoiceMessage, error) {
+func (c *Client) NewVoiceMessage(recipients []string, body string, params *VoiceMessageParams) (*VoiceMessage, error) {
 	urlParams := paramsForVoiceMessage(params)
 	urlParams.Set("body", body)
 	urlParams.Set("recipients", strings.Join(recipients, ","))
