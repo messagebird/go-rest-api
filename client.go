@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	ClientVersion = "2.0.1"
+	ClientVersion = "2.1.0"
 	Endpoint      = "https://rest.messagebird.com"
 )
 
@@ -217,6 +217,43 @@ func (c *Client) NewVoiceMessage(recipients []string, body string, params *Voice
 
 	message := &VoiceMessage{}
 	if err := c.request(message, "voicemessages", urlParams); err != nil {
+		if err == ErrResponse {
+			return message, err
+		}
+
+		return nil, err
+	}
+
+	return message, nil
+}
+
+// OtpGenerate generates a new One-Time-Password for one recipient
+func (c *Client) OtpGenerate(recipient string, params *OtpParams) (*OtpMessage, error) {
+	urlParams := paramsForOtp(params)
+	urlParams.Set("recipient", recipient)
+
+	message := &OtpMessage{}
+	if err := c.request(message, "otp/generate", urlParams); err != nil {
+		if err == ErrResponse {
+			return message, err
+		}
+
+		return nil, err
+	}
+
+	return message, nil
+}
+
+// OtpVerify verifies the token that was generated with OtpGenerate
+func (c *Client) OtpVerify(recipient string, token string, params *OtpParams) (*OtpMessage, error) {
+	urlParams := paramsForOtp(params)
+	urlParams.Set("recipient", recipient)
+	urlParams.Set("token", token)
+
+	path := "otp/verify?" + urlParams.Encode()
+
+	message := &OtpMessage{}
+	if err := c.request(message, path, nil); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
