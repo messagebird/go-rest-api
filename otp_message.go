@@ -6,23 +6,23 @@ import (
 )
 
 type OtpMessage struct {
-	Id					string
-	Recipient			string
-	Reference			string
-	Status				string
-	Href				map[string]string `json:"href"`
-	CreatedDatetime		*time.Time
-	ValidUntilDatetime	*time.Time
-	Errors				[]Error
+	Id                 string
+	Recipient          string
+	Reference          string
+	Status             string
+	Href               map[string]string `json:"href"`
+	CreatedDatetime    *time.Time
+	ValidUntilDatetime *time.Time
+	Errors             []Error
 }
 
 type OtpParams struct {
-	Reference		string
-	Originator		string
-	Type			string
-	Language		string
-	Voice			string
-	Template		string
+	Reference  string
+	Originator string
+	Type       string
+	Language   string
+	Voice      string
+	Template   string
 }
 
 // paramsForOtp converts the specified OtpParams struct to a

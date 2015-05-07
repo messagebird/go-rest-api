@@ -227,7 +227,7 @@ func (c *Client) NewVoiceMessage(recipients []string, body string, params *Voice
 	return message, nil
 }
 
-// OtpGenerate generates a new One-Time-Password for one recipient
+// OtpGenerate generates a new One-Time-Password for one recipient.
 func (c *Client) OtpGenerate(recipient string, params *OtpParams) (*OtpMessage, error) {
 	urlParams := paramsForOtp(params)
 	urlParams.Set("recipient", recipient)
@@ -244,7 +244,7 @@ func (c *Client) OtpGenerate(recipient string, params *OtpParams) (*OtpMessage, 
 	return message, nil
 }
 
-// OtpVerify verifies the token that was generated with OtpGenerate
+// OtpVerify verifies the token that was generated with OtpGenerate.
 func (c *Client) OtpVerify(recipient string, token string, params *OtpParams) (*OtpMessage, error) {
 	urlParams := paramsForOtp(params)
 	urlParams.Set("recipient", recipient)
