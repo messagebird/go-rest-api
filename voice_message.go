@@ -9,6 +9,7 @@ import (
 type VoiceMessage struct {
 	Id                string
 	HRef              string
+	Originator        string
 	Body              string
 	Reference         string
 	Language          string
@@ -22,6 +23,7 @@ type VoiceMessage struct {
 }
 
 type VoiceMessageParams struct {
+	Originator        string
 	Reference         string
 	Language          string
 	Voice             string
@@ -39,6 +41,9 @@ func paramsForVoiceMessage(params *VoiceMessageParams) *url.Values {
 		return urlParams
 	}
 
+	if params.Originator != "" {
+		urlParams.Set("originator", params.Originator)
+	}
 	if params.Reference != "" {
 		urlParams.Set("reference", params.Reference)
 	}
