@@ -8,6 +8,7 @@ import (
 var voiceMessageObject []byte = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
+  "originator":"MessageBird",
   "body":"Hello World",
   "reference":null,
   "language":"en-gb",
@@ -45,6 +46,10 @@ func TestNewVoiceMessage(t *testing.T) {
 
 	if message.HRef != "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463" {
 		t.Errorf("Unexpected voice message href: %s", message.HRef)
+	}
+
+	if message.Originator != "MessageBird" {
+		t.Errorf("Unexpected voice message originator: %s", message.Originator)
 	}
 
 	if message.Body != "Hello World" {
