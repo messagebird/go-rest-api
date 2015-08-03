@@ -2,6 +2,8 @@ MessageBird's REST API for Go
 =============================
 This repository contains the open source Go client for MessageBird's REST API. Documentation can be found at: https://www.messagebird.com/developers/go.
 
+[![Build Status](https://travis-ci.org/messagebird/go-rest-api.svg?branch=master)](https://travis-ci.org/messagebird/go-rest-api)
+
 Requirements
 ------------
 - [Sign up](https://www.messagebird.com/en/signup) for a free MessageBird account
@@ -58,7 +60,7 @@ This will give you something like:
 $ go run example.go
   payment : prepaid
   type    : credits
-  amount  : 9 
+  amount  : 9
 ```
 
 Please see the other examples for a complete overview of all the available API calls.
