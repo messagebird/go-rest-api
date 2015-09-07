@@ -18,8 +18,6 @@ The easiest way to use the MessageBird API in your Go project is to install it u
 $ go get github.com/messagebird/go-rest-api
 ```
 
-If this doesn't work, you probably haven't set your [GOPATH](https://code.google.com/p/go-wiki/wiki/GOPATH) variable.
-
 Examples
 --------
 Here is a quick example on how to get started. Assuming the **go get** installation worked, you can import the messagebird package like this:
