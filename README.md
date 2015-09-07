@@ -25,7 +25,7 @@ Examples
 Here is a quick example on how to get started. Assuming the **go get** installation worked, you can import the messagebird package like this:
 
 ```go
-import messagebird "github.com/messagebird/go-rest-api"
+import "github.com/messagebird/go-rest-api"
 ```
 
 Then, create an instance of **messagebird.Client**:
@@ -42,7 +42,7 @@ balance, err := client.Balance()
 if err != nil {
   // messagebird.ErrResponse means custom JSON errors.
   if err == messagebird.ErrResponse {
-    for _, mbError := range object.Errors {
+    for _, mbError := range balance.Errors {
       fmt.Printf("Error: %#v\n", mbError)
     }
   }
