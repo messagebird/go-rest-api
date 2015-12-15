@@ -1,6 +1,9 @@
 package messagebird
 
-import "testing"
+import (
+	"strconv"
+	"testing"
+)
 
 var lookupObject []byte = []byte(`{
     "href":"https://rest.messagebird.com/lookup/31624971134",
@@ -17,7 +20,7 @@ var lookupObject []byte = []byte(`{
     "hlr":{
         "id":"6118d3f06566fcd0cdc8962h65065907",
         "network":20416,
-        "reference":"yoloswag2000",
+        "reference":"referece2000",
         "status":"active",
         "createdDatetime":"2015-12-15T08:19:24+00:00",
         "statusDatetime":"2015-12-15T08:19:25+00:00"
@@ -27,7 +30,7 @@ var lookupObject []byte = []byte(`{
 var lookupHLRObject []byte = []byte(`{
     "id":"6118d3f06566fcd0cdc8962h65065907",
     "network":20416,
-    "reference":"yoloswag2000",
+    "reference":"referece2000",
     "status":"active",
     "createdDatetime":"2015-12-15T08:19:24+00:00",
     "statusDatetime":"2015-12-15T08:19:25+00:00"
@@ -36,8 +39,8 @@ var lookupHLRObject []byte = []byte(`{
 func TestLookup(t *testing.T) {
 	SetServerResponse(200, lookupObject)
 
-	phoneNumber := 31624971134
-	lookup, err := mbClient.Lookup(phoneNumber, "NL")
+	phoneNumber := "31624971134"
+	lookup, err := mbClient.Lookup(phoneNumber, &LookupParams{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
@@ -45,18 +48,16 @@ func TestLookup(t *testing.T) {
 	if lookup.Href != "https://rest.messagebird.com/lookup/31624971134" {
 		t.Errorf("Unexpected lookup href: %s", lookup.Href)
 	}
-	if lookup.PhoneNumber != phoneNumber {
+	if strconv.FormatInt(lookup.PhoneNumber, 10) != phoneNumber {
 		t.Errorf("Unexpected lookup phoneNumber: %s", lookup.PhoneNumber)
 	}
-	if lookup.Formats != nil {
-		if lookup.Formats.International != "+31 6 24971134" {
-			t.Errorf("Unexpected International format: %s", lookup.HLR.Reference)
-		}
-	} else {
-		t.Errorf("Unexpected empty Formats object")
+
+	if lookup.Formats.International != "+31 6 24971134" {
+		t.Errorf("Unexpected International format: %s", lookup.HLR.Reference)
 	}
+
 	if lookup.HLR != nil {
-		if lookup.HLR.Reference != "yoloswag2000" {
+		if lookup.HLR.Reference != "referece2000" {
 			t.Errorf("Unexpected hlr reference: %s", lookup.HLR.Reference)
 		}
 	} else {
@@ -71,7 +72,7 @@ func checkHLR(t *testing.T, hlr *HLR) {
 	if hlr.Network != 20416 {
 		t.Errorf("Unexpected hlr network: %d", hlr.Network)
 	}
-	if hlr.Reference != "yoloswag2000" {
+	if hlr.Reference != "referece2000" {
 		t.Errorf("Unexpected hlr reference: %s", hlr.Reference)
 	}
 	if hlr.Status != "active" {
@@ -82,7 +83,7 @@ func checkHLR(t *testing.T, hlr *HLR) {
 func TestHLRLookup(t *testing.T) {
 	SetServerResponse(200, lookupHLRObject)
 
-	hlr, err := mbClient.HLRLookup(31624971134, "NL")
+	hlr, err := mbClient.HLRLookup("31624971134", &LookupParams{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
@@ -92,7 +93,7 @@ func TestHLRLookup(t *testing.T) {
 func TestNewHLRLookup(t *testing.T) {
 	SetServerResponse(201, lookupHLRObject)
 
-	hlr, err := mbClient.NewHLRLookup(31624971134, "NL", "yoloswag2000")
+	hlr, err := mbClient.NewHLRLookup("31624971134", &LookupParams{CountryCode: "NL", Reference: "reference2000"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}

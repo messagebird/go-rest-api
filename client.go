@@ -9,7 +9,6 @@ package messagebird
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -265,14 +264,10 @@ func (c *Client) OtpVerify(recipient string, token string, params *OtpParams) (*
 	return message, nil
 }
 
-// Lookup performs a new lookup for the specified number
-func (c *Client) Lookup(phoneNumber int, countryCode string) (*Lookup, error) {
-	urlParams := &url.Values{}
-	if countryCode != "" {
-		urlParams.Set("countryCode", countryCode)
-	}
-
-	path := fmt.Sprintf("lookup/%d?%s", phoneNumber, urlParams.Encode())
+// Lookup performs a new lookup for the specified number.
+func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, error) {
+	urlParams := paramsForLookup(params)
+	path := "lookup/" + phoneNumber + "?" + urlParams.Encode()
 
 	lookup := &Lookup{}
 	if err := c.request(lookup, path, nil); err != nil {
@@ -286,18 +281,12 @@ func (c *Client) Lookup(phoneNumber int, countryCode string) (*Lookup, error) {
 	return lookup, nil
 }
 
-// NewHLRLookup creates a new HRL lookup for the specified number
-func (c *Client) NewHLRLookup(phoneNumber int, countryCode string, reference string) (*HLR, error) {
-	params := &url.Values{}
-	if countryCode != "" {
-		params.Set("countryCode", countryCode)
-	}
-	if reference != "" {
-		params.Set("reference", reference)
-	}
+// NewHLRLookup creates a new HLR lookup for the specified number.
+func (c *Client) NewHLRLookup(phoneNumber string, lookupParams *LookupParams) (*HLR, error) {
+	params := paramsForLookup(lookupParams)
 
 	hlr := &HLR{}
-	path := fmt.Sprintf("lookup/%d/hlr", phoneNumber)
+	path := "lookup/" + phoneNumber + "/hlr"
 	if err := c.request(hlr, path, params); err != nil {
 		if err == ErrResponse {
 			return hlr, err
@@ -309,14 +298,11 @@ func (c *Client) NewHLRLookup(phoneNumber int, countryCode string, reference str
 	return hlr, nil
 }
 
-// HLRLookup performs a HLR lookup for the specified number
-func (c *Client) HLRLookup(phoneNumber int, countryCode string) (*HLR, error) {
-	urlParams := &url.Values{}
-	if countryCode != "" {
-		urlParams.Set("countryCode", countryCode)
-	}
+// HLRLookup performs a HLR lookup for the specified number.
+func (c *Client) HLRLookup(phoneNumber string, params *LookupParams) (*HLR, error) {
+	urlParams := paramsForLookup(params)
 
-	path := fmt.Sprintf("lookup/%d/hlr?%s", phoneNumber, urlParams.Encode())
+	path := "lookup/" + phoneNumber + "/hlr?" + urlParams.Encode()
 
 	hlr := &HLR{}
 	if err := c.request(hlr, path, nil); err != nil {
