@@ -281,8 +281,8 @@ func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, erro
 	return lookup, nil
 }
 
-// NewHLRLookup creates a new HLR lookup for the specified number.
-func (c *Client) NewHLRLookup(phoneNumber string, params *LookupParams) (*HLR, error) {
+// NewLookupHLR creates a new HLR lookup for the specified number.
+func (c *Client) NewLookupHLR(phoneNumber string, params *LookupParams) (*HLR, error) {
 	urlParams := paramsForLookup(params)
 	path := "lookup/" + phoneNumber + "/hlr"
 
@@ -298,8 +298,8 @@ func (c *Client) NewHLRLookup(phoneNumber string, params *LookupParams) (*HLR, e
 	return hlr, nil
 }
 
-// HLRLookup performs a HLR lookup for the specified number.
-func (c *Client) HLRLookup(phoneNumber string, params *LookupParams) (*HLR, error) {
+// LookupHLR performs a HLR lookup for the specified number.
+func (c *Client) LookupHLR(phoneNumber string, params *LookupParams) (*HLR, error) {
 	urlParams := paramsForLookup(params)
 	path := "lookup/" + phoneNumber + "/hlr?" + urlParams.Encode()
 

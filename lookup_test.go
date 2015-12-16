@@ -80,20 +80,20 @@ func checkHLR(t *testing.T, hlr *HLR) {
 	}
 }
 
-func TestHLRLookup(t *testing.T) {
+func TestLookupHLR(t *testing.T) {
 	SetServerResponse(200, lookupHLRObject)
 
-	hlr, err := mbClient.HLRLookup("31624971134", &LookupParams{CountryCode: "NL"})
+	hlr, err := mbClient.LookupHLR("31624971134", &LookupParams{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
 	checkHLR(t, hlr)
 }
 
-func TestNewHLRLookup(t *testing.T) {
+func TestNewLookupHLR(t *testing.T) {
 	SetServerResponse(201, lookupHLRObject)
 
-	hlr, err := mbClient.NewHLRLookup("31624971134", &LookupParams{CountryCode: "NL", Reference: "reference2000"})
+	hlr, err := mbClient.NewLookupHLR("31624971134", &LookupParams{CountryCode: "NL", Reference: "reference2000"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
