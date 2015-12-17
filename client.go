@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	ClientVersion = "2.1.1"
+	ClientVersion = "2.2.0"
 	Endpoint      = "https://rest.messagebird.com"
 )
 
@@ -262,4 +262,55 @@ func (c *Client) OtpVerify(recipient string, token string, params *OtpParams) (*
 	}
 
 	return message, nil
+}
+
+// Lookup performs a new lookup for the specified number.
+func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, error) {
+	urlParams := paramsForLookup(params)
+	path := "lookup/" + phoneNumber + "?" + urlParams.Encode()
+
+	lookup := &Lookup{}
+	if err := c.request(lookup, path, nil); err != nil {
+		if err == ErrResponse {
+			return lookup, err
+		}
+
+		return nil, err
+	}
+
+	return lookup, nil
+}
+
+// NewLookupHLR creates a new HLR lookup for the specified number.
+func (c *Client) NewLookupHLR(phoneNumber string, params *LookupParams) (*HLR, error) {
+	urlParams := paramsForLookup(params)
+	path := "lookup/" + phoneNumber + "/hlr"
+
+	hlr := &HLR{}
+	if err := c.request(hlr, path, urlParams); err != nil {
+		if err == ErrResponse {
+			return hlr, err
+		}
+
+		return nil, err
+	}
+
+	return hlr, nil
+}
+
+// LookupHLR performs a HLR lookup for the specified number.
+func (c *Client) LookupHLR(phoneNumber string, params *LookupParams) (*HLR, error) {
+	urlParams := paramsForLookup(params)
+	path := "lookup/" + phoneNumber + "/hlr?" + urlParams.Encode()
+
+	hlr := &HLR{}
+	if err := c.request(hlr, path, nil); err != nil {
+		if err == ErrResponse {
+			return hlr, err
+		}
+
+		return nil, err
+	}
+
+	return hlr, nil
 }
