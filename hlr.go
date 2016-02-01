@@ -9,6 +9,7 @@ type HLR struct {
 	Network         int
 	Reference       string
 	Status          string
+	Details         map[string]interface{}
 	CreatedDatetime *time.Time
 	StatusDatetime  *time.Time
 	Errors          []Error
