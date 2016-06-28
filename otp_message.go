@@ -23,6 +23,7 @@ type OtpParams struct {
 	Language   string
 	Voice      string
 	Template   string
+	DataCoding string
 }
 
 // paramsForOtp converts the specified OtpParams struct to a
@@ -45,6 +46,10 @@ func paramsForOtp(params *OtpParams) *url.Values {
 	}
 	if params.Template != "" {
 		urlParams.Set("template", params.Template)
+	}
+
+	if params.DataCoding != "" {
+		urlParams.Set("datacoding", params.DataCoding)
 	}
 
 	// Specific params for voice messages
