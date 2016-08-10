@@ -5,8 +5,14 @@ import "testing"
 var balanceObject []byte = []byte(`{
   "payment":"prepaid",
   "type":"credits",
-  "amount":9
+  "amount":9.2
 }`)
+
+const Epsilon float32 = 0.001
+
+func cmpFloat32(a, b float32) bool {
+	return (a-b) < Epsilon && (b-a) < Epsilon
+}
 
 func TestBalance(t *testing.T) {
 	SetServerResponse(200, balanceObject)
@@ -22,8 +28,8 @@ func TestBalance(t *testing.T) {
 	if balance.Type != "credits" {
 		t.Errorf("Unexpected balance type: %s", balance.Type)
 	}
-	if balance.Amount != 9 {
-		t.Errorf("Unexpected balance amount: %d", balance.Amount)
+	if !cmpFloat32(balance.Amount, 9.2) {
+		t.Errorf("Unexpected balance amount: %.2f", balance.Amount)
 	}
 }
 
