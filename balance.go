@@ -3,6 +3,6 @@ package messagebird
 type Balance struct {
 	Payment string
 	Type    string
-	Amount  int
+	Amount  float32
 	Errors  []Error
 }
