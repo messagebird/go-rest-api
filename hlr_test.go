@@ -17,8 +17,8 @@ var hlrObject = []byte(`{
 }`)
 
 func assertHLRObject(t *testing.T, hlr *HLR) {
-	if hlr.Id != "27978c50354a93ca0ca8de6h54340177" {
-		t.Errorf("Unexpected result for HLR Id: %s", hlr.Id)
+	if hlr.ID != "27978c50354a93ca0ca8de6h54340177" {
+		t.Errorf("Unexpected result for HLR Id: %s", hlr.ID)
 	}
 
 	if hlr.HRef != "https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177" {

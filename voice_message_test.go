@@ -40,8 +40,8 @@ func TestNewVoiceMessage(t *testing.T) {
 		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
 	}
 
-	if message.Id != "430c44a0354aab7ac9553f7a49907463" {
-		t.Errorf("Unexpected voice message id: %s", message.Id)
+	if message.ID != "430c44a0354aab7ac9553f7a49907463" {
+		t.Errorf("Unexpected voice message id: %s", message.ID)
 	}
 
 	if message.HRef != "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463" {

@@ -6,7 +6,7 @@ import (
 )
 
 type OtpMessage struct {
-	Id                 string
+	ID                 string
 	Recipient          string
 	Reference          string
 	Status             string

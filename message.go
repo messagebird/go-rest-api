@@ -10,7 +10,7 @@ import (
 type TypeDetails map[string]interface{}
 
 type Message struct {
-	Id                string
+	ID                string
 	HRef              string
 	Direction         string
 	Type              string

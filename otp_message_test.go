@@ -25,8 +25,8 @@ func TestOtpGenerate(t *testing.T) {
 		t.Fatalf("Didn't expect error while generating an OTP: %s", err)
 	}
 
-	if result.Id != "76d429606554b5827a46b12o29500954" {
-		t.Errorf("Unexpected OTP message id: %s", result.Id)
+	if result.ID != "76d429606554b5827a46b12o29500954" {
+		t.Errorf("Unexpected OTP message id: %s", result.ID)
 	}
 
 	if result.Recipient != "31630174123" {
@@ -79,8 +79,8 @@ func TestOtpVerify(t *testing.T) {
 		t.Fatalf("Didn't expect error while verifying an OTP: %s", err)
 	}
 
-	if result.Id != "8b912ea03554b7a3d5d6e22o95082672" {
-		t.Errorf("Unexpected OTP message id: %s", result.Id)
+	if result.ID != "8b912ea03554b7a3d5d6e22o95082672" {
+		t.Errorf("Unexpected OTP message id: %s", result.ID)
 	}
 
 	if result.Recipient != "31630174123" {

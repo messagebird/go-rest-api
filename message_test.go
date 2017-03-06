@@ -45,8 +45,8 @@ func TestNewMessage(t *testing.T) {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
 
-	if message.Id != "6fe65f90454aa61536e6a88b88972670" {
-		t.Errorf("Unexpected message id: %s", message.Id)
+	if message.ID != "6fe65f90454aa61536e6a88b88972670" {
+		t.Errorf("Unexpected message id: %s", message.ID)
 	}
 
 	if message.HRef != "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670" {

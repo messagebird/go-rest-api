@@ -66,8 +66,8 @@ func TestLookup(t *testing.T) {
 }
 
 func checkHLR(t *testing.T, hlr *HLR) {
-	if hlr.Id != "6118d3f06566fcd0cdc8962h65065907" {
-		t.Errorf("Unexpected hlr id: %s", hlr.Id)
+	if hlr.ID != "6118d3f06566fcd0cdc8962h65065907" {
+		t.Errorf("Unexpected hlr id: %s", hlr.ID)
 	}
 	if hlr.Network != 20416 {
 		t.Errorf("Unexpected hlr network: %d", hlr.Network)

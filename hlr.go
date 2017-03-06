@@ -3,7 +3,7 @@ package messagebird
 import "time"
 
 type HLR struct {
-	Id              string
+	ID              string
 	HRef            string
 	MSISDN          int
 	Network         int

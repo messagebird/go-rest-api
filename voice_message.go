@@ -7,7 +7,7 @@ import (
 )
 
 type VoiceMessage struct {
-	Id                string
+	ID                string
 	HRef              string
 	Originator        string
 	Body              string
