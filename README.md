@@ -3,6 +3,7 @@ MessageBird's REST API for Go
 This repository contains the open source Go client for MessageBird's REST API. Documentation can be found at: https://www.messagebird.com/developers/go.
 
 [![Build Status](https://travis-ci.org/messagebird/go-rest-api.svg?branch=master)](https://travis-ci.org/messagebird/go-rest-api)
+[![Go Report Card](https://goreportcard.com/badge/github.com/messagebird/go-rest-api)](https://goreportcard.com/report/github.com/messagebird/go-rest-api)
 
 Requirements
 ------------
