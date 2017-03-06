@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// OtpMessage stands for one time password message.
 type OtpMessage struct {
 	ID                 string
 	Recipient          string
@@ -16,6 +17,7 @@ type OtpMessage struct {
 	Errors             []Error
 }
 
+// OtpParams carry aditional message details and used for URL build.
 type OtpParams struct {
 	Reference  string
 	Originator string

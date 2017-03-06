@@ -7,8 +7,11 @@ import (
 	"time"
 )
 
+// TypeDetails is a hash with extra information.
+// Is only used when a binary or premium message is sent.
 type TypeDetails map[string]interface{}
 
+// Message struct represents a message at MessageBird.com
 type Message struct {
 	ID                string
 	HRef              string
@@ -28,6 +31,7 @@ type Message struct {
 	Errors            []Error
 }
 
+// MessageParams provide additional message send options and used in URL as params.
 type MessageParams struct {
 	Type              string
 	Reference         string

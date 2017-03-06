@@ -18,15 +18,23 @@ import (
 )
 
 const (
+	// ClientVersion is used in User-Agent request header to provide server with API level.
 	ClientVersion = "2.3.0"
-	Endpoint      = "https://rest.messagebird.com"
+
+	// Endpoint points you to MessageBird REST API.
+	Endpoint = "https://rest.messagebird.com"
 )
 
 var (
-	ErrResponse           = errors.New("The MessageBird API returned an error")
+	// ErrResponse is returned when we were able to cntact API but request was not successful and containes error details.
+	ErrResponse = errors.New("The MessageBird API returned an error")
+
+	// ErrUnexpectedResponse is used when there was an internal server error and nothing can be done at this point.
 	ErrUnexpectedResponse = errors.New("The MessageBird API is currently unavailable")
 )
 
+// Client is used to access API with a given key.
+// Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
 type Client struct {
 	AccessKey  string       // The API access key
 	HTTPClient *http.Client // The HTTP client to send requests on
