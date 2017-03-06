@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var messageObject []byte = []byte(`{
+var messageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -147,7 +147,7 @@ func TestNewMessageError(t *testing.T) {
 	}
 }
 
-var messageWithParamsObject []byte = []byte(`{
+var messageWithParamsObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -216,7 +216,7 @@ func TestNewMessageWithParams(t *testing.T) {
 	}
 }
 
-var binaryMessageObject []byte = []byte(`{
+var binaryMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -274,7 +274,7 @@ func TestNewMessageWithBinaryType(t *testing.T) {
 	}
 }
 
-var premiumMessageObject []byte = []byte(`{
+var premiumMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -342,7 +342,7 @@ func TestNewMessageWithPremiumType(t *testing.T) {
 	}
 }
 
-var flashMessageObject []byte = []byte(`{
+var flashMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -389,7 +389,7 @@ func TestNewMessageWithFlashType(t *testing.T) {
 	}
 }
 
-var messageObjectWithCreatedDatetime []byte = []byte(`{
+var messageObjectWithCreatedDatetime = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",

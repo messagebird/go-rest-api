@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var OtpGenerateObject []byte = []byte(`{
+var OtpGenerateObject = []byte(`{
     "id": "76d429606554b5827a46b12o29500954",
     "recipient": "31630174123",
     "reference": null,
@@ -59,7 +59,7 @@ func TestOtpGenerate(t *testing.T) {
 	}
 }
 
-var OtpVerifyObject []byte = []byte(`{
+var OtpVerifyObject = []byte(`{
     "id": "8b912ea03554b7a3d5d6e22o95082672",
     "recipient": "31630174123",
     "reference": null,

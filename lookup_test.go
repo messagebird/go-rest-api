@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var lookupObject []byte = []byte(`{
+var lookupObject = []byte(`{
     "href":"https://rest.messagebird.com/lookup/31624971134",
     "countryCode":"NL",
     "countryPrefix":31,
@@ -27,7 +27,7 @@ var lookupObject []byte = []byte(`{
     }
 }`)
 
-var lookupHLRObject []byte = []byte(`{
+var lookupHLRObject = []byte(`{
     "id":"6118d3f06566fcd0cdc8962h65065907",
     "network":20416,
     "reference":"referece2000",

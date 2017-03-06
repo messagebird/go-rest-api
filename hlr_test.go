@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var hlrObject []byte = []byte(`{
+var hlrObject = []byte(`{
   "id":"27978c50354a93ca0ca8de6h54340177",
   "href":"https:\/\/rest.messagebird.com\/hlr\/27978c50354a93ca0ca8de6h54340177",
   "msisdn":31612345678,

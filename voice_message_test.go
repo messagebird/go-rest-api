@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var voiceMessageObject []byte = []byte(`{
+var voiceMessageObject = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
   "originator":"MessageBird",
@@ -109,7 +109,7 @@ func TestNewVoiceMessage(t *testing.T) {
 	}
 }
 
-var voiceMessageObjectWithParams []byte = []byte(`{
+var voiceMessageObjectWithParams = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
   "body":"Hello World",
@@ -167,7 +167,7 @@ func TestNewVoiceMessageWithParams(t *testing.T) {
 	}
 }
 
-var voiceMessageObjectWithCreatedDatetime []byte = []byte(`{
+var voiceMessageObjectWithCreatedDatetime = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
   "body":"Hello World",
