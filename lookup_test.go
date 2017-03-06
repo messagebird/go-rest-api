@@ -49,7 +49,7 @@ func TestLookup(t *testing.T) {
 		t.Errorf("Unexpected lookup href: %s", lookup.Href)
 	}
 	if strconv.FormatInt(lookup.PhoneNumber, 10) != phoneNumber {
-		t.Errorf("Unexpected lookup phoneNumber: %s", lookup.PhoneNumber)
+		t.Errorf("Unexpected lookup phoneNumber: %d", lookup.PhoneNumber)
 	}
 
 	if lookup.Formats.International != "+31 6 24971134" {

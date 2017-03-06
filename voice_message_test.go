@@ -73,7 +73,7 @@ func TestNewVoiceMessage(t *testing.T) {
 	}
 
 	if message.IfMachine != "continue" {
-		t.Errorf("Unexpected voice message ifmachine: %d", message.IfMachine)
+		t.Errorf("Unexpected voice message ifmachine: %s", message.IfMachine)
 	}
 
 	if message.ScheduledDatetime != nil {

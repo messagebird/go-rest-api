@@ -78,7 +78,7 @@ func TestNewMessage(t *testing.T) {
 	}
 
 	if message.Gateway != 239 {
-		t.Errorf("Unexpected message gateway: %s", message.Gateway)
+		t.Errorf("Unexpected message gateway: %d", message.Gateway)
 	}
 
 	if len(message.TypeDetails) != 0 {
@@ -90,7 +90,7 @@ func TestNewMessage(t *testing.T) {
 	}
 
 	if message.MClass != 1 {
-		t.Errorf("Unexpected message mclass: %s", message.MClass)
+		t.Errorf("Unexpected message mclass: %d", message.MClass)
 	}
 
 	if message.ScheduledDatetime != nil {
@@ -208,7 +208,7 @@ func TestNewMessageWithParams(t *testing.T) {
 	}
 
 	if message.Gateway != 10 {
-		t.Errorf("Unexpected message gateway: %s", message.Gateway)
+		t.Errorf("Unexpected message gateway: %d", message.Gateway)
 	}
 
 	if message.DataCoding != "unicode" {
