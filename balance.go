@@ -1,6 +1,6 @@
 package messagebird
 
-// Balance object represents your balance at MessageBird.com
+// Balance describes your balance information.
 type Balance struct {
 	Payment string
 	Type    string
