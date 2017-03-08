@@ -26,7 +26,7 @@ const (
 )
 
 var (
-	// ErrResponse is returned when we were able to cntact API but request was not successful and containes error details.
+	// ErrResponse is returned when we were able to contact API but request was not successful and containes error details.
 	ErrResponse = errors.New("The MessageBird API returned an error")
 
 	// ErrUnexpectedResponse is used when there was an internal server error and nothing can be done at this point.
