@@ -4,6 +4,9 @@
 //
 // Author: Maurice Nonnekes <maurice@messagebird.com>
 
+// Package messagebird is an official library for interacting with MessageBird.com API.
+// The MessageBird API connects your website or application to operators around the world. With our API you can integrate SMS, Chat & Voice.
+// More documentation you can find on the MessageBird developers portal: https://developers.messagebird.com/
 package messagebird
 
 import (
