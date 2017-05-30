@@ -245,6 +245,7 @@ func (c *Client) NewVerify(recipient string, params *VerifyParams) (*Verify, err
 	return verify, nil
 }
 
+// VerifyToken handles One-Time-Password verification.
 func (c *Client) VerifyToken(id, token string) (*Verify, error) {
 	params := &url.Values{}
 	params.Set("token", token)
