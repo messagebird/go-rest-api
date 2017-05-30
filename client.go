@@ -144,7 +144,8 @@ func (c *Client) HLR(id string) (*HLR, error) {
 func (c *Client) NewHLR(msisdn, reference string) (*HLR, error) {
 	params := &url.Values{
 		"msisdn":    {msisdn},
-		"reference": {reference}}
+		"reference": {reference},
+	}
 
 	hlr := &HLR{}
 	if err := c.request(hlr, "hlr", params); err != nil {
@@ -262,6 +263,41 @@ func (c *Client) OtpVerify(recipient string, token string, params *OtpParams) (*
 	}
 
 	return message, nil
+}
+
+// NewVerify generates a new One-Time-Password for one recipient.
+func (c *Client) NewVerify(recipient string, params *VerifyParams) (*Verify, error) {
+	urlParams := paramsForVerify(params)
+	urlParams.Set("recipient", recipient)
+
+	verify := &Verify{}
+	if err := c.request(verify, "verify", urlParams); err != nil {
+		if err == ErrResponse {
+			return verify, err
+		}
+
+		return nil, err
+	}
+
+	return verify, nil
+}
+
+func (c *Client) VerifyToken(id, token string) (*Verify, error) {
+	params := &url.Values{}
+	params.Set("token", token)
+
+	path := "verify/" + id + "?" + params.Encode()
+
+	verify := &Verify{}
+	if err := c.request(verify, path, nil); err != nil {
+		if err == ErrResponse {
+			return verify, err
+		}
+
+		return nil, err
+	}
+
+	return verify, nil
 }
 
 // Lookup performs a new lookup for the specified number.
