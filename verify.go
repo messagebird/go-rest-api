@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Verify object represents MessageBird server response.
 type Verify struct {
 	ID                 string
 	HRef               string
@@ -18,6 +19,7 @@ type Verify struct {
 	Errors             []Error
 }
 
+// VerifyParams handles optional verification parameters.
 type VerifyParams struct {
 	Originator  string
 	Reference   string
@@ -28,11 +30,6 @@ type VerifyParams struct {
 	Language    string
 	Timeout     int
 	TokenLength int
-}
-
-type VerifyToken struct {
-	ID    string
-	Token string
 }
 
 func paramsForVerify(params *VerifyParams) *url.Values {

@@ -32,7 +32,7 @@ func assertVerifyObject(t *testing.T, v *Verify) {
 	}
 
 	if v.Recipient != 31612345678 {
-		t.Errorf("Unexpected Recipient: %s", v.Recipient)
+		t.Errorf("Unexpected Recipient: %d", v.Recipient)
 	}
 
 	if v.Reference != "MyReference" {
@@ -109,7 +109,7 @@ func assertVerifyTokenObject(t *testing.T, v *Verify) {
 	}
 
 	if v.Recipient != 31612345678 {
-		t.Errorf("Unexpected Recipient: %s", v.Recipient)
+		t.Errorf("Unexpected Recipient: %d", v.Recipient)
 	}
 
 	if v.Reference != "MyReference" {
