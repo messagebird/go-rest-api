@@ -228,43 +228,6 @@ func (c *Client) NewVoiceMessage(recipients []string, body string, params *Voice
 	return message, nil
 }
 
-// OtpGenerate generates a new One-Time-Password for one recipient.
-func (c *Client) OtpGenerate(recipient string, params *OtpParams) (*OtpMessage, error) {
-	urlParams := paramsForOtp(params)
-	urlParams.Set("recipient", recipient)
-
-	message := &OtpMessage{}
-	if err := c.request(message, "otp/generate", urlParams); err != nil {
-		if err == ErrResponse {
-			return message, err
-		}
-
-		return nil, err
-	}
-
-	return message, nil
-}
-
-// OtpVerify verifies the token that was generated with OtpGenerate.
-func (c *Client) OtpVerify(recipient string, token string, params *OtpParams) (*OtpMessage, error) {
-	urlParams := paramsForOtp(params)
-	urlParams.Set("recipient", recipient)
-	urlParams.Set("token", token)
-
-	path := "otp/verify?" + urlParams.Encode()
-
-	message := &OtpMessage{}
-	if err := c.request(message, path, nil); err != nil {
-		if err == ErrResponse {
-			return message, err
-		}
-
-		return nil, err
-	}
-
-	return message, nil
-}
-
 // NewVerify generates a new One-Time-Password for one recipient.
 func (c *Client) NewVerify(recipient string, params *VerifyParams) (*Verify, error) {
 	urlParams := paramsForVerify(params)
