@@ -45,7 +45,13 @@ type MessageQueryParams struct {
 	Offset     int
 }
 
-type Messages []Message
+type Messages struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Items      []Message
+}
 
 // paramsForMessage converts the specified MessageParams struct to a
 // url.Values pointer and returns it.
