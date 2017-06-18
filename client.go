@@ -172,6 +172,25 @@ func (c *Client) Message(id string) (*Message, error) {
 	return message, nil
 }
 
+// Messages retrieves messages using query
+func (c *Client) Messages(msgQueryParams *MessageQueryParams) (*Messages, error) {
+	messages := &Messages{}
+	params, err := paramsForMessageQuery(msgQueryParams)
+	if err != nil {
+		return messages, err
+	}
+
+	if err := c.request(messages, "messages?"+params.Encode(), nil); err != nil {
+		if err == ErrResponse {
+			return messages, err
+		}
+
+		return nil, err
+	}
+
+	return messages, nil
+}
+
 // NewMessage creates a new message for one or more recipients.
 func (c *Client) NewMessage(originator string, recipients []string, body string, msgParams *MessageParams) (*Message, error) {
 	params, err := paramsForMessage(msgParams)

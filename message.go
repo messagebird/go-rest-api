@@ -45,6 +45,8 @@ type MessageQueryParams struct {
 	Offset     int
 }
 
+type Messages []Message
+
 // paramsForMessage converts the specified MessageParams struct to a
 // url.Values pointer and returns it.
 func paramsForMessage(params *MessageParams) (*url.Values, error) {
