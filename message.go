@@ -38,6 +38,13 @@ type MessageParams struct {
 	ScheduledDatetime time.Time
 }
 
+type MessageQueryParams struct {
+	Originator string
+	Direction  string
+	Limit      int
+	Offset     int
+}
+
 // paramsForMessage converts the specified MessageParams struct to a
 // url.Values pointer and returns it.
 func paramsForMessage(params *MessageParams) (*url.Values, error) {
@@ -79,6 +86,30 @@ func paramsForMessage(params *MessageParams) (*url.Values, error) {
 	if params.ScheduledDatetime.Unix() > 0 {
 		urlParams.Set("scheduledDatetime", params.ScheduledDatetime.Format(time.RFC3339))
 	}
+
+	return urlParams, nil
+}
+
+func paramsForMessageQuery(params *MessageQueryParams) (*url.Values, error) {
+	urlParams := &url.Values{}
+
+	if params == nil {
+		return urlParams, nil
+	}
+
+	if params.Direction != "" {
+		urlParams.Set("direction", params.Direction)
+	}
+
+	if params.Originator != "" {
+		urlParams.Set("originator", params.Originator)
+	}
+
+	if params.Limit != 0 {
+		urlParams.Set("limit", strconv.Itoa(params.Limit))
+	}
+
+	urlParams.Set("offset", strconv.Itoa(params.Offset))
 
 	return urlParams, nil
 }
