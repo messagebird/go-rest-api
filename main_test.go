@@ -15,7 +15,7 @@ var mbServer *httptest.Server
 var mbServerResponseCode int
 var mbServerResponseBody []byte
 
-var accessKeyErrorObject []byte = []byte(`{
+var accessKeyErrorObject = []byte(`{
   "errors":[
     {
       "code":2,
