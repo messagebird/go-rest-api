@@ -196,6 +196,38 @@ func (c *Client) NewMessage(originator string, recipients []string, body string,
 	return message, nil
 }
 
+func (c *Client) NewMmsMessage(originator string, recipients []string, body string, mediaUrls []string, msgParams *MmsMessageParams) (*MmsMessage, error) {
+	params, err := paramsForMmsMessage(msgParams)
+	if err != nil {
+		return nil, err
+	}
+
+	if body == "" && mediaUrls == nil {
+		return nil, errors.New("body or mediaUrls is required")
+	}
+
+	params.Set("originator", originator)
+	params.Set("recipients", strings.Join(recipients, ","))
+
+	if body != "" {
+		params.Set("body", body)
+	}
+	if mediaUrls != nil {
+		params.Set("mediaUrls[]", strings.Join(mediaUrls, ","))
+	}
+
+	mmsMessage := &MmsMessage{}
+	if err := c.request(mmsMessage, "mms", params); err != nil {
+		if (err == ErrResponse) {
+			return mmsMessage, err
+		}
+
+		return nil, err
+	}
+
+	return mmsMessage, nil
+}
+
 // VoiceMessage retrieves the information of an existing VoiceMessage.
 func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 	message := &VoiceMessage{}
