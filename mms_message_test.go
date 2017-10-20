@@ -99,21 +99,21 @@ func TestNewMmsMessage(t *testing.T) {
 func TestNewMmsMessageError(t *testing.T) {
 	SetServerResponse(405, accessKeyErrorObject)
 
-	message, err := mbClient.NewMmsMessage("TestName", []string{"31612345678"}, "Hello World", nil, nil)
+	mmsMessage, err := mbClient.NewMmsMessage("TestName", []string{"31612345678"}, "Hello World", nil, nil)
 	if err != ErrResponse {
 		t.Fatalf("Expected ErrResponse to be returned, instead I got %s", err)
 	}
 
-	if len(message.Errors) != 1 {
-		t.Fatalf("Unexpected number of errors: %d", len(message.Errors))
+	if len(mmsMessage.Errors) != 1 {
+		t.Fatalf("Unexpected number of errors: %d", len(mmsMessage.Errors))
 	}
 
-	if message.Errors[0].Code != 2 {
-		t.Errorf("Unexpected error code: %d", message.Errors[0].Code)
+	if mmsMessage.Errors[0].Code != 2 {
+		t.Errorf("Unexpected error code: %d", mmsMessage.Errors[0].Code)
 	}
 
-	if message.Errors[0].Parameter != "access_key" {
-		t.Errorf("Unexpected error parameter %s", message.Errors[0].Parameter)
+	if mmsMessage.Errors[0].Parameter != "access_key" {
+		t.Errorf("Unexpected error parameter %s", mmsMessage.Errors[0].Parameter)
 	}
 }
 
