@@ -2,6 +2,7 @@ package messagebird
 
 import "net/url"
 
+// Formats represents phone number in multiple formats.
 type Formats struct {
 	E164          string
 	International string
@@ -9,6 +10,7 @@ type Formats struct {
 	Rfc3966       string
 }
 
+// Lookup is used to validate and look up a mobile number.
 type Lookup struct {
 	Href          string
 	CountryCode   string
@@ -19,6 +21,7 @@ type Lookup struct {
 	HLR           *HLR
 }
 
+// LookupParams provide additional lookup information.
 type LookupParams struct {
 	CountryCode string
 	Reference   string

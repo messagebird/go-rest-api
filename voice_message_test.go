@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var voiceMessageObject []byte = []byte(`{
+var voiceMessageObject = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
   "originator":"MessageBird",
@@ -34,8 +34,8 @@ var voiceMessageObject []byte = []byte(`{
 }`)
 
 func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
-	if message.Id != "430c44a0354aab7ac9553f7a49907463" {
-		t.Errorf("Unexpected voice message id: %s, expected: 430c44a0354aab7ac9553f7a49907463", message.Id)
+	if message.ID != "430c44a0354aab7ac9553f7a49907463" {
+		t.Errorf("Unexpected voice message id: %s, expected: 430c44a0354aab7ac9553f7a49907463", message.ID)
 	}
 
 	if message.HRef != "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463" {
@@ -114,7 +114,7 @@ func TestNewVoiceMessage(t *testing.T) {
 	assertVoiceMessageObject(t, message)
 }
 
-var voiceMessageObjectWithParams []byte = []byte(`{
+var voiceMessageObjectWithParams = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
   "body":"Hello World",
@@ -172,7 +172,7 @@ func TestNewVoiceMessageWithParams(t *testing.T) {
 	}
 }
 
-var voiceMessageObjectWithCreatedDatetime []byte = []byte(`{
+var voiceMessageObjectWithCreatedDatetime = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
   "body":"Hello World",

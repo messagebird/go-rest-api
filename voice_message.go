@@ -6,8 +6,10 @@ import (
 	"time"
 )
 
+// VoiceMessage wraps data needed to transform text messages into voice messages.
+// Voice messages are identified by a unique random ID. With this ID you can always check the status of the voice message through the provided endpoint.
 type VoiceMessage struct {
-	Id                string
+	ID                string
 	HRef              string
 	Originator        string
 	Body              string
@@ -32,6 +34,7 @@ type VoiceMessageList struct {
 	Items      []VoiceMessage
 }
 
+// VoiceMessageParams struct provides additional VoiceMessage details.
 type VoiceMessageParams struct {
 	Originator        string
 	Reference         string

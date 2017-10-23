@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var hlrObject []byte = []byte(`{
+var hlrObject = []byte(`{
   "id":"27978c50354a93ca0ca8de6h54340177",
   "href":"https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177",
   "msisdn":31612345678,
@@ -53,8 +53,8 @@ var hlrListObject = []byte(`{
 }`)
 
 func assertHLRObject(t *testing.T, hlr *HLR) {
-	if hlr.Id != "27978c50354a93ca0ca8de6h54340177" {
-		t.Errorf("Unexpected result for HLR id: %s, expected: 27978c50354a93ca0ca8de6h54340177", hlr.Id)
+	if hlr.ID != "27978c50354a93ca0ca8de6h54340177" {
+		t.Errorf("Unexpected result for HLR Id: %s, expected: 27978c50354a93ca0ca8de6h54340177", hlr.ID)
 	}
 
 	if hlr.HRef != "https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177" {
