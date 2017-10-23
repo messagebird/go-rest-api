@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var lookupObject []byte = []byte(`{
+var lookupObject = []byte(`{
     "href":"https://rest.messagebird.com/lookup/31624971134",
     "countryCode":"NL",
     "countryPrefix":31,
@@ -27,7 +27,7 @@ var lookupObject []byte = []byte(`{
     }
 }`)
 
-var lookupHLRObject []byte = []byte(`{
+var lookupHLRObject = []byte(`{
     "id":"6118d3f06566fcd0cdc8962h65065907",
     "network":20416,
     "reference":"referece2000",
@@ -49,7 +49,7 @@ func TestLookup(t *testing.T) {
 		t.Errorf("Unexpected lookup href: %s", lookup.Href)
 	}
 	if strconv.FormatInt(lookup.PhoneNumber, 10) != phoneNumber {
-		t.Errorf("Unexpected lookup phoneNumber: %s", lookup.PhoneNumber)
+		t.Errorf("Unexpected lookup phoneNumber: %d", lookup.PhoneNumber)
 	}
 
 	if lookup.Formats.International != "+31 6 24971134" {
@@ -66,8 +66,8 @@ func TestLookup(t *testing.T) {
 }
 
 func checkHLR(t *testing.T, hlr *HLR) {
-	if hlr.Id != "6118d3f06566fcd0cdc8962h65065907" {
-		t.Errorf("Unexpected hlr id: %s", hlr.Id)
+	if hlr.ID != "6118d3f06566fcd0cdc8962h65065907" {
+		t.Errorf("Unexpected hlr id: %s", hlr.ID)
 	}
 	if hlr.Network != 20416 {
 		t.Errorf("Unexpected hlr network: %d", hlr.Network)

@@ -2,7 +2,7 @@ package messagebird
 
 import "testing"
 
-var balanceObject []byte = []byte(`{
+var balanceObject = []byte(`{
   "payment":"prepaid",
   "type":"credits",
   "amount":9.2
