@@ -125,7 +125,7 @@ func TestNewMMSMessageError(t *testing.T) {
 	}
 }
 
-func TestNewMmsMessageWithEmptyParams(t *testing.T) {
+func TestNewMMSMessageWithEmptyParams(t *testing.T) {
 	params := &MMSMessageParams{
 		Body:              "",
 		MediaUrls:         nil,
