@@ -31,17 +31,17 @@ var mmsMessageObject = []byte(`{
     }
 }`)
 
-func TestNewMmsMessage(t *testing.T) {
+func TestNewMMSMessage(t *testing.T) {
 	SetServerResponse(200, mmsMessageObject)
 
-	params := &MmsMessageParams{
+	params := &MMSMessageParams{
 		Body:              "Hello World",
 		MediaUrls:         []string{"http://w3.org/1.gif", "http://w3.org/2.gif"},
 		Subject:           "TestSubject",
 		Reference:         "TestReference",
 		ScheduledDatetime: time.Now(),
 	}
-	mmsMessage, err := mbClient.NewMmsMessage("TestName", []string{"31612345678"}, params)
+	mmsMessage, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
 
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new MMS message: %s", err)
@@ -99,17 +99,17 @@ func TestNewMmsMessage(t *testing.T) {
 	}
 }
 
-func TestNewMmsMessageError(t *testing.T) {
+func TestNewMMSMessageError(t *testing.T) {
 	SetServerResponse(405, accessKeyErrorObject)
 
-	params := &MmsMessageParams{
+	params := &MMSMessageParams{
 		Body:              "Hello World",
 		MediaUrls:         nil,
 		Subject:           "",
 		Reference:         "",
 		ScheduledDatetime: time.Now(),
 	}
-	mmsMessage, err := mbClient.NewMmsMessage("TestName", []string{"31612345678"}, params)
+	mmsMessage, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
 
 	if err != ErrResponse {
 		t.Fatalf("Expected ErrResponse to be returned, instead I got %s", err)
@@ -126,14 +126,14 @@ func TestNewMmsMessageError(t *testing.T) {
 }
 
 func TestNewMmsMessageWithEmptyParams(t *testing.T) {
-	params := &MmsMessageParams{
+	params := &MMSMessageParams{
 		Body:              "",
 		MediaUrls:         nil,
 		Subject:           "",
 		Reference:         "",
 		ScheduledDatetime: time.Now(),
 	}
-	_, err := mbClient.NewMmsMessage("TestName", []string{"31612345678"}, params)
+	_, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
 
 	if err == nil {
 		t.Fatalf("Expected error to be returned, instead I got nil")

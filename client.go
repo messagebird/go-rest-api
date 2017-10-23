@@ -196,9 +196,9 @@ func (c *Client) NewMessage(originator string, recipients []string, body string,
 	return message, nil
 }
 
-// MmsMessage retrieves the information of an existing MmsMessage.
-func (c *Client) MmsMessage(id string) (*MmsMessage, error) {
-	mmsMessage := &MmsMessage{}
+// MMSMessage retrieves the information of an existing MmsMessage.
+func (c *Client) MMSMessage(id string) (*MMSMessage, error) {
+	mmsMessage := &MMSMessage{}
 	if err := c.request(mmsMessage, "mms/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return mmsMessage, err
@@ -210,9 +210,9 @@ func (c *Client) MmsMessage(id string) (*MmsMessage, error) {
 	return mmsMessage, nil
 }
 
-// NewMmsMessage creates a new MMS message for one or more recipients.
-func (c *Client) NewMmsMessage(originator string, recipients []string, msgParams *MmsMessageParams) (*MmsMessage, error) {
-	params, err := paramsForMmsMessage(msgParams)
+// NewMMSMessage creates a new MMS message for one or more recipients.
+func (c *Client) NewMMSMessage(originator string, recipients []string, msgParams *MMSMessageParams) (*MMSMessage, error) {
+	params, err := paramsForMMSMessage(msgParams)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +220,7 @@ func (c *Client) NewMmsMessage(originator string, recipients []string, msgParams
 	params.Set("originator", originator)
 	params.Set("recipients", strings.Join(recipients, ","))
 
-	mmsMessage := &MmsMessage{}
+	mmsMessage := &MMSMessage{}
 	if err := c.request(mmsMessage, "mms", params); err != nil {
 		if err == ErrResponse {
 			return mmsMessage, err

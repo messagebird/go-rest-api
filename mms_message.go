@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-// MmsMessage represents a MMS Message.
-type MmsMessage struct {
+// MMSMessage represents a MMS Message.
+type MMSMessage struct {
 	ID                string
 	HRef              string
 	Direction         string
@@ -23,9 +23,9 @@ type MmsMessage struct {
 	Errors            []Error
 }
 
-// MmsMessageParams represents the parameters that can be supplied when creating
+// MMSMessageParams represents the parameters that can be supplied when creating
 // a request.
-type MmsMessageParams struct {
+type MMSMessageParams struct {
 	Body              string
 	MediaUrls         []string
 	Subject           string
@@ -33,9 +33,9 @@ type MmsMessageParams struct {
 	ScheduledDatetime time.Time
 }
 
-// paramsForMessage converts the specified MmsMessageParams struct to a
+// paramsForMMSMessage converts the specified MMSMessageParams struct to a
 // url.Values pointer and returns it.
-func paramsForMmsMessage(params *MmsMessageParams) (*url.Values, error) {
+func paramsForMMSMessage(params *MMSMessageParams) (*url.Values, error) {
 	urlParams := &url.Values{}
 
 	if params.Body == "" && params.MediaUrls == nil {
