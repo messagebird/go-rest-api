@@ -28,6 +28,16 @@ type Message struct {
 	Errors            []Error
 }
 
+// MessageList represents a list of Messages.
+type MessageList struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Links      map[string]*string
+	Items      []Message
+}
+
 type MessageParams struct {
 	Type              string
 	Reference         string

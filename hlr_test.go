@@ -16,6 +16,40 @@ var hlrObject []byte = []byte(`{
   "statusDatetime":"2015-01-04T13:14:09+00:00"
 }`)
 
+var hlrListObject = []byte(`{
+	"offset": 0,
+    "limit": 20,
+    "count": 2,
+    "totalCount": 2,
+    "links": {
+        "first": "https://rest.messagebird.com/hlr/?offset=0",
+        "previous": null,
+        "next": null,
+        "last": "https://rest.messagebird.com/hlr/?offset=0"
+    },
+    "items": [
+	{
+		"id":"27978c50354a93ca0ca8de6h54340177",
+	    "href":"https:\/\/rest.messagebird.com\/hlr\/27978c50354a93ca0ca8de6h54340177",
+	    "msisdn":31612345678,
+	    "network":20406,
+	    "reference":"MyReference",
+	    "status":"sent",
+	    "createdDatetime":"2015-01-04T13:14:08+00:00",
+	    "statusDatetime":"2015-01-04T13:14:09+00:00"
+	},
+	{
+		"id":"27978c50354a93ca0ca8de6h54340177",
+	    "href":"https:\/\/rest.messagebird.com\/hlr\/27978c50354a93ca0ca8de6h54340177",
+	    "msisdn":31612345678,
+	    "network":20406,
+	    "reference":"MyReference",
+	    "status":"sent",
+	    "createdDatetime":"2015-01-04T13:14:08+00:00",
+	    "statusDatetime":"2015-01-04T13:14:09+00:00"
+	}]
+}`)
+
 func assertHLRObject(t *testing.T, hlr *HLR) {
 	if hlr.Id != "27978c50354a93ca0ca8de6h54340177" {
 		t.Errorf("Unexpected result for HLR Id: %s", hlr.Id)
@@ -90,5 +124,31 @@ func TestHLRError(t *testing.T) {
 
 	if hlr.Errors[0].Parameter != "access_key" {
 		t.Errorf("Unexpected error parameter: %s", hlr.Errors[0].Parameter)
+	}
+}
+
+func TestHLRList(t *testing.T) {
+	SetServerResponse(200, hlrListObject)
+
+	hlrList, err := mbClient.HLRs()
+	if err != nil {
+		t.Fatalf("Didn't expect an error while requesting HLRs: %s", err)
+	}
+
+	if hlrList.Offset != 0 {
+		t.Errorf("Unexpected result for the HLRList Offset: %d\n", hlrList.Offset)
+	}
+	if hlrList.Limit != 20 {
+		t.Errorf("Unexpected result for the HLRList Limit: %d\n", hlrList.Limit)
+	}
+	if hlrList.Count != 2 {
+		t.Errorf("Unexpected result for the HLRList Count: %d\n", hlrList.Count)
+	}
+	if hlrList.TotalCount != 2 {
+		t.Errorf("Unexpected result for the HLRList TotalCount: %d\n", hlrList.TotalCount)
+	}
+
+	for _, hlr := range hlrList.Items {
+		assertHLRObject(t, &hlr)
 	}
 }

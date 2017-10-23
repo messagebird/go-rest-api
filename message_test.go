@@ -16,7 +16,7 @@ var messageObject []byte = []byte(`{
   "validity":null,
   "gateway":239,
   "typeDetails":{
-    
+
   },
   "datacoding":"plain",
   "mclass":1,
@@ -37,14 +37,7 @@ var messageObject []byte = []byte(`{
   }
 }`)
 
-func TestNewMessage(t *testing.T) {
-	SetServerResponse(200, messageObject)
-
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", nil)
-	if err != nil {
-		t.Fatalf("Didn't expect error while creating a new message: %s", err)
-	}
-
+func assertMessageObject(t *testing.T, message *Message) {
 	if message.Id != "6fe65f90454aa61536e6a88b88972670" {
 		t.Errorf("Unexpected message id: %s", message.Id)
 	}
@@ -78,7 +71,7 @@ func TestNewMessage(t *testing.T) {
 	}
 
 	if message.Gateway != 239 {
-		t.Errorf("Unexpected message gateway: %s", message.Gateway)
+		t.Errorf("Unexpected message gateway: %d", message.Gateway)
 	}
 
 	if len(message.TypeDetails) != 0 {
@@ -90,7 +83,7 @@ func TestNewMessage(t *testing.T) {
 	}
 
 	if message.MClass != 1 {
-		t.Errorf("Unexpected message mclass: %s", message.MClass)
+		t.Errorf("Unexpected message mclass: %d", message.MClass)
 	}
 
 	if message.ScheduledDatetime != nil {
@@ -126,6 +119,17 @@ func TestNewMessage(t *testing.T) {
 	}
 }
 
+func TestNewMessage(t *testing.T) {
+	SetServerResponse(200, messageObject)
+
+	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", nil)
+	if err != nil {
+		t.Fatalf("Didn't expect error while creating a new message: %s", err)
+	}
+
+	assertMessageObject(t, message)
+}
+
 func TestNewMessageError(t *testing.T) {
 	SetServerResponse(405, accessKeyErrorObject)
 
@@ -158,7 +162,7 @@ var messageWithParamsObject []byte = []byte(`{
   "validity":13,
   "gateway":10,
   "typeDetails":{
-    
+
   },
   "datacoding":"unicode",
   "mclass":1,
@@ -208,7 +212,7 @@ func TestNewMessageWithParams(t *testing.T) {
 	}
 
 	if message.Gateway != 10 {
-		t.Errorf("Unexpected message gateway: %s", message.Gateway)
+		t.Errorf("Unexpected message gateway: %d", message.Gateway)
 	}
 
 	if message.DataCoding != "unicode" {
@@ -400,7 +404,7 @@ var messageObjectWithCreatedDatetime []byte = []byte(`{
   "validity":null,
   "gateway":239,
   "typeDetails":{
-    
+
   },
   "datacoding":"plain",
   "mclass":1,
@@ -454,5 +458,100 @@ func TestNewMessageWithScheduledDatetime(t *testing.T) {
 
 	if message.Recipients.Items[0].StatusDatetime != nil {
 		t.Errorf("Unexpected datetime status for message recipient: %s", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
+	}
+}
+
+var messageListObject = []byte(`{
+    "offset": 0,
+    "limit": 20,
+    "count": 2,
+    "totalCount": 2,
+    "links": {
+        "first": "https://rest.messagebird.com/messages/?offset=0",
+        "previous": null,
+        "next": null,
+        "last": "https://rest.messagebird.com/messages/?offset=0"
+    },
+    "items": [
+	{
+		"id":"6fe65f90454aa61536e6a88b88972670",
+		"href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+		"direction":"mt",
+		"type":"sms",
+		"originator":"TestName",
+		"body":"Hello World",
+		"reference":null,
+		"validity":null,
+		"gateway":239,
+		"typeDetails":{ },
+		"datacoding":"plain",
+		"mclass":1,
+		"scheduledDatetime":null,
+		"createdDatetime":"2015-01-05T10:02:59+00:00",
+		"recipients":{
+	    	"totalCount":1,
+	    	"totalSentCount":1,
+	    	"totalDeliveredCount":0,
+	    	"totalDeliveryFailedCount":0,
+	    	"items":[{
+	        	"recipient":31612345678,
+	        	"status":"sent",
+	        	"statusDatetime":"2015-01-05T10:02:59+00:00"
+	    	}]
+	  	}
+  	},
+	{
+		"id":"6fe65f90454aa61536e6a88b88972670",
+		"href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+		"direction":"mt",
+		"type":"sms",
+		"originator":"TestName",
+		"body":"Hello World",
+		"reference":null,
+		"validity":null,
+		"gateway":239,
+		"typeDetails":{ },
+		"datacoding":"plain",
+		"mclass":1,
+		"scheduledDatetime":null,
+		"createdDatetime":"2015-01-05T10:02:59+00:00",
+		"recipients":{
+	    	"totalCount":1,
+	    	"totalSentCount":1,
+	    	"totalDeliveredCount":0,
+	    	"totalDeliveryFailedCount":0,
+	    	"items":[{
+	        	"recipient":31612345678,
+	        	"status":"sent",
+	        	"statusDatetime":"2015-01-05T10:02:59+00:00"
+	    	}]
+	  	}
+  	}
+ 	]
+}`)
+
+func TestMessageList(t *testing.T) {
+	SetServerResponse(200, messageListObject)
+
+	messageList, err := mbClient.Messages()
+	if err != nil {
+		t.Fatalf("Didn't expect an error while requesting Messages: %s", err)
+	}
+
+	if messageList.Offset != 0 {
+		t.Errorf("Unexpected result for the MessageList Offset: %d\n", messageList.Offset)
+	}
+	if messageList.Limit != 20 {
+		t.Errorf("Unexpected result for the MessageList Limit: %d\n", messageList.Limit)
+	}
+	if messageList.Count != 2 {
+		t.Errorf("Unexpected result for the MessageList Count: %d\n", messageList.Count)
+	}
+	if messageList.TotalCount != 2 {
+		t.Errorf("Unexpected result for the MessageList TotalCount: %d\n", messageList.TotalCount)
+	}
+
+	for _, message := range messageList.Items {
+		assertMessageObject(t, &message)
 	}
 }

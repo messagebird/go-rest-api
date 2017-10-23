@@ -32,14 +32,9 @@ var voiceMessageObject []byte = []byte(`{
   }
 }`)
 
-func TestNewVoiceMessage(t *testing.T) {
-	SetServerResponse(200, voiceMessageObject)
+// `
 
-	message, err := mbClient.NewVoiceMessage([]string{"31612345678"}, "Hello World", nil)
-	if err != nil {
-		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
-	}
-
+func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
 	if message.Id != "430c44a0354aab7ac9553f7a49907463" {
 		t.Errorf("Unexpected voice message id: %s", message.Id)
 	}
@@ -73,7 +68,7 @@ func TestNewVoiceMessage(t *testing.T) {
 	}
 
 	if message.IfMachine != "continue" {
-		t.Errorf("Unexpected voice message ifmachine: %d", message.IfMachine)
+		t.Errorf("Unexpected voice message ifmachine: %s", message.IfMachine)
 	}
 
 	if message.ScheduledDatetime != nil {
@@ -109,6 +104,17 @@ func TestNewVoiceMessage(t *testing.T) {
 	}
 }
 
+func TestNewVoiceMessage(t *testing.T) {
+	SetServerResponse(200, voiceMessageObject)
+
+	message, err := mbClient.NewVoiceMessage([]string{"31612345678"}, "Hello World", nil)
+	if err != nil {
+		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
+	}
+
+	assertVoiceMessageObject(t, message)
+}
+
 var voiceMessageObjectWithParams []byte = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
   "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
@@ -134,6 +140,8 @@ var voiceMessageObjectWithParams []byte = []byte(`{
     ]
   }
 }`)
+
+// `
 
 func TestNewVoiceMessageWithParams(t *testing.T) {
 	SetServerResponse(200, voiceMessageObjectWithParams)
@@ -193,6 +201,8 @@ var voiceMessageObjectWithCreatedDatetime []byte = []byte(`{
   }
 }`)
 
+// `
+
 func TestNewVoiceMessageWithScheduledDatetime(t *testing.T) {
 	SetServerResponse(200, voiceMessageObjectWithCreatedDatetime)
 
@@ -222,5 +232,96 @@ func TestNewVoiceMessageWithScheduledDatetime(t *testing.T) {
 
 	if message.Recipients.Items[0].Status != "scheduled" {
 		t.Errorf("Unexpected voice message recipient status: %s", message.Recipients.Items[0].Status)
+	}
+}
+
+var voiceMessageListObject = []byte(`{
+    "offset": 0,
+    "limit": 20,
+    "count": 2,
+    "totalCount": 2,
+    "links": {
+        "first": "https://rest.messagebird.com/voicemessages/?offset=0",
+        "previous": null,
+        "next": null,
+        "last": "https://rest.messagebird.com/voicemessages/?offset=0"
+    },
+    "items": [
+	{
+		"id":"430c44a0354aab7ac9553f7a49907463",
+		"href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
+		"originator":"MessageBird",
+		"body":"Hello World",
+		"reference":null,
+		"language":"en-gb",
+		"voice":"female",
+		"repeat":1,
+		"ifMachine":"continue",
+		"scheduledDatetime":null,
+		"createdDatetime":"2015-01-05T16:11:24+00:00",
+		"recipients":{
+			"totalCount":1,
+			"totalSentCount":1,
+			"totalDeliveredCount":0,
+			"totalDeliveryFailedCount":0,
+			"items":[{
+				"recipient":31612345678,
+				"status":"calling",
+				"statusDatetime":"2015-01-05T16:11:24+00:00"
+		  	}]
+	  	}
+	},
+	{
+		"id":"430c44a0354aab7ac9553f7a49907463",
+		"href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
+		"originator":"MessageBird",
+		"body":"Hello World",
+		"reference":null,
+		"language":"en-gb",
+		"voice":"female",
+		"repeat":1,
+		"ifMachine":"continue",
+		"scheduledDatetime":null,
+		"createdDatetime":"2015-01-05T16:11:24+00:00",
+		"recipients":{
+			"totalCount":1,
+			"totalSentCount":1,
+			"totalDeliveredCount":0,
+			"totalDeliveryFailedCount":0,
+			"items":[{
+				"recipient":31612345678,
+				"status":"calling",
+				"statusDatetime":"2015-01-05T16:11:24+00:00"
+		  	}]
+	  	}
+	}
+	]
+}`)
+
+// `
+
+func TestVoiceMessageList(t *testing.T) {
+	SetServerResponse(200, voiceMessageListObject)
+
+	messageList, err := mbClient.VoiceMessages()
+	if err != nil {
+		t.Fatalf("Didn't expect an error while requesting VoiceMessages: %s", err)
+	}
+
+	if messageList.Offset != 0 {
+		t.Errorf("Unexpected result for the VoiceMessages Offset: %d\n", messageList.Offset)
+	}
+	if messageList.Limit != 20 {
+		t.Errorf("Unexpected result for the VoiceMessages Limit: %d\n", messageList.Limit)
+	}
+	if messageList.Count != 2 {
+		t.Errorf("Unexpected result for the VoiceMessages Count: %d\n", messageList.Count)
+	}
+	if messageList.TotalCount != 2 {
+		t.Errorf("Unexpected result for the VoiceMessages TotalCount: %d\n", messageList.TotalCount)
+	}
+
+	for _, message := range messageList.Items {
+		assertVoiceMessageObject(t, &message)
 	}
 }

@@ -140,6 +140,21 @@ func (c *Client) HLR(id string) (*HLR, error) {
 	return hlr, nil
 }
 
+// HLRs lists all HLR objects that were previously created by the NewHLR
+// function.
+func (c *Client) HLRs() (*HLRList, error) {
+	hlrList := &HLRList{}
+	if err := c.request(hlrList, "hlr", nil); err != nil {
+		if err == ErrResponse {
+			return hlrList, err
+		}
+
+		return nil, err
+	}
+
+	return hlrList, nil
+}
+
 // NewHLR retrieves the information of an existing HLR.
 func (c *Client) NewHLR(msisdn, reference string) (*HLR, error) {
 	params := &url.Values{
@@ -171,6 +186,20 @@ func (c *Client) Message(id string) (*Message, error) {
 	}
 
 	return message, nil
+}
+
+// Messages retrieves all messages of the user represented as a MessageList object.
+func (c *Client) Messages() (*MessageList, error) {
+	messageList := &MessageList{}
+	if err := c.request(messageList, "messages", nil); err != nil {
+		if err == ErrResponse {
+			return messageList, err
+		}
+
+		return nil, err
+	}
+
+	return messageList, nil
 }
 
 // NewMessage creates a new message for one or more recipients.
@@ -208,6 +237,20 @@ func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 	}
 
 	return message, nil
+}
+
+// VoiceMessages retrieves all VoiceMessages of the user.
+func (c *Client) VoiceMessages() (*VoiceMessageList, error) {
+	messageList := &VoiceMessageList{}
+	if err := c.request(messageList, "voicemessages", nil); err != nil {
+		if err == ErrResponse {
+			return messageList, err
+		}
+
+		return nil, err
+	}
+
+	return messageList, nil
 }
 
 // NewVoiceMessage creates a new voice message for one or more recipients.
