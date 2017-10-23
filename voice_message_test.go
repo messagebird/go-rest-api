@@ -32,8 +32,6 @@ var voiceMessageObject []byte = []byte(`{
   }
 }`)
 
-// `
-
 func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
 	if message.Id != "430c44a0354aab7ac9553f7a49907463" {
 		t.Errorf("Unexpected voice message id: %s", message.Id)
@@ -141,8 +139,6 @@ var voiceMessageObjectWithParams []byte = []byte(`{
   }
 }`)
 
-// `
-
 func TestNewVoiceMessageWithParams(t *testing.T) {
 	SetServerResponse(200, voiceMessageObjectWithParams)
 
@@ -200,8 +196,6 @@ var voiceMessageObjectWithCreatedDatetime []byte = []byte(`{
     ]
   }
 }`)
-
-// `
 
 func TestNewVoiceMessageWithScheduledDatetime(t *testing.T) {
 	SetServerResponse(200, voiceMessageObjectWithCreatedDatetime)
@@ -297,8 +291,6 @@ var voiceMessageListObject = []byte(`{
 	}
 	]
 }`)
-
-// `
 
 func TestVoiceMessageList(t *testing.T) {
 	SetServerResponse(200, voiceMessageListObject)
