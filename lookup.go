@@ -1,6 +1,8 @@
 package messagebird
 
-import "net/url"
+import (
+	"net/url"
+)
 
 // Formats represents phone number in multiple formats.
 type Formats struct {
@@ -25,6 +27,24 @@ type Lookup struct {
 type LookupParams struct {
 	CountryCode string
 	Reference   string
+}
+
+type lookupRequest struct {
+	CountryCode string `json:"countryCode,omitempty"`
+	Reference   string `json:"reference,omitempty"`
+}
+
+func requestDataForLookup(params *LookupParams) *lookupRequest {
+	request := &lookupRequest{}
+
+	if params == nil {
+		return request
+	}
+
+	request.CountryCode = params.CountryCode
+	request.Reference = params.Reference
+
+	return request
 }
 
 func paramsForLookup(params *LookupParams) *url.Values {

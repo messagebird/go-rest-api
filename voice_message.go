@@ -1,8 +1,7 @@
 package messagebird
 
 import (
-	"net/url"
-	"strconv"
+	"errors"
 	"time"
 )
 
@@ -35,39 +34,41 @@ type VoiceMessageParams struct {
 	ScheduledDatetime time.Time
 }
 
-// paramsForVoiceMessage converts the specified VoiceMessageParams struct to a
-// url.Values pointer and returns it.
-func paramsForVoiceMessage(params *VoiceMessageParams) *url.Values {
-	urlParams := &url.Values{}
+type voiceMessageRequest struct {
+	Recipients        []string `json:"recipients"`
+	Body              string   `json:"body"`
+	Originator        string   `json:"originator,omitempty"`
+	Reference         string   `json:"reference,omitempty"`
+	Language          string   `json:"language,omitempty"`
+	Voice             string   `json:"voice,omitempty"`
+	Repeat            int      `json:"repeat,omitempty"`
+	IfMachine         string   `json:"ifMachine,omitempty"`
+	ScheduledDatetime string   `json:"scheduledDatetime,omitempty"`
+}
+
+func requestDataForVoiceMessage(recipients []string, body string, params *VoiceMessageParams) (*voiceMessageRequest, error) {
+	request := &voiceMessageRequest{}
+
+	if len(recipients) == 0 {
+		return nil, errors.New("at least 1 recipient is required")
+	}
+	if body == "" {
+		return nil, errors.New("body is required")
+	}
+	request.Recipients = recipients
+	request.Body = body
 
 	if params == nil {
-		return urlParams
+		return request, nil
 	}
 
-	if params.Originator != "" {
-		urlParams.Set("originator", params.Originator)
-	}
-	if params.Reference != "" {
-		urlParams.Set("reference", params.Reference)
-	}
-	if params.Language != "" {
-		urlParams.Set("language", params.Language)
-	}
-	if params.Voice != "" {
-		urlParams.Set("voice", params.Voice)
-	}
+	request.Originator = params.Originator
+	request.Reference = params.Reference
+	request.Language = params.Language
+	request.Voice = params.Voice
+	request.Repeat = params.Repeat
+	request.IfMachine = params.IfMachine
+	request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
 
-	// A repeat value of 1 actually means "play it once", not "repeat it once"
-	// So only set the repeat value when it's larger than 1.
-	if params.Repeat > 1 {
-		urlParams.Set("repeat", strconv.Itoa(params.Repeat))
-	}
-	if params.IfMachine != "" {
-		urlParams.Set("ifMachine", params.IfMachine)
-	}
-	if params.ScheduledDatetime.Unix() > 0 {
-		urlParams.Set("scheduledDatetime", params.ScheduledDatetime.Format(time.RFC3339))
-	}
-
-	return urlParams
+	return request, nil
 }

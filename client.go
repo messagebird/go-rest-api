@@ -10,14 +10,15 @@
 package messagebird
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"runtime"
-	"strings"
 )
 
 const (
@@ -49,41 +50,46 @@ func New(AccessKey string) *Client {
 	return &Client{AccessKey: AccessKey, HTTPClient: &http.Client{}}
 }
 
-func (c *Client) request(v interface{}, path string, params *url.Values) error {
+func (c *Client) request(v interface{}, path string, data interface{}) error {
 	uri, err := url.Parse(Endpoint + "/" + path)
 	if err != nil {
 		return err
 	}
 
-	var request *http.Request
-	if params != nil {
-		body := params.Encode()
-		if request, err = http.NewRequest("POST", uri.String(), strings.NewReader(body)); err != nil {
+	method := "GET"
+	var jsonEncoded []byte
+	if data != nil {
+		jsonEncoded, err = json.Marshal(data)
+		method = "POST"
+		if err != nil {
 			return err
-		}
-
-		if c.DebugLog != nil {
-			if unescapedBody, queryError := url.QueryUnescape(body); queryError == nil {
-				log.Printf("HTTP REQUEST: POST %s %s", uri.String(), unescapedBody)
-			} else {
-				log.Printf("HTTP REQUEST: POST %s %s", uri.String(), body)
-			}
-		}
-
-		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	} else {
-		if request, err = http.NewRequest("GET", uri.String(), nil); err != nil {
-			return err
-		}
-
-		if c.DebugLog != nil {
-			log.Printf("HTTP REQUEST: GET %s", uri.String())
 		}
 	}
 
-	request.Header.Add("Accept", "application/json")
-	request.Header.Add("Authorization", "AccessKey "+c.AccessKey)
+	request, err := http.NewRequest(method, uri.String(), bytes.NewBuffer(jsonEncoded))
+	if err != nil {
+		return err
+	}
+
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json")
+	request.Header.Set("Authorization", "AccessKey "+c.AccessKey)
 	request.Header.Add("User-Agent", "MessageBird/ApiClient/"+ClientVersion+" Go/"+runtime.Version())
+
+	if c.DebugLog != nil {
+		if data != nil {
+			log.Printf("HTTP REQUEST: %s %s %s", method, uri.String(), jsonEncoded)
+		} else {
+			log.Printf("HTTP REQUEST: %s %s", method, uri.String())
+		}
+	}
+
+	// TODO remove this
+	if data != nil {
+		fmt.Printf("HTTP REQUEST: %s %s %s\n", method, uri.String(), jsonEncoded)
+	} else {
+		fmt.Printf("HTTP REQUEST: %s %s\n", method, uri.String())
+	}
 
 	response, err := c.HTTPClient.Do(request)
 	if err != nil {
@@ -100,6 +106,9 @@ func (c *Client) request(v interface{}, path string, params *url.Values) error {
 	if c.DebugLog != nil {
 		log.Printf("HTTP RESPONSE: %s", string(responseBody))
 	}
+
+	// TODO remove this
+	fmt.Printf("HTTP RESPONSE: %s\n", string(responseBody))
 
 	// Status code 500 is a server error and means nothing can be done at this
 	// point.
@@ -152,14 +161,14 @@ func (c *Client) HLR(id string) (*HLR, error) {
 }
 
 // NewHLR retrieves the information of an existing HLR.
-func (c *Client) NewHLR(msisdn, reference string) (*HLR, error) {
-	params := &url.Values{
-		"msisdn":    {msisdn},
-		"reference": {reference},
+func (c *Client) NewHLR(msisdn string, reference string) (*HLR, error) {
+	requestData, err := requestDataForHLR(msisdn, reference)
+	if err != nil {
+		return nil, err
 	}
 
 	hlr := &HLR{}
-	if err := c.request(hlr, "hlr", params); err != nil {
+	if err := c.request(hlr, "hlr", requestData); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}
@@ -186,17 +195,13 @@ func (c *Client) Message(id string) (*Message, error) {
 
 // NewMessage creates a new message for one or more recipients.
 func (c *Client) NewMessage(originator string, recipients []string, body string, msgParams *MessageParams) (*Message, error) {
-	params, err := paramsForMessage(msgParams)
+	requestData, err := requestDataForMessage(originator, recipients, body, msgParams)
 	if err != nil {
 		return nil, err
 	}
 
-	params.Set("originator", originator)
-	params.Set("body", body)
-	params.Set("recipients", strings.Join(recipients, ","))
-
 	message := &Message{}
-	if err := c.request(message, "messages", params); err != nil {
+	if err := c.request(message, "messages", requestData); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -223,12 +228,13 @@ func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 
 // NewVoiceMessage creates a new voice message for one or more recipients.
 func (c *Client) NewVoiceMessage(recipients []string, body string, params *VoiceMessageParams) (*VoiceMessage, error) {
-	urlParams := paramsForVoiceMessage(params)
-	urlParams.Set("body", body)
-	urlParams.Set("recipients", strings.Join(recipients, ","))
+	requestData, err := requestDataForVoiceMessage(recipients, body, params)
+	if err != nil {
+		return nil, err
+	}
 
 	message := &VoiceMessage{}
-	if err := c.request(message, "voicemessages", urlParams); err != nil {
+	if err := c.request(message, "voicemessages", requestData); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -241,11 +247,13 @@ func (c *Client) NewVoiceMessage(recipients []string, body string, params *Voice
 
 // NewVerify generates a new One-Time-Password for one recipient.
 func (c *Client) NewVerify(recipient string, params *VerifyParams) (*Verify, error) {
-	urlParams := paramsForVerify(params)
-	urlParams.Set("recipient", recipient)
+	requestData, err := requestDataForVerify(recipient, params)
+	if err != nil {
+		return nil, err
+	}
 
 	verify := &Verify{}
-	if err := c.request(verify, "verify", urlParams); err != nil {
+	if err := c.request(verify, "verify", requestData); err != nil {
 		if err == ErrResponse {
 			return verify, err
 		}
@@ -294,11 +302,11 @@ func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, erro
 
 // NewLookupHLR creates a new HLR lookup for the specified number.
 func (c *Client) NewLookupHLR(phoneNumber string, params *LookupParams) (*HLR, error) {
-	urlParams := paramsForLookup(params)
+	requestData := requestDataForLookup(params)
 	path := "lookup/" + phoneNumber + "/hlr"
 
 	hlr := &HLR{}
-	if err := c.request(hlr, path, urlParams); err != nil {
+	if err := c.request(hlr, path, requestData); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}
