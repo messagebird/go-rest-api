@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var messageObject []byte = []byte(`{
+var messageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -16,7 +16,7 @@ var messageObject []byte = []byte(`{
   "validity":null,
   "gateway":239,
   "typeDetails":{
-    
+
   },
   "datacoding":"plain",
   "mclass":1,
@@ -45,8 +45,8 @@ func TestNewMessage(t *testing.T) {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
 
-	if message.Id != "6fe65f90454aa61536e6a88b88972670" {
-		t.Errorf("Unexpected message id: %s", message.Id)
+	if message.ID != "6fe65f90454aa61536e6a88b88972670" {
+		t.Errorf("Unexpected message id: %s", message.ID)
 	}
 
 	if message.HRef != "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670" {
@@ -78,7 +78,7 @@ func TestNewMessage(t *testing.T) {
 	}
 
 	if message.Gateway != 239 {
-		t.Errorf("Unexpected message gateway: %s", message.Gateway)
+		t.Errorf("Unexpected message gateway: %d", message.Gateway)
 	}
 
 	if len(message.TypeDetails) != 0 {
@@ -90,7 +90,7 @@ func TestNewMessage(t *testing.T) {
 	}
 
 	if message.MClass != 1 {
-		t.Errorf("Unexpected message mclass: %s", message.MClass)
+		t.Errorf("Unexpected message mclass: %d", message.MClass)
 	}
 
 	if message.ScheduledDatetime != nil {
@@ -147,7 +147,7 @@ func TestNewMessageError(t *testing.T) {
 	}
 }
 
-var messageWithParamsObject []byte = []byte(`{
+var messageWithParamsObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -158,7 +158,7 @@ var messageWithParamsObject []byte = []byte(`{
   "validity":13,
   "gateway":10,
   "typeDetails":{
-    
+
   },
   "datacoding":"unicode",
   "mclass":1,
@@ -208,7 +208,7 @@ func TestNewMessageWithParams(t *testing.T) {
 	}
 
 	if message.Gateway != 10 {
-		t.Errorf("Unexpected message gateway: %s", message.Gateway)
+		t.Errorf("Unexpected message gateway: %d", message.Gateway)
 	}
 
 	if message.DataCoding != "unicode" {
@@ -216,7 +216,7 @@ func TestNewMessageWithParams(t *testing.T) {
 	}
 }
 
-var binaryMessageObject []byte = []byte(`{
+var binaryMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -274,7 +274,7 @@ func TestNewMessageWithBinaryType(t *testing.T) {
 	}
 }
 
-var premiumMessageObject []byte = []byte(`{
+var premiumMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -342,7 +342,7 @@ func TestNewMessageWithPremiumType(t *testing.T) {
 	}
 }
 
-var flashMessageObject []byte = []byte(`{
+var flashMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -389,7 +389,7 @@ func TestNewMessageWithFlashType(t *testing.T) {
 	}
 }
 
-var messageObjectWithCreatedDatetime []byte = []byte(`{
+var messageObjectWithCreatedDatetime = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
   "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
@@ -400,7 +400,7 @@ var messageObjectWithCreatedDatetime []byte = []byte(`{
   "validity":null,
   "gateway":239,
   "typeDetails":{
-    
+
   },
   "datacoding":"plain",
   "mclass":1,
