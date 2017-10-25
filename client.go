@@ -13,7 +13,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -84,13 +83,6 @@ func (c *Client) request(v interface{}, path string, data interface{}) error {
 		}
 	}
 
-	// TODO remove this
-	if data != nil {
-		fmt.Printf("HTTP REQUEST: %s %s %s\n", method, uri.String(), jsonEncoded)
-	} else {
-		fmt.Printf("HTTP REQUEST: %s %s\n", method, uri.String())
-	}
-
 	response, err := c.HTTPClient.Do(request)
 	if err != nil {
 		return err
@@ -106,9 +98,6 @@ func (c *Client) request(v interface{}, path string, data interface{}) error {
 	if c.DebugLog != nil {
 		log.Printf("HTTP RESPONSE: %s", string(responseBody))
 	}
-
-	// TODO remove this
-	fmt.Printf("HTTP RESPONSE: %s\n", string(responseBody))
 
 	// Status code 500 is a server error and means nothing can be done at this
 	// point.
