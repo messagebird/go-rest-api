@@ -135,5 +135,51 @@ func assertVerifyTokenObject(t *testing.T, v *Verify) {
 	if v.ValidUntilDatetime == nil || v.ValidUntilDatetime.Format(time.RFC3339) != "2017-05-30T12:40:20Z" {
 		t.Errorf("Unexpected Verify valid until datetime: %s", v.ValidUntilDatetime.Format(time.RFC3339))
 	}
+}
 
+func TestRequestDataForVerify(t *testing.T) {
+	verifyParams := &VerifyParams{
+		Originator:  "MSGBIRD",
+		Reference:   "MyReference",
+		Type:        "sms",
+		Template:    "Your code is: %token",
+		DataCoding:  "plain",
+		Voice:       "male",
+		Language:    "en-gb",
+		Timeout:     20,
+		TokenLength: 8,
+	}
+
+	requestData, err := requestDataForVerify("31612345678", verifyParams)
+	if err != nil {
+		t.Fatalf("Didn't expect error while getting request data for message: %s", err)
+	}
+
+	if requestData.Recipient != "31612345678" {
+		t.Errorf("Unexpected recipient: %s, expected: 31612345678", requestData.Recipient)
+	}
+	if requestData.Originator != "MSGBIRD" {
+		t.Errorf("Unexpected originator: %s, expected: MSGBIRD", requestData.Originator)
+	}
+	if requestData.Reference != "MyReference" {
+		t.Errorf("Unexpected reference: %s, expected: MyReference", requestData.Reference)
+	}
+	if requestData.Type != "sms" {
+		t.Errorf("Unexpected type: %s, expected: sms", requestData.Type)
+	}
+	if requestData.DataCoding != "plain" {
+		t.Errorf("Unexpected data coding: %s, expected: plain", requestData.DataCoding)
+	}
+	if requestData.Voice != "male" {
+		t.Errorf("Unexpected voice: %s, expected: male", requestData.Voice)
+	}
+	if requestData.Language != "en-gb" {
+		t.Errorf("Unexpected language: %s, expected en-gb", requestData.Language)
+	}
+	if requestData.Timeout != 20 {
+		t.Errorf("Unexepcted timeout: %d, expected 20", requestData.Timeout)
+	}
+	if requestData.TokenLength != 8 {
+		t.Errorf("Unexpected token length: %d, expected 8", requestData.TokenLength)
+	}
 }

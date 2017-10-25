@@ -456,3 +456,44 @@ func TestNewMessageWithScheduledDatetime(t *testing.T) {
 		t.Errorf("Unexpected datetime status for message recipient: %s", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 	}
 }
+
+func TestRequestDataForMessage(t *testing.T) {
+	currentTime := time.Now()
+	messageParams := &MessageParams{
+		Type:              "binary",
+		Reference:         "MyReference",
+		Validity:          1,
+		Gateway:           0,
+		TypeDetails:       nil,
+		DataCoding:        "unicode",
+		ScheduledDatetime: currentTime,
+	}
+
+	request, err := requestDataForMessage("MSGBIRD", []string{"31612345678"}, "MyBody", messageParams)
+	if err != nil {
+		t.Fatalf("Didn't expect error while getting request data for message: %s", err)
+	}
+
+	if request.Type != messageParams.Type {
+		t.Errorf("Unexpected type: %s, expected: %s", request.Type, messageParams.Type)
+	}
+	if request.Reference != messageParams.Reference {
+		t.Errorf("Unexpected reference: %s, expected: %s", request.Reference, messageParams.Reference)
+	}
+	if request.Validity != messageParams.Validity {
+		t.Errorf("Unexpected validity: %d, expected: %d", request.Validity, messageParams.Validity)
+	}
+	if request.Gateway != messageParams.Gateway {
+		t.Errorf("Unexpected gateway: %d, expected: %d", request.Gateway, messageParams.Gateway)
+	}
+	if request.TypeDetails != nil {
+		t.Errorf("Unexpected type details: %s, expected: nil", request.TypeDetails)
+	}
+	if request.DataCoding != messageParams.DataCoding {
+		t.Errorf("Unexpected data coding: %s, expected: %s", request.DataCoding, messageParams.DataCoding)
+	}
+	if request.ScheduledDatetime != messageParams.ScheduledDatetime.Format(time.RFC3339) {
+		t.Errorf("Unexepcted scheduled date time: %s, expected: %s", request.ScheduledDatetime, messageParams.ScheduledDatetime.Format(time.RFC3339))
+	}
+
+}

@@ -61,6 +61,20 @@ func TestHLR(t *testing.T) {
 	assertHLRObject(t, hlr)
 }
 
+func TestRequestDataForHLR(t *testing.T) {
+	requestData, err := requestDataForHLR("31612345678", "MyReference")
+	if err != nil {
+		t.Fatalf("Didn't expect an error while getting the request data for a HLR: %s", err)
+	}
+
+	if requestData.MSISDN != "31612345678" {
+		t.Errorf("Unexpected msisdn: %s, expected: 31612345678", requestData.MSISDN)
+	}
+	if requestData.Reference != "MyReference" {
+		t.Errorf("Unexpected reference: %s, expected: MyReference", requestData.Reference)
+	}
+}
+
 func TestNewHLR(t *testing.T) {
 	SetServerResponse(200, hlrObject)
 

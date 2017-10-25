@@ -224,3 +224,43 @@ func TestNewVoiceMessageWithScheduledDatetime(t *testing.T) {
 		t.Errorf("Unexpected voice message recipient status: %s", message.Recipients.Items[0].Status)
 	}
 }
+
+func TestRequestDataForVoiceMessage(t *testing.T) {
+	currentTime := time.Now()
+	voiceParams := &VoiceMessageParams{
+		Originator:        "MSGBIRD",
+		Reference:         "MyReference",
+		Language:          "en-gb",
+		Voice:             "male",
+		Repeat:            2,
+		IfMachine:         "continue",
+		ScheduledDatetime: currentTime,
+	}
+
+	request, err := requestDataForVoiceMessage([]string{"31612345678"}, "MyBody", voiceParams)
+	if err != nil {
+		t.Fatalf("Didn't expect error while getting request data for voice message: %s", err)
+	}
+
+	if request.Recipients[0] != "31612345678" {
+		t.Errorf("Unexpected recipient: %s, expected: 31612345678", request.Recipients[0])
+	}
+	if request.Reference != "MyReference" {
+		t.Errorf("Unexpected reference: %s, expected: MyReference", request.Reference)
+	}
+	if request.Language != "en-gb" {
+		t.Errorf("Unexpected language: %s, expected: en-gb", request.Language)
+	}
+	if request.Voice != "male" {
+		t.Errorf("Unexpected voice: %s, expected: male", request.Voice)
+	}
+	if request.Repeat != 2 {
+		t.Errorf("Unexpected repeat: %d, expected: 2", request.Repeat)
+	}
+	if request.IfMachine != "continue" {
+		t.Errorf("Unexpected if machine: %s, expected: continue", request.IfMachine)
+	}
+	if request.ScheduledDatetime != voiceParams.ScheduledDatetime.Format(time.RFC3339) {
+		t.Errorf("Unexpected scheduled date time: %s, expected: %s", request.ScheduledDatetime, voiceParams.ScheduledDatetime.Format(time.RFC3339))
+	}
+}
