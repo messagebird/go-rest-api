@@ -245,6 +245,9 @@ func TestRequestDataForVoiceMessage(t *testing.T) {
 	if request.Recipients[0] != "31612345678" {
 		t.Errorf("Unexpected recipient: %s, expected: 31612345678", request.Recipients[0])
 	}
+	if request.Body != "MyBody" {
+		t.Errorf("Unexpected body: %s, expected: MyBody", request.Body)
+	}
 	if request.Reference != "MyReference" {
 		t.Errorf("Unexpected reference: %s, expected: MyReference", request.Reference)
 	}

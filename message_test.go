@@ -474,6 +474,15 @@ func TestRequestDataForMessage(t *testing.T) {
 		t.Fatalf("Didn't expect error while getting request data for message: %s", err)
 	}
 
+	if request.Originator != "MSGBIRD" {
+		t.Errorf("Unexpected originator: %s, expected: MSGBIRD", request.Originator)
+	}
+	if request.Recipients[0] != "31612345678" {
+		t.Errorf("Unexpected recipient: %s, expected: 31612345678", request.Recipients[0])
+	}
+	if request.Body != "MyBody" {
+		t.Errorf("Unexpected body: %s, expected: MyBody", request.Body)
+	}
 	if request.Type != messageParams.Type {
 		t.Errorf("Unexpected type: %s, expected: %s", request.Type, messageParams.Type)
 	}
