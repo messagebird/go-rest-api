@@ -542,7 +542,7 @@ var messageListObject = []byte(`{
 func TestMessageList(t *testing.T) {
 	SetServerResponse(http.StatusOK, messageListObject)
 
-	messageList, err := mbClient.Messages()
+	messageList, err := mbClient.Messages(nil)
 	if err != nil {
 		t.Fatalf("Didn't expect an error while requesting Messages: %s", err)
 	}

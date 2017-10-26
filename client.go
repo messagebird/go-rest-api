@@ -213,9 +213,14 @@ func (c *Client) Message(id string) (*Message, error) {
 }
 
 // Messages retrieves all messages of the user represented as a MessageList object.
-func (c *Client) Messages() (*MessageList, error) {
+func (c *Client) Messages(msgListParams *MessageListParams) (*MessageList, error) {
 	messageList := &MessageList{}
-	if err := c.request(messageList, MessagePath, nil); err != nil {
+	params, err := paramsForMessageList(msgListParams)
+	if err != nil {
+		return messageList, err
+	}
+
+	if err := c.request(messageList, "messages?"+params.Encode(), nil); err != nil {
 		if err == ErrResponse {
 			return messageList, err
 		}
