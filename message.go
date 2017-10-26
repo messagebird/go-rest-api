@@ -52,9 +52,11 @@ type MessageParams struct {
 	ScheduledDatetime time.Time
 }
 
+// MessageListParams provides additional message list options.
 type MessageListParams struct {
 	Originator string
 	Direction  string
+	Type       string
 	Limit      int
 	Offset     int
 }
