@@ -22,7 +22,7 @@ import (
 
 const (
 	// ClientVersion is used in User-Agent request header to provide server with API level.
-	ClientVersion = "3.0.0"
+	ClientVersion = "4.1.0"
 
 	// Endpoint points you to MessageBird REST API.
 	Endpoint = "https://rest.messagebird.com"
@@ -252,6 +252,42 @@ func (c *Client) NewMessage(originator string, recipients []string, body string,
 	}
 
 	return message, nil
+}
+
+// MMSMessage retrieves the information of an existing MmsMessage.
+func (c *Client) MMSMessage(id string) (*MMSMessage, error) {
+	mmsMessage := &MMSMessage{}
+	if err := c.request(mmsMessage, "mms/"+id, nil); err != nil {
+		if err == ErrResponse {
+			return mmsMessage, err
+		}
+
+		return nil, err
+	}
+
+	return mmsMessage, nil
+}
+
+// NewMMSMessage creates a new MMS message for one or more recipients.
+func (c *Client) NewMMSMessage(originator string, recipients []string, msgParams *MMSMessageParams) (*MMSMessage, error) {
+	params, err := paramsForMMSMessage(msgParams)
+	if err != nil {
+		return nil, err
+	}
+
+	params.Set("originator", originator)
+	params.Set("recipients", strings.Join(recipients, ","))
+
+	mmsMessage := &MMSMessage{}
+	if err := c.request(mmsMessage, "mms", params); err != nil {
+		if err == ErrResponse {
+			return mmsMessage, err
+		}
+
+		return nil, err
+	}
+
+	return mmsMessage, nil
 }
 
 // VoiceMessage retrieves the information of an existing VoiceMessage.
