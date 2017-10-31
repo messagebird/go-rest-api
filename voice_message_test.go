@@ -7,7 +7,7 @@ import (
 
 var voiceMessageObject = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
-  "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
+  "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
   "originator":"MessageBird",
   "body":"Hello World",
   "reference":null,
@@ -111,7 +111,7 @@ func TestNewVoiceMessage(t *testing.T) {
 
 var voiceMessageObjectWithParams = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
-  "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
+  "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
   "body":"Hello World",
   "reference":"MyReference",
   "language":"en-gb",
@@ -169,7 +169,7 @@ func TestNewVoiceMessageWithParams(t *testing.T) {
 
 var voiceMessageObjectWithCreatedDatetime = []byte(`{
   "id":"430c44a0354aab7ac9553f7a49907463",
-  "href":"https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
+  "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
   "body":"Hello World",
   "reference":null,
   "language":"en-gb",
