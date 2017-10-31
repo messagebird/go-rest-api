@@ -7,7 +7,7 @@ import (
 
 var messageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
   "type":"sms",
   "originator":"TestName",
@@ -149,7 +149,7 @@ func TestNewMessageError(t *testing.T) {
 
 var messageWithParamsObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
   "type":"sms",
   "originator":"TestName",
@@ -218,7 +218,7 @@ func TestNewMessageWithParams(t *testing.T) {
 
 var binaryMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
   "type":"binary",
   "originator":"TestName",
@@ -276,7 +276,7 @@ func TestNewMessageWithBinaryType(t *testing.T) {
 
 var premiumMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
   "type":"premium",
   "originator":"TestName",
@@ -344,7 +344,7 @@ func TestNewMessageWithPremiumType(t *testing.T) {
 
 var flashMessageObject = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
   "type":"flash",
   "originator":"TestName",
@@ -391,7 +391,7 @@ func TestNewMessageWithFlashType(t *testing.T) {
 
 var messageObjectWithCreatedDatetime = []byte(`{
   "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
   "direction":"mt",
   "type":"sms",
   "originator":"TestName",

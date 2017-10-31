@@ -59,10 +59,10 @@ func (c *Client) request(v interface{}, path string, data interface{}) error {
 	var jsonEncoded []byte
 	if data != nil {
 		jsonEncoded, err = json.Marshal(data)
-		method = "POST"
 		if err != nil {
 			return err
 		}
+		method = "POST"
 	}
 
 	request, err := http.NewRequest(method, uri.String(), bytes.NewBuffer(jsonEncoded))
@@ -73,7 +73,7 @@ func (c *Client) request(v interface{}, path string, data interface{}) error {
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Authorization", "AccessKey "+c.AccessKey)
-	request.Header.Add("User-Agent", "MessageBird/ApiClient/"+ClientVersion+" Go/"+runtime.Version())
+	request.Header.Set("User-Agent", "MessageBird/ApiClient/"+ClientVersion+" Go/"+runtime.Version())
 
 	if c.DebugLog != nil {
 		if data != nil {

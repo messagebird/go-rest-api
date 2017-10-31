@@ -47,16 +47,17 @@ type voiceMessageRequest struct {
 }
 
 func requestDataForVoiceMessage(recipients []string, body string, params *VoiceMessageParams) (*voiceMessageRequest, error) {
-	request := &voiceMessageRequest{}
-
 	if len(recipients) == 0 {
 		return nil, errors.New("at least 1 recipient is required")
 	}
 	if body == "" {
 		return nil, errors.New("body is required")
 	}
-	request.Recipients = recipients
-	request.Body = body
+
+	request := &voiceMessageRequest{
+		Recipients: recipients,
+		Body:       body,
+	}
 
 	if params == nil {
 		return request, nil

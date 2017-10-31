@@ -45,12 +45,13 @@ type verifyRequest struct {
 }
 
 func requestDataForVerify(recipient string, params *VerifyParams) (*verifyRequest, error) {
-	request := &verifyRequest{}
-
 	if recipient == "" {
 		return nil, errors.New("recipient is required")
 	}
-	request.Recipient = recipient
+
+	request := &verifyRequest{
+		Recipient: recipient,
+	}
 
 	if params == nil {
 		return request, nil

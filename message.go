@@ -55,8 +55,6 @@ type messageRequest struct {
 }
 
 func requestDataForMessage(originator string, recipients []string, body string, params *MessageParams) (*messageRequest, error) {
-	request := &messageRequest{}
-
 	if originator == "" {
 		return nil, errors.New("originator is required")
 	}
@@ -66,9 +64,12 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 	if body == "" {
 		return nil, errors.New("body is required")
 	}
-	request.Originator = originator
-	request.Recipients = recipients
-	request.Body = body
+
+	request := &messageRequest{
+		Originator: originator,
+		Recipients: recipients,
+		Body:       body,
+	}
 
 	if params == nil {
 		return request, nil

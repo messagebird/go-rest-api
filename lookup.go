@@ -1,8 +1,6 @@
 package messagebird
 
-import (
-	"net/url"
-)
+import "net/url"
 
 // Formats represents phone number in multiple formats.
 type Formats struct {

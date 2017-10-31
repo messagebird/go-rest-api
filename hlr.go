@@ -26,8 +26,6 @@ type hlrRequest struct {
 }
 
 func requestDataForHLR(msisdn string, reference string) (*hlrRequest, error) {
-	request := &hlrRequest{}
-
 	if msisdn == "" {
 		return nil, errors.New("msisdn is required")
 	}
@@ -35,8 +33,10 @@ func requestDataForHLR(msisdn string, reference string) (*hlrRequest, error) {
 		return nil, errors.New("reference is required")
 	}
 
-	request.MSISDN = msisdn
-	request.Reference = reference
+	request := &hlrRequest{
+		MSISDN:    msisdn,
+		Reference: reference,
+	}
 
 	return request, nil
 }
