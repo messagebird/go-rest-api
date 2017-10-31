@@ -31,6 +31,16 @@ type Message struct {
 	Errors            []Error
 }
 
+// MessageList represents a list of Messages.
+type MessageList struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Links      map[string]*string
+	Items      []Message
+}
+
 // MessageParams provide additional message send options and used in URL as params.
 type MessageParams struct {
 	Type              string
@@ -40,6 +50,15 @@ type MessageParams struct {
 	TypeDetails       TypeDetails
 	DataCoding        string
 	ScheduledDatetime time.Time
+}
+
+// MessageListParams provides additional message list options.
+type MessageListParams struct {
+	Originator string
+	Direction  string
+	Type       string
+	Limit      int
+	Offset     int
 }
 
 // paramsForMessage converts the specified MessageParams struct to a
@@ -83,6 +102,29 @@ func paramsForMessage(params *MessageParams) (*url.Values, error) {
 	if params.ScheduledDatetime.Unix() > 0 {
 		urlParams.Set("scheduledDatetime", params.ScheduledDatetime.Format(time.RFC3339))
 	}
+
+	return urlParams, nil
+}
+
+// paramsForMessageList converts the specified MessageListParams struct to a
+// url.Values pointer and returns it.
+func paramsForMessageList(params *MessageListParams) (*url.Values, error) {
+	urlParams := &url.Values{}
+
+	if params == nil {
+		return urlParams, nil
+	}
+
+	if params.Direction != "" {
+		urlParams.Set("direction", params.Direction)
+	}
+	if params.Originator != "" {
+		urlParams.Set("originator", params.Originator)
+	}
+	if params.Limit != 0 {
+		urlParams.Set("limit", strconv.Itoa(params.Limit))
+	}
+	urlParams.Set("offset", strconv.Itoa(params.Offset))
 
 	return urlParams, nil
 }

@@ -16,3 +16,13 @@ type HLR struct {
 	StatusDatetime  *time.Time
 	Errors          []Error
 }
+
+// HLRList represents a list of HLR requests.
+type HLRList struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Links      map[string]*string
+	Items      []HLR
+}

@@ -24,6 +24,16 @@ type VoiceMessage struct {
 	Errors            []Error
 }
 
+// VoiceMessageList represents a list of VoiceMessages.
+type VoiceMessageList struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Links      map[string]*string
+	Items      []VoiceMessage
+}
+
 // VoiceMessageParams struct provides additional VoiceMessage details.
 type VoiceMessageParams struct {
 	Originator        string
