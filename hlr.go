@@ -20,6 +20,16 @@ type HLR struct {
 	Errors          []Error
 }
 
+// HLRList represents a list of HLR requests.
+type HLRList struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Links      map[string]*string
+	Items      []HLR
+}
+
 type hlrRequest struct {
 	MSISDN    string `json:"msisdn"`
 	Reference string `json:"reference"`

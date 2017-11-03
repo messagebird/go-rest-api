@@ -18,14 +18,30 @@ import (
 	"net/http"
 	"net/url"
 	"runtime"
+	"strings"
 )
 
 const (
 	// ClientVersion is used in User-Agent request header to provide server with API level.
-	ClientVersion = "3.0.0"
+	ClientVersion = "4.2.0"
 
 	// Endpoint points you to MessageBird REST API.
 	Endpoint = "https://rest.messagebird.com"
+)
+
+const (
+	// HLRPath represents the path to the HLR resource.
+	HLRPath = "hlr"
+	// MessagePath represents the path to the Message resource.
+	MessagePath = "messages"
+	// MMSPath represents the path to the MMS resource.
+	MMSPath = "mms"
+	// VoiceMessagePath represents the path to the VoiceMessage resource.
+	VoiceMessagePath = "voicemessages"
+	// VerifyPath represents the path to the Verify resource.
+	VerifyPath = "verify"
+	// LookupPath represents the path to the Lookup resource.
+	LookupPath = "lookup"
 )
 
 var (
@@ -138,7 +154,7 @@ func (c *Client) Balance() (*Balance, error) {
 // created by the NewHLR function.
 func (c *Client) HLR(id string) (*HLR, error) {
 	hlr := &HLR{}
-	if err := c.request(hlr, "hlr/"+id, nil); err != nil {
+	if err := c.request(hlr, HLRPath+"/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}
@@ -149,6 +165,21 @@ func (c *Client) HLR(id string) (*HLR, error) {
 	return hlr, nil
 }
 
+// HLRs lists all HLR objects that were previously created by the NewHLR
+// function.
+func (c *Client) HLRs() (*HLRList, error) {
+	hlrList := &HLRList{}
+	if err := c.request(hlrList, HLRPath, nil); err != nil {
+		if err == ErrResponse {
+			return hlrList, err
+		}
+
+		return nil, err
+	}
+
+	return hlrList, nil
+}
+
 // NewHLR retrieves the information of an existing HLR.
 func (c *Client) NewHLR(msisdn string, reference string) (*HLR, error) {
 	requestData, err := requestDataForHLR(msisdn, reference)
@@ -157,7 +188,8 @@ func (c *Client) NewHLR(msisdn string, reference string) (*HLR, error) {
 	}
 
 	hlr := &HLR{}
-	if err := c.request(hlr, "hlr", requestData); err != nil {
+
+	if err := c.request(hlr, HLRPath, requestData); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}
@@ -171,7 +203,7 @@ func (c *Client) NewHLR(msisdn string, reference string) (*HLR, error) {
 // Message retrieves the information of an existing Message.
 func (c *Client) Message(id string) (*Message, error) {
 	message := &Message{}
-	if err := c.request(message, "messages/"+id, nil); err != nil {
+	if err := c.request(message, MessagePath+"/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -180,6 +212,25 @@ func (c *Client) Message(id string) (*Message, error) {
 	}
 
 	return message, nil
+}
+
+// Messages retrieves all messages of the user represented as a MessageList object.
+func (c *Client) Messages(msgListParams *MessageListParams) (*MessageList, error) {
+	messageList := &MessageList{}
+	params, err := paramsForMessageList(msgListParams)
+	if err != nil {
+		return messageList, err
+	}
+
+	if err := c.request(messageList, MessagePath+"?"+params.Encode(), nil); err != nil {
+		if err == ErrResponse {
+			return messageList, err
+		}
+
+		return nil, err
+	}
+
+	return messageList, nil
 }
 
 // NewMessage creates a new message for one or more recipients.
@@ -190,7 +241,7 @@ func (c *Client) NewMessage(originator string, recipients []string, body string,
 	}
 
 	message := &Message{}
-	if err := c.request(message, "messages", requestData); err != nil {
+	if err := c.request(message, MessagePath, requestData); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -201,10 +252,46 @@ func (c *Client) NewMessage(originator string, recipients []string, body string,
 	return message, nil
 }
 
+// MMSMessage retrieves the information of an existing MmsMessage.
+func (c *Client) MMSMessage(id string) (*MMSMessage, error) {
+	mmsMessage := &MMSMessage{}
+	if err := c.request(mmsMessage, MMSPath+"/"+id, nil); err != nil {
+		if err == ErrResponse {
+			return mmsMessage, err
+		}
+
+		return nil, err
+	}
+
+	return mmsMessage, nil
+}
+
+// NewMMSMessage creates a new MMS message for one or more recipients.
+func (c *Client) NewMMSMessage(originator string, recipients []string, msgParams *MMSMessageParams) (*MMSMessage, error) {
+	params, err := paramsForMMSMessage(msgParams)
+	if err != nil {
+		return nil, err
+	}
+
+	params.Set("originator", originator)
+	params.Set("recipients", strings.Join(recipients, ","))
+
+	mmsMessage := &MMSMessage{}
+	if err := c.request(mmsMessage, MMSPath, params); err != nil {
+		if err == ErrResponse {
+			return mmsMessage, err
+		}
+
+		return nil, err
+	}
+
+	return mmsMessage, nil
+}
+
 // VoiceMessage retrieves the information of an existing VoiceMessage.
 func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 	message := &VoiceMessage{}
-	if err := c.request(message, "voicemessages/"+id, nil); err != nil {
+	if err := c.request(message, VoiceMessagePath+"/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -213,6 +300,20 @@ func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 	}
 
 	return message, nil
+}
+
+// VoiceMessages retrieves all VoiceMessages of the user.
+func (c *Client) VoiceMessages() (*VoiceMessageList, error) {
+	messageList := &VoiceMessageList{}
+	if err := c.request(messageList, VoiceMessagePath, nil); err != nil {
+		if err == ErrResponse {
+			return messageList, err
+		}
+
+		return nil, err
+	}
+
+	return messageList, nil
 }
 
 // NewVoiceMessage creates a new voice message for one or more recipients.
@@ -223,7 +324,7 @@ func (c *Client) NewVoiceMessage(recipients []string, body string, params *Voice
 	}
 
 	message := &VoiceMessage{}
-	if err := c.request(message, "voicemessages", requestData); err != nil {
+	if err := c.request(message, VoiceMessagePath, requestData); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -242,7 +343,7 @@ func (c *Client) NewVerify(recipient string, params *VerifyParams) (*Verify, err
 	}
 
 	verify := &Verify{}
-	if err := c.request(verify, "verify", requestData); err != nil {
+	if err := c.request(verify, VerifyPath, requestData); err != nil {
 		if err == ErrResponse {
 			return verify, err
 		}
@@ -258,7 +359,7 @@ func (c *Client) VerifyToken(id, token string) (*Verify, error) {
 	params := &url.Values{}
 	params.Set("token", token)
 
-	path := "verify/" + id + "?" + params.Encode()
+	path := VerifyPath + "/" + id + "?" + params.Encode()
 
 	verify := &Verify{}
 	if err := c.request(verify, path, nil); err != nil {
@@ -275,7 +376,7 @@ func (c *Client) VerifyToken(id, token string) (*Verify, error) {
 // Lookup performs a new lookup for the specified number.
 func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, error) {
 	urlParams := paramsForLookup(params)
-	path := "lookup/" + phoneNumber + "?" + urlParams.Encode()
+	path := LookupPath + "/" + phoneNumber + "?" + urlParams.Encode()
 
 	lookup := &Lookup{}
 	if err := c.request(lookup, path, nil); err != nil {
@@ -292,7 +393,7 @@ func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, erro
 // NewLookupHLR creates a new HLR lookup for the specified number.
 func (c *Client) NewLookupHLR(phoneNumber string, params *LookupParams) (*HLR, error) {
 	requestData := requestDataForLookup(params)
-	path := "lookup/" + phoneNumber + "/hlr"
+	path := LookupPath + "/" + phoneNumber + "/" + HLRPath
 
 	hlr := &HLR{}
 	if err := c.request(hlr, path, requestData); err != nil {
@@ -309,7 +410,7 @@ func (c *Client) NewLookupHLR(phoneNumber string, params *LookupParams) (*HLR, e
 // LookupHLR performs a HLR lookup for the specified number.
 func (c *Client) LookupHLR(phoneNumber string, params *LookupParams) (*HLR, error) {
 	urlParams := paramsForLookup(params)
-	path := "lookup/" + phoneNumber + "/hlr?" + urlParams.Encode()
+	path := LookupPath + "/" + phoneNumber + "/" + HLRPath + "?" + urlParams.Encode()
 
 	hlr := &HLR{}
 	if err := c.request(hlr, path, nil); err != nil {
