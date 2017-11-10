@@ -27,6 +27,24 @@ type LookupParams struct {
 	Reference   string
 }
 
+type lookupRequest struct {
+	CountryCode string `json:"countryCode,omitempty"`
+	Reference   string `json:"reference,omitempty"`
+}
+
+func requestDataForLookup(params *LookupParams) *lookupRequest {
+	request := &lookupRequest{}
+
+	if params == nil {
+		return request
+	}
+
+	request.CountryCode = params.CountryCode
+	request.Reference = params.Reference
+
+	return request
+}
+
 func paramsForLookup(params *LookupParams) *url.Values {
 	urlParams := &url.Values{}
 

@@ -90,6 +90,21 @@ func TestLookupHLR(t *testing.T) {
 	checkHLR(t, hlr)
 }
 
+func TestRequestDataForLookupHLR(t *testing.T) {
+	lookupParams := &LookupParams{
+		CountryCode: "NL",
+		Reference:   "MyReference",
+	}
+	request := requestDataForLookup(lookupParams)
+
+	if request.CountryCode != "NL" {
+		t.Errorf("Unexpected country code: %s, expected: NL", request.CountryCode)
+	}
+	if request.Reference != "MyReference" {
+		t.Errorf("Unexpected reference: %s, expected: MyReference", request.Reference)
+	}
+}
+
 func TestNewLookupHLR(t *testing.T) {
 	SetServerResponse(201, lookupHLRObject)
 

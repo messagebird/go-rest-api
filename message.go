@@ -61,49 +61,55 @@ type MessageListParams struct {
 	Offset     int
 }
 
-// paramsForMessage converts the specified MessageParams struct to a
-// url.Values pointer and returns it.
-func paramsForMessage(params *MessageParams) (*url.Values, error) {
-	urlParams := &url.Values{}
+type messageRequest struct {
+	Originator        string      `json:"originator"`
+	Body              string      `json:"body"`
+	Recipients        []string    `json:"recipients"`
+	Type              string      `json:"type,omitempty"`
+	Reference         string      `json:"reference,omitempty"`
+	Validity          int         `json:"validity,omitempty"`
+	Gateway           int         `json:"gateway,omitempty"`
+	TypeDetails       TypeDetails `json:"typeDetails,omitempty"`
+	DataCoding        string      `json:"dataCoding,omitempty"`
+	MClass            int         `json:"mclass,omitempty"`
+	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
+}
+
+func requestDataForMessage(originator string, recipients []string, body string, params *MessageParams) (*messageRequest, error) {
+	if originator == "" {
+		return nil, errors.New("originator is required")
+	}
+	if len(recipients) == 0 {
+		return nil, errors.New("at least 1 recipient is required")
+	}
+	if body == "" {
+		return nil, errors.New("body is required")
+	}
+
+	request := &messageRequest{
+		Originator: originator,
+		Recipients: recipients,
+		Body:       body,
+	}
 
 	if params == nil {
-		return urlParams, nil
+		return request, nil
 	}
 
-	if params.Type != "" {
-		urlParams.Set("type", params.Type)
-		if params.Type == "flash" {
-			urlParams.Set("mclass", "0")
-		}
+	request.Type = params.Type
+	if request.Type == "flash" {
+		request.MClass = 0
+	} else {
+		request.MClass = 1
 	}
-	if params.Reference != "" {
-		urlParams.Set("reference", params.Reference)
-	}
-	if params.Validity != 0 {
-		urlParams.Set("validity", strconv.Itoa(params.Validity))
-	}
-	if params.Gateway != 0 {
-		urlParams.Set("gateway", strconv.Itoa(params.Gateway))
-	}
+	request.Reference = params.Reference
+	request.Validity = params.Validity
+	request.Gateway = params.Gateway
+	request.TypeDetails = params.TypeDetails
+	request.DataCoding = params.DataCoding
+	request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
 
-	for k, v := range params.TypeDetails {
-		if vs, ok := v.(string); ok {
-			urlParams.Set("typeDetails["+k+"]", vs)
-		} else if vi, ok := v.(int); ok {
-			urlParams.Set("typeDetails["+k+"]", strconv.Itoa(vi))
-		} else {
-			return nil, errors.New("Unknown type for typeDetails value")
-		}
-	}
-
-	if params.DataCoding != "" {
-		urlParams.Set("datacoding", params.DataCoding)
-	}
-	if params.ScheduledDatetime.Unix() > 0 {
-		urlParams.Set("scheduledDatetime", params.ScheduledDatetime.Format(time.RFC3339))
-	}
-
-	return urlParams, nil
+	return request, nil
 }
 
 // paramsForMessageList converts the specified MessageListParams struct to a
