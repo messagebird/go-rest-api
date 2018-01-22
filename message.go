@@ -102,12 +102,16 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 	} else {
 		request.MClass = 1
 	}
+
+	if params.ScheduledDatetime.IsZero() == false {
+		request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
+	}
+
 	request.Reference = params.Reference
 	request.Validity = params.Validity
 	request.Gateway = params.Gateway
 	request.TypeDetails = params.TypeDetails
 	request.DataCoding = params.DataCoding
-	request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
 
 	return request, nil
 }
