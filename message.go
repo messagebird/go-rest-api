@@ -103,7 +103,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 		request.MClass = 1
 	}
 
-	if params.ScheduledDatetime.IsZero() == false {
+	if !params.ScheduledDatetime.IsZero() {
 		request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
 	}
 
