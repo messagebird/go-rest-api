@@ -8,6 +8,26 @@ import (
 	"time"
 )
 
+func ExampleCallFlow() {
+	callflow := CallFlow{
+		Title: "My CallFlow",
+		Steps: []CallFlowStep{
+			&CallFlowSayStep{
+				Payload:  "Hello",
+				Voice:    "male",
+				Language: "en-US",
+			},
+			&CallFlowPauseStep{
+				Length: time.Second * 4,
+			},
+			&CallFlowTransferStep{
+				Destination: "31600000000",
+			},
+		},
+	}
+	_ = callflow
+}
+
 func TestCallFlowJSONMarshal(t *testing.T) {
 	refCreatedAt, _ := time.Parse(time.RFC3339, "2018-01-29T13:46:06Z")
 	refUpdatedAt, _ := time.Parse(time.RFC3339, "2018-01-30T16:00:34Z")
