@@ -113,7 +113,7 @@ func (callflow *CallFlow) UnmarshalJSON(data []byte) error {
 // An error is returned if no such call flow exists or is accessible.
 func (c *Client) CallFlowByID(id string) (*CallFlow, error) {
 	callflow := &CallFlow{}
-	err := c.request(callflow, "GET", "call-flow/"+id, nil)
+	err := c.Request(callflow, "GET", "call-flow/"+id, nil)
 	return callflow, err
 }
 
@@ -124,7 +124,7 @@ func (c *Client) CallFlowByID(id string) (*CallFlow, error) {
 // Typically, a page contains 10 callflows.
 func (c *Client) CallFlows(page int) (*CallFlowList, error) {
 	list := &CallFlowList{}
-	err := c.request(list, "GET", fmt.Sprintf("call-flow/?page=%d", page), nil)
+	err := c.Request(list, "GET", fmt.Sprintf("call-flow/?page=%d", page), nil)
 	return list, err
 }
 
@@ -135,7 +135,7 @@ func (c *Client) CreateCallFlow(callflow *CallFlow) (*CallFlow, error) {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := c.request(&data, "POST", "call-flow/", callflow); err != nil {
+	if err := c.Request(&data, "POST", "call-flow/", callflow); err != nil {
 		return nil, err
 	}
 	return &data.Data[0], nil
@@ -148,7 +148,7 @@ func (c *Client) UpdateCallFlow(callflow *CallFlow) (*CallFlow, error) {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := c.request(callflow, "PUT", "call-flow/"+callflow.ID, callflow); err != nil {
+	if err := c.Request(callflow, "PUT", "call-flow/"+callflow.ID, callflow); err != nil {
 		return nil, err
 	}
 	return &data.Data[0], nil
@@ -156,7 +156,7 @@ func (c *Client) UpdateCallFlow(callflow *CallFlow) (*CallFlow, error) {
 
 // DeleteCallFlow deletes the specified CallFlow.
 func (c *Client) DeleteCallFlow(callflow *CallFlow) error {
-	return c.request(nil, "DELETE", "call-flow/"+callflow.ID, nil)
+	return c.Request(nil, "DELETE", "call-flow/"+callflow.ID, nil)
 }
 
 // A CallFlowStep is a single step that can be taken in a callflow.
