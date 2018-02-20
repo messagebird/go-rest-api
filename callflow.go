@@ -6,6 +6,17 @@ import (
 	"time"
 )
 
+// CallFlowList is a single page from the total collection of call flows.
+type CallFlowList struct {
+	Items      []CallFlow `json:"data"`
+	Pagination struct {
+		TotalCount  int `json:"totalCount"`
+		PageCount   int `json:"pageCount"`
+		CurrentPage int `json:"currentPage"`
+		PerPage     int `json:"perPage"`
+	} `json:"pagination"`
+}
+
 // A CallFlow describes the flow of operations (steps) to be executed when
 // handling an incoming call.
 type CallFlow struct {
@@ -104,6 +115,17 @@ func (c *Client) CallFlowByID(id string) (*CallFlow, error) {
 	callflow := &CallFlow{}
 	err := c.request(callflow, "GET", "call-flow/"+id, nil)
 	return callflow, err
+}
+
+// CallFlows lists the callflows on the specified page.
+//
+// Page indices start at 1.
+//
+// Typically, a page contains 10 callflows.
+func (c *Client) CallFlows(page int) (*CallFlowList, error) {
+	list := &CallFlowList{}
+	err := c.request(list, "GET", fmt.Sprintf("call-flow/?page=%d", page), nil)
+	return list, err
 }
 
 // CreateCallFlow creates the specified callflow.
