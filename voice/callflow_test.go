@@ -1,4 +1,4 @@
-package messagebird
+package voice
 
 import (
 	"encoding/json"
@@ -131,7 +131,7 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 }
 
 func TestCreateCallFlow(t *testing.T) {
-	SetServerResponse(http.StatusOK, []byte(`{
+	mbClient, stop := testClient(http.StatusOK, []byte(`{
 		"data": [
 			{
 				"id": "the-id",
@@ -141,8 +141,9 @@ func TestCreateCallFlow(t *testing.T) {
 			}
 		]
 	}`))
-	newCf, err := mbClient.CreateCallFlow(&CallFlow{})
-	if err != nil {
+	defer stop()
+	newCf := &CallFlow{}
+	if err := newCf.Create(mbClient); err != nil {
 		t.Fatal(err)
 	}
 	if newCf.ID != "the-id" {

@@ -1,9 +1,11 @@
-package messagebird
+package voice
 
 import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/messagebird/go-rest-api"
 )
 
 // CallFlowList is a single page from the total collection of call flows.
@@ -111,9 +113,9 @@ func (callflow *CallFlow) UnmarshalJSON(data []byte) error {
 // CallFlowByID fetches a callflow by it's ID.
 //
 // An error is returned if no such call flow exists or is accessible.
-func (c *Client) CallFlowByID(id string) (*CallFlow, error) {
+func CallFlowByID(client *messagebird.Client, id string) (*CallFlow, error) {
 	callflow := &CallFlow{}
-	err := c.Request(callflow, "GET", "call-flow/"+id, nil)
+	err := client.Request(callflow, "GET", "call-flow/"+id, nil)
 	return callflow, err
 }
 
@@ -122,41 +124,43 @@ func (c *Client) CallFlowByID(id string) (*CallFlow, error) {
 // Page indices start at 1.
 //
 // Typically, a page contains 10 callflows.
-func (c *Client) CallFlows(page int) (*CallFlowList, error) {
+func CallFlows(client *messagebird.Client, page int) (*CallFlowList, error) {
 	list := &CallFlowList{}
-	err := c.Request(list, "GET", fmt.Sprintf("call-flow/?page=%d", page), nil)
+	err := client.Request(list, "GET", fmt.Sprintf("call-flow/?page=%d", page), nil)
 	return list, err
 }
 
-// CreateCallFlow creates the specified callflow.
+// CreateCallFlow creates the callflow remotely.
 //
-// The updated callflow is returned.
-func (c *Client) CreateCallFlow(callflow *CallFlow) (*CallFlow, error) {
+// The callflow is updated in-place.
+func (callflow *CallFlow) Create(client *messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := c.Request(&data, "POST", "call-flow/", callflow); err != nil {
-		return nil, err
+	if err := client.Request(&data, "POST", "call-flow/", callflow); err != nil {
+		return err
 	}
-	return &data.Data[0], nil
+	*callflow = data.Data[0]
+	return nil
 }
 
-// UpdateCallFlow updates the specified call flow by overwriting it.
+// UpdateCallFlow updates the call flow by overwriting it.
 //
 // An error is returned if no such call flow exists or is accessible.
-func (c *Client) UpdateCallFlow(callflow *CallFlow) (*CallFlow, error) {
+func (callflow *CallFlow) Update(client *messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := c.Request(callflow, "PUT", "call-flow/"+callflow.ID, callflow); err != nil {
-		return nil, err
+	if err := client.Request(callflow, "PUT", "call-flow/"+callflow.ID, callflow); err != nil {
+		return err
 	}
-	return &data.Data[0], nil
+	*callflow = data.Data[0]
+	return nil
 }
 
-// DeleteCallFlow deletes the specified CallFlow.
-func (c *Client) DeleteCallFlow(callflow *CallFlow) error {
-	return c.Request(nil, "DELETE", "call-flow/"+callflow.ID, nil)
+// DeleteCallFlow deletes the CallFlow.
+func (callflow *CallFlow) Delete(client *messagebird.Client) error {
+	return client.Request(nil, "DELETE", "call-flow/"+callflow.ID, nil)
 }
 
 // A CallFlowStep is a single step that can be taken in a callflow.
