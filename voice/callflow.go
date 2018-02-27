@@ -3,21 +3,11 @@ package voice
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/messagebird/go-rest-api"
 )
-
-// CallFlowList is a single page from the total collection of call flows.
-type CallFlowList struct {
-	Items      []CallFlow `json:"data"`
-	Pagination struct {
-		TotalCount  int `json:"totalCount"`
-		PageCount   int `json:"pageCount"`
-		CurrentPage int `json:"currentPage"`
-		PerPage     int `json:"perPage"`
-	} `json:"pagination"`
-}
 
 // A CallFlow describes the flow of operations (steps) to be executed when
 // handling an incoming call.
@@ -119,15 +109,9 @@ func CallFlowByID(client *messagebird.Client, id string) (*CallFlow, error) {
 	return callflow, err
 }
 
-// CallFlows lists the callflows on the specified page.
-//
-// Page indices start at 1.
-//
-// Typically, a page contains 10 callflows.
-func CallFlows(client *messagebird.Client, page int) (*CallFlowList, error) {
-	list := &CallFlowList{}
-	err := client.Request(list, "GET", fmt.Sprintf("call-flow/?page=%d", page), nil)
-	return list, err
+// CallFlows returns a Paginator which iterates over all CallFlows.
+func CallFlows(client *messagebird.Client) *Paginator {
+	return newPaginator(client, "call-flow/", reflect.TypeOf(CallFlow{}))
 }
 
 // CreateCallFlow creates the callflow remotely.
