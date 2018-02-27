@@ -114,7 +114,7 @@ func CallFlows(client *messagebird.Client) *Paginator {
 	return newPaginator(client, "call-flow/", reflect.TypeOf(CallFlow{}))
 }
 
-// CreateCallFlow creates the callflow remotely.
+// Create creates the callflow remotely.
 //
 // The callflow is updated in-place.
 func (callflow *CallFlow) Create(client *messagebird.Client) error {
@@ -128,7 +128,7 @@ func (callflow *CallFlow) Create(client *messagebird.Client) error {
 	return nil
 }
 
-// UpdateCallFlow updates the call flow by overwriting it.
+// Update updates the call flow by overwriting it.
 //
 // An error is returned if no such call flow exists or is accessible.
 func (callflow *CallFlow) Update(client *messagebird.Client) error {
@@ -142,7 +142,7 @@ func (callflow *CallFlow) Update(client *messagebird.Client) error {
 	return nil
 }
 
-// DeleteCallFlow deletes the CallFlow.
+// Delete deletes the CallFlow.
 func (callflow *CallFlow) Delete(client *messagebird.Client) error {
 	return client.Request(nil, "DELETE", "call-flow/"+callflow.ID, nil)
 }
