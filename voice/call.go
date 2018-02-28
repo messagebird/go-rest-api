@@ -143,3 +143,8 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 func (call *Call) Delete(client *messagebird.Client) error {
 	return client.Request(nil, "DELETE", "calls/"+call.ID, nil)
 }
+
+// Legs returns a paginator over all Legs associated with a call.
+func (call *Call) Legs(client *messagebird.Client) *Paginator {
+	return newPaginator(client, fmt.Sprintf("calls/%s/legs", call.ID), reflect.TypeOf(Leg{}))
+}
