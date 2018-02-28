@@ -3,7 +3,10 @@ package voice
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"time"
+
+	messagebird "github.com/messagebird/go-rest-api"
 )
 
 // LegStatus enumerates all valid values for a leg status.
@@ -143,4 +146,9 @@ func (leg *Leg) UnmarshalJSON(data []byte) error {
 		EndedAt:     endedAt,
 	}
 	return nil
+}
+
+// Recordings retrieves the Recording objects associated with a leg.
+func (leg *Leg) Recordings(client *messagebird.Client) *Paginator {
+	return newPaginator(client, fmt.Sprintf("calls/%s/legs/%s/recordings", leg.CallID, leg.ID), reflect.TypeOf(Recording{}))
 }
