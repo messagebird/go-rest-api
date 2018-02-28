@@ -121,16 +121,23 @@ func Calls(client *messagebird.Client) *Paginator {
 // When placing a call, you pass the source (the caller ID), the destination
 // (the number/address that will be called), and the callFlow (the call flow to
 // execute when the call is answered).
-func InitiateCall(client *messagebird.Client, source, destination string, callflow CallFlow) (*Call, error) {
+func InitiateCall(client *messagebird.Client, source, destination string, callflow CallFlow, webhook *Webhook) (*Call, error) {
 	body := struct {
 		Source      string   `json:"source"`
 		Destination string   `json:"destination"`
 		Callflow    CallFlow `json:"callflow"`
-		// TODO: Optional webhook
+		Webhook     struct {
+			URL   string `json:"url,omitempty"`
+			Token string `json:"token,omitempty"`
+		}
 	}{
 		Source:      source,
 		Destination: destination,
 		Callflow:    callflow,
+	}
+	if webhook != nil {
+		body.Webhook.URL = webhook.URL
+		body.Webhook.Token = webhook.Token
 	}
 	call := &Call{}
 	err := client.Request(call, "POST", "calls/", body)
