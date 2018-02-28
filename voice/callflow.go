@@ -105,13 +105,13 @@ func (callflow *CallFlow) UnmarshalJSON(data []byte) error {
 // An error is returned if no such call flow exists or is accessible.
 func CallFlowByID(client *messagebird.Client, id string) (*CallFlow, error) {
 	callflow := &CallFlow{}
-	err := client.Request(callflow, "GET", "call-flow/"+id, nil)
+	err := client.Request(callflow, "GET", "call-flows/"+id, nil)
 	return callflow, err
 }
 
 // CallFlows returns a Paginator which iterates over all CallFlows.
 func CallFlows(client *messagebird.Client) *Paginator {
-	return newPaginator(client, "call-flow/", reflect.TypeOf(CallFlow{}))
+	return newPaginator(client, "call-flows/", reflect.TypeOf(CallFlow{}))
 }
 
 // Create creates the callflow remotely.
@@ -121,7 +121,7 @@ func (callflow *CallFlow) Create(client *messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := client.Request(&data, "POST", "call-flow/", callflow); err != nil {
+	if err := client.Request(&data, "POST", "call-flows/", callflow); err != nil {
 		return err
 	}
 	*callflow = data.Data[0]
@@ -135,7 +135,7 @@ func (callflow *CallFlow) Update(client *messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := client.Request(callflow, "PUT", "call-flow/"+callflow.ID, callflow); err != nil {
+	if err := client.Request(&data, "PUT", "call-flows/"+callflow.ID, callflow); err != nil {
 		return err
 	}
 	*callflow = data.Data[0]
@@ -144,7 +144,7 @@ func (callflow *CallFlow) Update(client *messagebird.Client) error {
 
 // Delete deletes the CallFlow.
 func (callflow *CallFlow) Delete(client *messagebird.Client) error {
-	return client.Request(nil, "DELETE", "call-flow/"+callflow.ID, nil)
+	return client.Request(nil, "DELETE", "call-flows/"+callflow.ID, nil)
 }
 
 // A CallFlowStep is a single step that can be taken in a callflow.
