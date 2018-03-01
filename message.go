@@ -70,7 +70,7 @@ type messageRequest struct {
 	Validity          int         `json:"validity,omitempty"`
 	Gateway           int         `json:"gateway,omitempty"`
 	TypeDetails       TypeDetails `json:"typeDetails,omitempty"`
-	DataCoding        string      `json:"dataCoding,omitempty"`
+	DataCoding        string      `json:"datacoding,omitempty"`
 	MClass            int         `json:"mclass,omitempty"`
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
 }
