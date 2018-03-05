@@ -3,6 +3,7 @@ package voice
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 	"time"
 
@@ -79,7 +80,7 @@ func CreateWebHook(client *messagebird.Client, url, token string) (*Webhook, err
 		Token: token,
 	}
 	wh := &Webhook{}
-	if err := client.Request(wh, "POST", "webhooks/", data); err != nil {
+	if err := client.Request(wh, http.MethodPost, "webhooks/", data); err != nil {
 		return nil, err
 	}
 	return wh, nil
@@ -90,7 +91,7 @@ func (wh *Webhook) Update(client *messagebird.Client) error {
 	var data struct {
 		Data []Webhook `json:"data"`
 	}
-	if err := client.Request(&data, "PUT", "webhooks/"+wh.ID, wh); err != nil {
+	if err := client.Request(&data, http.MethodPut, "webhooks/"+wh.ID, wh); err != nil {
 		return err
 	}
 	*wh = data.Data[0]
@@ -99,5 +100,5 @@ func (wh *Webhook) Update(client *messagebird.Client) error {
 
 // Delete deletes a webhook.
 func (wh *Webhook) Delete(client *messagebird.Client) error {
-	return client.Request(nil, "DELETE", "webhooks/"+wh.ID, nil)
+	return client.Request(nil, http.MethodDelete, "webhooks/"+wh.ID, nil)
 }

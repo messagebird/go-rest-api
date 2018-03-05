@@ -3,6 +3,7 @@ package voice
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"reflect"
 
 	messagebird "github.com/messagebird/go-rest-api"
@@ -61,7 +62,7 @@ func (pag *Paginator) NextPage() (interface{}, error) {
 	})
 	rawVal := reflect.New(rawType)
 
-	if err := pag.client.Request(rawVal.Interface(), "GET", fmt.Sprintf("%s?page=%d", pag.endpoint, pag.nextPage), nil); err != nil {
+	if err := pag.client.Request(rawVal.Interface(), http.MethodGet, fmt.Sprintf("%s?page=%d", pag.endpoint, pag.nextPage), nil); err != nil {
 		return nil, err
 	}
 

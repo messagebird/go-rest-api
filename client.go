@@ -138,7 +138,7 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 // with the access key.
 func (c *Client) Balance() (*Balance, error) {
 	balance := &Balance{}
-	if err := c.Request(balance, "GET", "balance", nil); err != nil {
+	if err := c.Request(balance, http.MethodGet, "balance", nil); err != nil {
 		if err == ErrResponse {
 			return balance, err
 		}
@@ -153,7 +153,7 @@ func (c *Client) Balance() (*Balance, error) {
 // created by the NewHLR function.
 func (c *Client) HLR(id string) (*HLR, error) {
 	hlr := &HLR{}
-	if err := c.Request(hlr, "GET", HLRPath+"/"+id, nil); err != nil {
+	if err := c.Request(hlr, http.MethodGet, HLRPath+"/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}
@@ -168,7 +168,7 @@ func (c *Client) HLR(id string) (*HLR, error) {
 // function.
 func (c *Client) HLRs() (*HLRList, error) {
 	hlrList := &HLRList{}
-	if err := c.Request(hlrList, "GET", HLRPath, nil); err != nil {
+	if err := c.Request(hlrList, http.MethodGet, HLRPath, nil); err != nil {
 		if err == ErrResponse {
 			return hlrList, err
 		}
@@ -188,7 +188,7 @@ func (c *Client) NewHLR(msisdn string, reference string) (*HLR, error) {
 
 	hlr := &HLR{}
 
-	if err := c.Request(hlr, "POST", HLRPath, requestData); err != nil {
+	if err := c.Request(hlr, http.MethodPost, HLRPath, requestData); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}
@@ -202,7 +202,7 @@ func (c *Client) NewHLR(msisdn string, reference string) (*HLR, error) {
 // Message retrieves the information of an existing Message.
 func (c *Client) Message(id string) (*Message, error) {
 	message := &Message{}
-	if err := c.Request(message, "GET", MessagePath+"/"+id, nil); err != nil {
+	if err := c.Request(message, http.MethodGet, MessagePath+"/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -221,7 +221,7 @@ func (c *Client) Messages(msgListParams *MessageListParams) (*MessageList, error
 		return messageList, err
 	}
 
-	if err := c.Request(messageList, "GET", MessagePath+"?"+params.Encode(), nil); err != nil {
+	if err := c.Request(messageList, http.MethodGet, MessagePath+"?"+params.Encode(), nil); err != nil {
 		if err == ErrResponse {
 			return messageList, err
 		}
@@ -240,7 +240,7 @@ func (c *Client) NewMessage(originator string, recipients []string, body string,
 	}
 
 	message := &Message{}
-	if err := c.Request(message, "POST", MessagePath, requestData); err != nil {
+	if err := c.Request(message, http.MethodPost, MessagePath, requestData); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -254,7 +254,7 @@ func (c *Client) NewMessage(originator string, recipients []string, body string,
 // MMSMessage retrieves the information of an existing MmsMessage.
 func (c *Client) MMSMessage(id string) (*MMSMessage, error) {
 	mmsMessage := &MMSMessage{}
-	if err := c.Request(mmsMessage, "GET", MMSPath+"/"+id, nil); err != nil {
+	if err := c.Request(mmsMessage, http.MethodGet, MMSPath+"/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return mmsMessage, err
 		}
@@ -276,7 +276,7 @@ func (c *Client) NewMMSMessage(originator string, recipients []string, msgParams
 	params.Set("recipients", strings.Join(recipients, ","))
 
 	mmsMessage := &MMSMessage{}
-	if err := c.Request(mmsMessage, "POST", MMSPath, params); err != nil {
+	if err := c.Request(mmsMessage, http.MethodPost, MMSPath, params); err != nil {
 		if err == ErrResponse {
 			return mmsMessage, err
 		}
@@ -290,7 +290,7 @@ func (c *Client) NewMMSMessage(originator string, recipients []string, msgParams
 // VoiceMessage retrieves the information of an existing VoiceMessage.
 func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 	message := &VoiceMessage{}
-	if err := c.Request(message, "GET", VoiceMessagePath+"/"+id, nil); err != nil {
+	if err := c.Request(message, http.MethodGet, VoiceMessagePath+"/"+id, nil); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -304,7 +304,7 @@ func (c *Client) VoiceMessage(id string) (*VoiceMessage, error) {
 // VoiceMessages retrieves all VoiceMessages of the user.
 func (c *Client) VoiceMessages() (*VoiceMessageList, error) {
 	messageList := &VoiceMessageList{}
-	if err := c.Request(messageList, "GET", VoiceMessagePath, nil); err != nil {
+	if err := c.Request(messageList, http.MethodGet, VoiceMessagePath, nil); err != nil {
 		if err == ErrResponse {
 			return messageList, err
 		}
@@ -323,7 +323,7 @@ func (c *Client) NewVoiceMessage(recipients []string, body string, params *Voice
 	}
 
 	message := &VoiceMessage{}
-	if err := c.Request(message, "POST", VoiceMessagePath, requestData); err != nil {
+	if err := c.Request(message, http.MethodPost, VoiceMessagePath, requestData); err != nil {
 		if err == ErrResponse {
 			return message, err
 		}
@@ -342,7 +342,7 @@ func (c *Client) NewVerify(recipient string, params *VerifyParams) (*Verify, err
 	}
 
 	verify := &Verify{}
-	if err := c.Request(verify, "POST", VerifyPath, requestData); err != nil {
+	if err := c.Request(verify, http.MethodPost, VerifyPath, requestData); err != nil {
 		if err == ErrResponse {
 			return verify, err
 		}
@@ -361,7 +361,7 @@ func (c *Client) VerifyToken(id, token string) (*Verify, error) {
 	path := VerifyPath + "/" + id + "?" + params.Encode()
 
 	verify := &Verify{}
-	if err := c.Request(verify, "GET", path, nil); err != nil {
+	if err := c.Request(verify, http.MethodGet, path, nil); err != nil {
 		if err == ErrResponse {
 			return verify, err
 		}
@@ -378,7 +378,7 @@ func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, erro
 	path := LookupPath + "/" + phoneNumber + "?" + urlParams.Encode()
 
 	lookup := &Lookup{}
-	if err := c.Request(lookup, "POST", path, nil); err != nil {
+	if err := c.Request(lookup, http.MethodPost, path, nil); err != nil {
 		if err == ErrResponse {
 			return lookup, err
 		}
@@ -395,7 +395,7 @@ func (c *Client) NewLookupHLR(phoneNumber string, params *LookupParams) (*HLR, e
 	path := LookupPath + "/" + phoneNumber + "/" + HLRPath
 
 	hlr := &HLR{}
-	if err := c.Request(hlr, "POST", path, requestData); err != nil {
+	if err := c.Request(hlr, http.MethodPost, path, requestData); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}
@@ -412,7 +412,7 @@ func (c *Client) LookupHLR(phoneNumber string, params *LookupParams) (*HLR, erro
 	path := LookupPath + "/" + phoneNumber + "/" + HLRPath + "?" + urlParams.Encode()
 
 	hlr := &HLR{}
-	if err := c.Request(hlr, "GET", path, nil); err != nil {
+	if err := c.Request(hlr, http.MethodGet, path, nil); err != nil {
 		if err == ErrResponse {
 			return hlr, err
 		}

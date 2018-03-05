@@ -3,6 +3,7 @@ package voice
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 	"time"
 
@@ -105,7 +106,7 @@ func (callflow *CallFlow) UnmarshalJSON(data []byte) error {
 // An error is returned if no such call flow exists or is accessible.
 func CallFlowByID(client *messagebird.Client, id string) (*CallFlow, error) {
 	callflow := &CallFlow{}
-	err := client.Request(callflow, "GET", "call-flows/"+id, nil)
+	err := client.Request(callflow, http.MethodGet, "call-flows/"+id, nil)
 	return callflow, err
 }
 
@@ -121,7 +122,7 @@ func (callflow *CallFlow) Create(client *messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := client.Request(&data, "POST", "call-flows/", callflow); err != nil {
+	if err := client.Request(&data, http.MethodPost, "call-flows/", callflow); err != nil {
 		return err
 	}
 	*callflow = data.Data[0]
@@ -135,7 +136,7 @@ func (callflow *CallFlow) Update(client *messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
-	if err := client.Request(&data, "PUT", "call-flows/"+callflow.ID, callflow); err != nil {
+	if err := client.Request(&data, http.MethodPut, "call-flows/"+callflow.ID, callflow); err != nil {
 		return err
 	}
 	*callflow = data.Data[0]
@@ -144,7 +145,7 @@ func (callflow *CallFlow) Update(client *messagebird.Client) error {
 
 // Delete deletes the CallFlow.
 func (callflow *CallFlow) Delete(client *messagebird.Client) error {
-	return client.Request(nil, "DELETE", "call-flows/"+callflow.ID, nil)
+	return client.Request(nil, http.MethodDelete, "call-flows/"+callflow.ID, nil)
 }
 
 // A CallFlowStep is a single step that can be taken in a callflow.

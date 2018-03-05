@@ -3,6 +3,7 @@ package voice
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
 	"time"
 
@@ -107,7 +108,7 @@ func (call *Call) UnmarshalJSON(data []byte) error {
 // An error is returned if no such call flow exists or is accessible.
 func CallByID(client *messagebird.Client, id string) (*Call, error) {
 	call := &Call{}
-	err := client.Request(call, "GET", "calls/"+id, nil)
+	err := client.Request(call, http.MethodGet, "calls/"+id, nil)
 	return call, err
 }
 
@@ -140,7 +141,7 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 		body.Webhook.Token = webhook.Token
 	}
 	call := &Call{}
-	err := client.Request(call, "POST", "calls/", body)
+	err := client.Request(call, http.MethodPost, "calls/", body)
 	return call, err
 }
 
@@ -148,7 +149,7 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 //
 // If the call is in progress, it hangs up all legs.
 func (call *Call) Delete(client *messagebird.Client) error {
-	return client.Request(nil, "DELETE", "calls/"+call.ID, nil)
+	return client.Request(nil, http.MethodDelete, "calls/"+call.ID, nil)
 }
 
 // Legs returns a paginator over all Legs associated with a call.
