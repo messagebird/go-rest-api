@@ -68,7 +68,10 @@ func New(AccessKey string) *Client {
 
 // Request is for internal use only and unstable.
 func (c *Client) Request(v interface{}, method, path string, data interface{}) error {
-	uri, err := url.Parse(Endpoint + "/" + path)
+	if !strings.HasPrefix(path, "https://") && !strings.HasPrefix(path, "http://") {
+		path = fmt.Sprintf("%s/%s", Endpoint, path)
+	}
+	uri, err := url.Parse(path)
 	if err != nil {
 		return err
 	}

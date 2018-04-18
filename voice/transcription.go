@@ -72,7 +72,7 @@ func (trans *Transcription) UnmarshalJSON(data []byte) error {
 //
 // This is a plain text file.
 func (trans *Transcription) Contents(client *messagebird.Client) (string, error) {
-	req, err := http.NewRequest(http.MethodGet, messagebird.Endpoint+trans.links["file"], nil)
+	req, err := http.NewRequest(http.MethodGet, apiRoot+trans.links["file"], nil)
 	if err != nil {
 		return "", err
 	}

@@ -66,7 +66,7 @@ func (wh *Webhook) UnmarshalJSON(data []byte) error {
 
 // Webhooks returns a paginator over all webhooks.
 func Webhooks(client *messagebird.Client) *Paginator {
-	return newPaginator(client, "webhooks/", reflect.TypeOf(Webhook{}))
+	return newPaginator(client, apiRoot+"/webhooks/", reflect.TypeOf(Webhook{}))
 }
 
 // CreateWebHook creates a new webhook the specified url that will be called
@@ -80,7 +80,7 @@ func CreateWebHook(client *messagebird.Client, url, token string) (*Webhook, err
 		Token: token,
 	}
 	wh := &Webhook{}
-	if err := client.Request(wh, http.MethodPost, "webhooks/", data); err != nil {
+	if err := client.Request(wh, http.MethodPost, apiRoot+"/webhooks/", data); err != nil {
 		return nil, err
 	}
 	return wh, nil
@@ -91,7 +91,7 @@ func (wh *Webhook) Update(client *messagebird.Client) error {
 	var data struct {
 		Data []Webhook `json:"data"`
 	}
-	if err := client.Request(&data, http.MethodPut, "webhooks/"+wh.ID, wh); err != nil {
+	if err := client.Request(&data, http.MethodPut, apiRoot+"/webhooks/"+wh.ID, wh); err != nil {
 		return err
 	}
 	*wh = data.Data[0]
@@ -100,5 +100,5 @@ func (wh *Webhook) Update(client *messagebird.Client) error {
 
 // Delete deletes a webhook.
 func (wh *Webhook) Delete(client *messagebird.Client) error {
-	return client.Request(nil, http.MethodDelete, "webhooks/"+wh.ID, nil)
+	return client.Request(nil, http.MethodDelete, apiRoot+"/webhooks/"+wh.ID, nil)
 }

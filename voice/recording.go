@@ -101,7 +101,7 @@ func (rec *Recording) Transcriptions(client *messagebird.Client) *Paginator {
 
 // DownloadFile streams the recorded WAV file.
 func (rec *Recording) DownloadFile(client *messagebird.Client) (io.ReadCloser, error) {
-	req, err := http.NewRequest(http.MethodGet, messagebird.Endpoint+rec.links["file"], nil)
+	req, err := http.NewRequest(http.MethodGet, apiRoot+rec.links["file"], nil)
 	if err != nil {
 		return nil, err
 	}

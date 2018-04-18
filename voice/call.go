@@ -108,13 +108,13 @@ func (call *Call) UnmarshalJSON(data []byte) error {
 // An error is returned if no such call flow exists or is accessible.
 func CallByID(client *messagebird.Client, id string) (*Call, error) {
 	call := &Call{}
-	err := client.Request(call, http.MethodGet, "calls/"+id, nil)
+	err := client.Request(call, http.MethodGet, apiRoot+"/calls/"+id, nil)
 	return call, err
 }
 
 // Calls returns a Paginator which iterates over all Calls.
 func Calls(client *messagebird.Client) *Paginator {
-	return newPaginator(client, "calls/", reflect.TypeOf(Call{}))
+	return newPaginator(client, apiRoot+"/calls/", reflect.TypeOf(Call{}))
 }
 
 // InitiateCall initiates an outbound call.
@@ -141,7 +141,7 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 		body.Webhook.Token = webhook.Token
 	}
 	call := &Call{}
-	err := client.Request(call, http.MethodPost, "calls/", body)
+	err := client.Request(call, http.MethodPost, apiRoot+"/calls/", body)
 	return call, err
 }
 
@@ -149,10 +149,10 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 //
 // If the call is in progress, it hangs up all legs.
 func (call *Call) Delete(client *messagebird.Client) error {
-	return client.Request(nil, http.MethodDelete, "calls/"+call.ID, nil)
+	return client.Request(nil, http.MethodDelete, apiRoot+"/calls/"+call.ID, nil)
 }
 
 // Legs returns a paginator over all Legs associated with a call.
 func (call *Call) Legs(client *messagebird.Client) *Paginator {
-	return newPaginator(client, fmt.Sprintf("calls/%s/legs", call.ID), reflect.TypeOf(Leg{}))
+	return newPaginator(client, fmt.Sprintf("%s/calls/%s/legs", apiRoot, call.ID), reflect.TypeOf(Leg{}))
 }
