@@ -76,17 +76,17 @@ func (call *Call) UnmarshalJSON(data []byte) error {
 	}
 	createdAt, err := time.Parse(time.RFC3339, raw.CreatedAt)
 	if err != nil {
-		return fmt.Errorf("unable to parse CallFlow CreatedAt: %v", err)
+		return fmt.Errorf("unable to parse Call CreatedAt: %v", err)
 	}
 	updatedAt, err := time.Parse(time.RFC3339, raw.UpdatedAt)
 	if err != nil {
-		return fmt.Errorf("unable to parse CallFlow UpdatedAt: %v", err)
+		return fmt.Errorf("unable to parse Call UpdatedAt: %v", err)
 	}
 	var endedAt *time.Time
 	if raw.EndedAt != "" {
 		eat, err := time.Parse(time.RFC3339, raw.EndedAt)
 		if err != nil {
-			return fmt.Errorf("unable to parse CallFlow EndedAt: %v", err)
+			return fmt.Errorf("unable to parse Call EndedAt: %v", err)
 		}
 		endedAt = &eat
 	}
