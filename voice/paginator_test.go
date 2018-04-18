@@ -10,7 +10,7 @@ func TestPaginatorStream(t *testing.T) {
 	type myStruct struct {
 		Val int
 	}
-	mbClient, stop := testClient(http.StatusOK, []byte(`{
+	mbClient, stop := testRequest(http.StatusOK, []byte(`{
 		"data": [
 			{ "Val": 1 },
 			{ "Val": 2 },

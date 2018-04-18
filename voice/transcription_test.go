@@ -7,7 +7,7 @@ import (
 
 func TestTranscriptionGetContents(t *testing.T) {
 	text := "the quick brown fox jumps over the lazy dog"
-	mbClient, stop := testClient(http.StatusOK, []byte(text))
+	mbClient, stop := testRequest(http.StatusOK, []byte(text))
 	defer stop()
 
 	trans := &Transcription{

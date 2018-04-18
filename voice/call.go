@@ -76,17 +76,17 @@ func (call *Call) UnmarshalJSON(data []byte) error {
 	}
 	createdAt, err := time.Parse(time.RFC3339, raw.CreatedAt)
 	if err != nil {
-		return fmt.Errorf("unable to parse CallFlow CreatedAt: %v", err)
+		return fmt.Errorf("unable to parse Call CreatedAt: %v", err)
 	}
 	updatedAt, err := time.Parse(time.RFC3339, raw.UpdatedAt)
 	if err != nil {
-		return fmt.Errorf("unable to parse CallFlow UpdatedAt: %v", err)
+		return fmt.Errorf("unable to parse Call UpdatedAt: %v", err)
 	}
 	var endedAt *time.Time
 	if raw.EndedAt != "" {
 		eat, err := time.Parse(time.RFC3339, raw.EndedAt)
 		if err != nil {
-			return fmt.Errorf("unable to parse CallFlow EndedAt: %v", err)
+			return fmt.Errorf("unable to parse Call EndedAt: %v", err)
 		}
 		endedAt = &eat
 	}
@@ -107,14 +107,18 @@ func (call *Call) UnmarshalJSON(data []byte) error {
 //
 // An error is returned if no such call flow exists or is accessible.
 func CallByID(client *messagebird.Client, id string) (*Call, error) {
-	call := &Call{}
-	err := client.Request(call, http.MethodGet, "calls/"+id, nil)
-	return call, err
+	var resp struct {
+		Data []Call `json:"data"`
+	}
+	if err := client.Request(&resp, http.MethodGet, apiRoot+"/calls/"+id, nil); err != nil {
+		return nil, err
+	}
+	return &resp.Data[0], nil
 }
 
 // Calls returns a Paginator which iterates over all Calls.
 func Calls(client *messagebird.Client) *Paginator {
-	return newPaginator(client, "calls/", reflect.TypeOf(Call{}))
+	return newPaginator(client, apiRoot+"/calls/", reflect.TypeOf(Call{}))
 }
 
 // InitiateCall initiates an outbound call.
@@ -140,19 +144,23 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 		body.Webhook.URL = webhook.URL
 		body.Webhook.Token = webhook.Token
 	}
-	call := &Call{}
-	err := client.Request(call, http.MethodPost, "calls/", body)
-	return call, err
+	var resp struct {
+		Data []Call `json:"data"`
+	}
+	if err := client.Request(&resp, http.MethodPost, apiRoot+"/calls", body); err != nil {
+		return nil, err
+	}
+	return &resp.Data[0], nil
 }
 
 // Delete deletes the Call.
 //
 // If the call is in progress, it hangs up all legs.
 func (call *Call) Delete(client *messagebird.Client) error {
-	return client.Request(nil, http.MethodDelete, "calls/"+call.ID, nil)
+	return client.Request(nil, http.MethodDelete, apiRoot+"/calls/"+call.ID, nil)
 }
 
 // Legs returns a paginator over all Legs associated with a call.
 func (call *Call) Legs(client *messagebird.Client) *Paginator {
-	return newPaginator(client, fmt.Sprintf("calls/%s/legs", call.ID), reflect.TypeOf(Leg{}))
+	return newPaginator(client, fmt.Sprintf("%s/calls/%s/legs", apiRoot, call.ID), reflect.TypeOf(Leg{}))
 }
