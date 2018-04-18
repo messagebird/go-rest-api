@@ -140,9 +140,13 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 		body.Webhook.URL = webhook.URL
 		body.Webhook.Token = webhook.Token
 	}
-	call := &Call{}
-	err := client.Request(call, http.MethodPost, apiRoot+"/calls/", body)
-	return call, err
+	var resp struct {
+		Data []Call `json:"data"`
+	}
+	if err := client.Request(&resp, http.MethodPost, apiRoot+"/calls", body); err != nil {
+		return nil, err
+	}
+	return &resp.Data[0], nil
 }
 
 // Delete deletes the Call.

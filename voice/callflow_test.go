@@ -131,7 +131,7 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 }
 
 func TestCreateCallFlow(t *testing.T) {
-	mbClient, stop := testClient(http.StatusOK, []byte(`{
+	mbClient, stop := testRequest(http.StatusOK, []byte(`{
 		"data": [
 			{
 				"id": "the-id",
