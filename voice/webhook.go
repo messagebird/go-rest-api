@@ -79,11 +79,13 @@ func CreateWebHook(client *messagebird.Client, url, token string) (*Webhook, err
 		URL:   url,
 		Token: token,
 	}
-	wh := &Webhook{}
-	if err := client.Request(wh, http.MethodPost, apiRoot+"/webhooks/", data); err != nil {
+	var resp struct {
+		Data []Webhook `json:"data"`
+	}
+	if err := client.Request(&resp, http.MethodPost, apiRoot+"/webhooks/", data); err != nil {
 		return nil, err
 	}
-	return wh, nil
+	return &resp.Data[0], nil
 }
 
 // Update syncs hte local state of a webhook to the MessageBird API.

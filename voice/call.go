@@ -107,9 +107,13 @@ func (call *Call) UnmarshalJSON(data []byte) error {
 //
 // An error is returned if no such call flow exists or is accessible.
 func CallByID(client *messagebird.Client, id string) (*Call, error) {
-	call := &Call{}
-	err := client.Request(call, http.MethodGet, apiRoot+"/calls/"+id, nil)
-	return call, err
+	var resp struct {
+		Data []Call `json:"data"`
+	}
+	if err := client.Request(&resp, http.MethodGet, apiRoot+"/calls/"+id, nil); err != nil {
+		return nil, err
+	}
+	return &resp.Data[0], nil
 }
 
 // Calls returns a Paginator which iterates over all Calls.

@@ -2,7 +2,6 @@ package voice
 
 import (
 	"encoding/json"
-	"net/http"
 	"reflect"
 	"testing"
 	"time"
@@ -131,25 +130,86 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 }
 
 func TestCreateCallFlow(t *testing.T) {
-	mbClient, stop := testRequest(http.StatusOK, []byte(`{
-		"data": [
-			{
-				"id": "the-id",
-				"title": "the-title",
-				"createdAt": "2018-01-29T13:46:06Z",
-				"updatedAt": "2018-01-30T16:00:34Z"
-			}
-		]
-	}`))
-	defer stop()
-	newCf := &CallFlow{}
+	mbClient, ok := testClient(t)
+	if !ok {
+		t.SkipNow()
+	}
+
+	newCf := &CallFlow{
+		Title: "the-title",
+		Steps: []CallFlowStep{
+			&CallFlowSayStep{
+				Payload:  "Hello",
+				Language: "en-US",
+				Voice:    "male",
+			},
+			&CallFlowPauseStep{
+				Length: time.Second,
+			},
+		},
+	}
 	if err := newCf.Create(mbClient); err != nil {
 		t.Fatal(err)
 	}
-	if newCf.ID != "the-id" {
-		t.Fatalf("Unexpected ID: %q", newCf.ID)
-	}
 	if newCf.Title != "the-title" {
 		t.Fatalf("Unexpected Title: %q", newCf.Title)
+	}
+	if len(newCf.Steps) != 2 {
+		t.Fatalf("Unexpected Title: %q", newCf.Title)
+	}
+}
+
+func TestCallFlowByID(t *testing.T) {
+	mbClient, ok := testClient(t)
+	if !ok {
+		t.SkipNow()
+	}
+
+	newCf := &CallFlow{
+		Title: "the-title",
+		Steps: []CallFlowStep{
+			&CallFlowHangupStep{},
+		},
+	}
+	if err := newCf.Create(mbClient); err != nil {
+		t.Fatal(err)
+	}
+
+	fetchedCf, err := CallFlowByID(mbClient, newCf.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fetchedCf.ID != newCf.ID {
+		t.Fatalf("mismatched fetched IDs: exp %q, got %q", newCf.ID, fetchedCf.ID)
+	}
+}
+
+func TestCallFlowList(t *testing.T) {
+	mbClient, ok := testClient(t)
+	if !ok {
+		t.SkipNow()
+	}
+
+	for _, c := range []string{"foo", "bar", "baz"} {
+		newCf := &CallFlow{
+			Title: c,
+			Steps: []CallFlowStep{
+				&CallFlowHangupStep{},
+			},
+		}
+		if err := newCf.Create(mbClient); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	i := 0
+	for cf := range CallFlows(mbClient).Stream() {
+		if err, ok := cf.(error); ok {
+			t.Fatal(err)
+		}
+		i++
+	}
+	if i == 0 {
+		t.Fatal("no callflows were fetched")
 	}
 }
