@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -119,16 +120,19 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 	if response.StatusCode == 500 {
 		return ErrUnexpectedResponse
 	}
-
-	if err = json.Unmarshal(responseBody, &v); err != nil {
-		return err
-	}
-
 	// Status codes 200 and 201 are indicative of being able to convert the
 	// response body to the struct that was specified.
 	if response.StatusCode == 200 || response.StatusCode == 201 {
+		if err := json.Unmarshal(responseBody, &v); err != nil {
+			return fmt.Errorf("could not decode response JSON, %s: %v", string(responseBody), err)
+		}
 		return nil
 	}
+
+	// We're dealing with an API error here. try to decode it, but don't do
+	// anything with the error. This is because not all values of `v` have
+	// `Error` properties and decoding could fail.
+	json.Unmarshal(responseBody, &v)
 
 	// Anything else than a 200/201/500 should be a JSON error.
 	return ErrResponse
