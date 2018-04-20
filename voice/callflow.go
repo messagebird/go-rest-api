@@ -21,6 +21,12 @@ type CallFlow struct {
 	// audio file.
 	Steps []CallFlowStep
 
+	// Record instructs the Voice system to record the entire call.
+	//
+	// Note that this is distinct from the Record CallFlow step which records
+	// only a single message from the callee.
+	Record bool
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -29,6 +35,7 @@ type jsonCallFlow struct {
 	ID        string         `json:"id,omitempty"`
 	Title     string         `json:"title"`
 	Steps     []CallFlowStep `json:"steps"`
+	Record    bool           `json:"record"`
 	CreatedAt string         `json:"createdAt"`
 	UpdatedAt string         `json:"updatedAt"`
 }
@@ -40,6 +47,7 @@ func (callflow CallFlow) MarshalJSON() ([]byte, error) {
 		Title: callflow.Title,
 		// Steps are able to serialize themselves to JSON.
 		Steps:     callflow.Steps,
+		Record:    callflow.Record,
 		CreatedAt: callflow.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: callflow.UpdatedAt.Format(time.RFC3339),
 	}
@@ -95,6 +103,7 @@ func (callflow *CallFlow) UnmarshalJSON(data []byte) error {
 		ID:        raw.ID,
 		Title:     raw.Title,
 		Steps:     raw.Steps,
+		Record:    raw.Record,
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
 	}
@@ -399,6 +408,9 @@ func (step *CallFlowPauseStep) UnmarshalJSON(data []byte) error {
 
 // A CallFlowRecordStep initiates an audio recording during a call, e.g. for
 // capturing a user response.
+//
+// Note that this is distinct from CallFlow.Record which records the entire
+// call.
 type CallFlowRecordStep struct {
 	CallFlowStepBase
 
