@@ -96,9 +96,9 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 
 	if c.DebugLog != nil {
 		if data != nil {
-			log.Printf("HTTP REQUEST: %s %s %s", method, uri.String(), jsonEncoded)
+			c.DebugLog.Printf("HTTP REQUEST: %s %s %s", method, uri.String(), jsonEncoded)
 		} else {
-			log.Printf("HTTP REQUEST: %s %s", method, uri.String())
+			c.DebugLog.Printf("HTTP REQUEST: %s %s", method, uri.String())
 		}
 	}
 
@@ -115,7 +115,7 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 	}
 
 	if c.DebugLog != nil {
-		log.Printf("HTTP RESPONSE: %s", string(responseBody))
+		c.DebugLog.Printf("HTTP RESPONSE: %s", string(responseBody))
 	}
 
 	// Status code 500 is a server error and means nothing can be done at this
