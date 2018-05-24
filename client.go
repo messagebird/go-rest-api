@@ -66,9 +66,9 @@ type Client struct {
 }
 
 // New creates a new MessageBird client object.
-func New(AccessKey string) *Client {
+func New(accessKey string) *Client {
 	return &Client{
-		AccessKey: AccessKey,
+		AccessKey: accessKey,
 		HTTPClient: &http.Client{
 			Timeout: httpClientTimeout,
 		},
