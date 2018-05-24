@@ -20,6 +20,7 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
+	"time"
 )
 
 const (
@@ -28,6 +29,9 @@ const (
 
 	// Endpoint points you to MessageBird REST API.
 	Endpoint = "https://rest.messagebird.com"
+
+	// httpClientTimeout is used to limit http.Client waiting time.
+	httpClientTimeout = 15 * time.Second
 )
 
 const (
@@ -63,7 +67,12 @@ type Client struct {
 
 // New creates a new MessageBird client object.
 func New(AccessKey string) *Client {
-	return &Client{AccessKey: AccessKey, HTTPClient: &http.Client{}}
+	return &Client{
+		AccessKey: AccessKey,
+		HTTPClient: &http.Client{
+			Timeout: httpClientTimeout,
+		},
+	}
 }
 
 // Request is for internal use only and unstable.
