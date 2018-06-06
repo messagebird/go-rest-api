@@ -45,10 +45,8 @@ func startFauxServer() {
 		},
 	}
 
-	mbClient = &Client{
-		AccessKey:  "test_gshuPaZoeEG6ovbc8M79w0QyM",
-		HTTPClient: &http.Client{Transport: transport},
-	}
+	mbClient = NewV2("test_gshuPaZoeEG6ovbc8M79w0QyM")
+	mbClient.HTTPClient = &http.Client{Transport: transport}
 
 	if testing.Verbose() {
 		mbClient.DebugLog = log.New(os.Stdout, "DEBUG", log.Lshortfile)

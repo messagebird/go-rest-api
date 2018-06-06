@@ -28,7 +28,6 @@ type Message struct {
 	ScheduledDatetime *time.Time
 	CreatedDatetime   *time.Time
 	Recipients        Recipients
-	Errors            []Error
 }
 
 // MessageList represents a list of Messages.

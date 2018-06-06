@@ -124,22 +124,23 @@ func TestNewHLR(t *testing.T) {
 
 func TestHLRError(t *testing.T) {
 	SetServerResponse(http.StatusMethodNotAllowed, accessKeyErrorObject)
+	_, err := mbClient.HLR("dummy_hlr_id")
 
-	hlr, err := mbClient.HLR("dummy_hlr_id")
-	if err != ErrResponse {
-		t.Fatalf("Expected ErrResponse to be returned, instead I got %s", err)
+	errorResponse, ok := err.(ErrorResponse)
+	if !ok {
+		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
 	}
 
-	if len(hlr.Errors) != 1 {
-		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(hlr.Errors))
+	if len(errorResponse.Errors) != 1 {
+		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(errorResponse.Errors))
 	}
 
-	if hlr.Errors[0].Code != 2 {
-		t.Errorf("Unexpected error code: %d, expected: 2", hlr.Errors[0].Code)
+	if errorResponse.Errors[0].Code != 2 {
+		t.Errorf("Unexpected error code: %d, expected: 2", errorResponse.Errors[0].Code)
 	}
 
-	if hlr.Errors[0].Parameter != "access_key" {
-		t.Errorf("Unexpected error parameter: %s, expected: access_key", hlr.Errors[0].Parameter)
+	if errorResponse.Errors[0].Parameter != "access_key" {
+		t.Errorf("Unexpected error parameter: %s, expected: access_key", errorResponse.Errors[0].Parameter)
 	}
 }
 

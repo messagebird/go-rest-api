@@ -114,10 +114,6 @@ func assertMessageObject(t *testing.T, message *Message) {
 	if message.Recipients.Items[0].StatusDatetime == nil || message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339) != "2015-01-05T10:02:59Z" {
 		t.Errorf("Unexpected datetime status for message recipient: %s, expected: 2015-01-05T10:02:59Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 	}
-
-	if len(message.Errors) != 0 {
-		t.Errorf("Unexpected number of errors in message: %d, expected: 0", len(message.Errors))
-	}
 }
 
 func TestNewMessage(t *testing.T) {
@@ -133,22 +129,23 @@ func TestNewMessage(t *testing.T) {
 
 func TestNewMessageError(t *testing.T) {
 	SetServerResponse(http.StatusMethodNotAllowed, accessKeyErrorObject)
+	_, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", nil)
 
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", nil)
-	if err != ErrResponse {
-		t.Fatalf("Expected ErrResponse to be returned, instead I got %s", err)
+	errorResponse, ok := err.(ErrorResponse)
+	if !ok {
+		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
 	}
 
-	if len(message.Errors) != 1 {
-		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(message.Errors))
+	if len(errorResponse.Errors) != 1 {
+		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(errorResponse.Errors))
 	}
 
-	if message.Errors[0].Code != 2 {
-		t.Errorf("Unexpected error code: %d, expected: 2", message.Errors[0].Code)
+	if errorResponse.Errors[0].Code != 2 {
+		t.Errorf("Unexpected error code: %d, expected: 2", errorResponse.Errors[0].Code)
 	}
 
-	if message.Errors[0].Parameter != "access_key" {
-		t.Errorf("Unexpected error parameter: %s, expected: access_key", message.Errors[0].Parameter)
+	if errorResponse.Errors[0].Parameter != "access_key" {
+		t.Errorf("Unexpected error parameter: %s, expected: access_key", errorResponse.Errors[0].Parameter)
 	}
 }
 

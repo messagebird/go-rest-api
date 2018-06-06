@@ -17,7 +17,7 @@ type HLR struct {
 	Details         map[string]interface{}
 	CreatedDatetime *time.Time
 	StatusDatetime  *time.Time
-	Errors          []Error
+	Errors          []Error // Deprecated: errors now returned at ErrorResponse instance as error.
 }
 
 // HLRList represents a list of HLR requests.

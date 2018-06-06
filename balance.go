@@ -5,5 +5,5 @@ type Balance struct {
 	Payment string
 	Type    string
 	Amount  float32
-	Errors  []Error
+	Errors  []Error // Deprecated: errors now returned at ErrorResponse instance as error.
 }
