@@ -69,6 +69,10 @@ type Client struct {
 }
 
 // NewV2 creates a new MessageBird client object.
+// If the request to MessageBird API will return an
+// error, it will be returned as ErrorResponse instance
+// typed as the error, containing all codes,
+// descriptions and properies.
 func NewV2(accessKey string) *Client {
 	return &Client{
 		AccessKey: accessKey,
@@ -80,6 +84,8 @@ func NewV2(accessKey string) *Client {
 }
 
 // New creates a new MessageBird client object.
+// If the request to MessageBird API will return
+// and error, it will simply return ErrResponse.
 // Deprecated: use NewV2 until v2 release.
 func New(accessKey string) *Client {
 	return &Client{
@@ -89,16 +95,6 @@ func New(accessKey string) *Client {
 		},
 		request: requestV1,
 	}
-}
-
-// ErrorResponse represents errored API response.
-type ErrorResponse struct {
-	Errors []Error `json:"errors"`
-}
-
-// Error implements error interface.
-func (r ErrorResponse) Error() string {
-	return errorMessage
 }
 
 // Request is for internal use only and unstable.
