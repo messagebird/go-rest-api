@@ -24,10 +24,9 @@ func testRequest(status int, body []byte) (*messagebird.Client, func()) {
 			return tls.Dial(netw, addr, &tls.Config{InsecureSkipVerify: true})
 		},
 	}
-	mbClient := &messagebird.Client{
-		AccessKey:  "test_gshuPaZoeEG6ovbc8M79w0QyM",
-		HTTPClient: &http.Client{Transport: transport},
-	}
+	mbClient := messagebird.NewV2("test_gshuPaZoeEG6ovbc8M79w0QyM")
+	mbClient.HTTPClient = &http.Client{Transport: transport}
+
 	if testing.Verbose() {
 		mbClient.DebugLog = log.New(os.Stdout, "DEBUG", log.Lshortfile)
 	}

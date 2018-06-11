@@ -109,19 +109,23 @@ func TestNewMMSMessageError(t *testing.T) {
 		Reference:         "",
 		ScheduledDatetime: time.Now(),
 	}
-	mmsMessage, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
+	_, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
 
-	if err != ErrResponse {
-		t.Fatalf("Expected ErrResponse to be returned, instead I got %s", err)
+	errorResponse, ok := err.(ErrorResponse)
+	if !ok {
+		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
 	}
-	if len(mmsMessage.Errors) != 1 {
-		t.Fatalf("Unexpected number of errors: %d", len(mmsMessage.Errors))
+
+	if len(errorResponse.Errors) != 1 {
+		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(errorResponse.Errors))
 	}
-	if mmsMessage.Errors[0].Code != 2 {
-		t.Errorf("Unexpected error code: %d", mmsMessage.Errors[0].Code)
+
+	if errorResponse.Errors[0].Code != 2 {
+		t.Errorf("Unexpected error code: %d, expected: 2", errorResponse.Errors[0].Code)
 	}
-	if mmsMessage.Errors[0].Parameter != "access_key" {
-		t.Errorf("Unexpected error parameter %s", mmsMessage.Errors[0].Parameter)
+
+	if errorResponse.Errors[0].Parameter != "access_key" {
+		t.Errorf("Unexpected error parameter: %s, expected: access_key", errorResponse.Errors[0].Parameter)
 	}
 }
 

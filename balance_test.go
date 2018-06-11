@@ -35,21 +35,22 @@ func TestBalance(t *testing.T) {
 
 func TestBalanceError(t *testing.T) {
 	SetServerResponse(405, accessKeyErrorObject)
+	_, err := mbClient.Balance()
 
-	balance, err := mbClient.Balance()
-	if err != ErrResponse {
-		t.Fatalf("Expected ErrResponse to be returned, instead I got %s", err)
+	errorResponse, ok := err.(ErrorResponse)
+	if !ok {
+		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
 	}
 
-	if len(balance.Errors) != 1 {
-		t.Fatalf("Unexpected number of errors: %d", len(balance.Errors))
+	if len(errorResponse.Errors) != 1 {
+		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(errorResponse.Errors))
 	}
 
-	if balance.Errors[0].Code != 2 {
-		t.Errorf("Unexpected error code: %d", balance.Errors[0].Code)
+	if errorResponse.Errors[0].Code != 2 {
+		t.Errorf("Unexpected error code: %d, expected: 2", errorResponse.Errors[0].Code)
 	}
 
-	if balance.Errors[0].Parameter != "access_key" {
-		t.Errorf("Unexpected error parameter: %s", balance.Errors[0].Parameter)
+	if errorResponse.Errors[0].Parameter != "access_key" {
+		t.Errorf("Unexpected error parameter: %s, expected: access_key", errorResponse.Errors[0].Parameter)
 	}
 }

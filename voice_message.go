@@ -20,7 +20,7 @@ type VoiceMessage struct {
 	ScheduledDatetime *time.Time
 	CreatedDatetime   *time.Time
 	Recipients        Recipients
-	Errors            []Error
+	Errors            []Error // Deprecated: errors now returned at ErrorResponse instance as error.
 }
 
 // VoiceMessageList represents a list of VoiceMessages.
