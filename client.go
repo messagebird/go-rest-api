@@ -47,8 +47,6 @@ const (
 	VerifyPath = "verify"
 	// LookupPath represents the path to the Lookup resource.
 	LookupPath = "lookup"
-
-	errorMessage = "The MessageBird API returned an error"
 )
 
 var (
