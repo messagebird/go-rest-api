@@ -25,6 +25,7 @@ type VerifyParams struct {
 	Type        string
 	Template    string
 	DataCoding  string
+	ReportURL   string
 	Voice       string
 	Language    string
 	Timeout     int
@@ -38,6 +39,7 @@ type verifyRequest struct {
 	Type        string `json:"type,omitempty"`
 	Template    string `json:"template,omitempty"`
 	DataCoding  string `json:"dataCoding,omitempty"`
+	ReportURL   string `json:"reportUrl,omitempty"`
 	Voice       string `json:"voice,omitempty"`
 	Language    string `json:"language,omitempty"`
 	Timeout     int    `json:"timeout,omitempty"`
@@ -62,6 +64,7 @@ func requestDataForVerify(recipient string, params *VerifyParams) (*verifyReques
 	request.Type = params.Type
 	request.Template = params.Template
 	request.DataCoding = params.DataCoding
+	request.ReportURL = params.ReportURL
 	request.Voice = params.Voice
 	request.Language = params.Language
 	request.Timeout = params.Timeout
