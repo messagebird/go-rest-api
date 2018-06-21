@@ -144,6 +144,7 @@ func TestRequestDataForVerify(t *testing.T) {
 		Type:        "sms",
 		Template:    "Your code is: %token",
 		DataCoding:  "plain",
+		ReportURL:   "http://example.com/report",
 		Voice:       "male",
 		Language:    "en-gb",
 		Timeout:     20,
@@ -169,6 +170,9 @@ func TestRequestDataForVerify(t *testing.T) {
 	}
 	if requestData.DataCoding != "plain" {
 		t.Errorf("Unexpected data coding: %s, expected: plain", requestData.DataCoding)
+	}
+	if requestData.ReportURL != "http://example.com/report" {
+		t.Errorf("Unexpected report URL: %s, expected: http://example.com/repot", requestData.ReportURL)
 	}
 	if requestData.Voice != "male" {
 		t.Errorf("Unexpected voice: %s, expected: male", requestData.Voice)

@@ -25,6 +25,7 @@ type Message struct {
 	TypeDetails       TypeDetails
 	DataCoding        string
 	MClass            int
+	ReportURL         string
 	ScheduledDatetime *time.Time
 	CreatedDatetime   *time.Time
 	Recipients        Recipients
@@ -49,6 +50,7 @@ type MessageParams struct {
 	Gateway           int
 	TypeDetails       TypeDetails
 	DataCoding        string
+	ReportURL         string
 	ScheduledDatetime time.Time
 }
 
@@ -72,6 +74,7 @@ type messageRequest struct {
 	TypeDetails       TypeDetails `json:"typeDetails,omitempty"`
 	DataCoding        string      `json:"datacoding,omitempty"`
 	MClass            int         `json:"mclass,omitempty"`
+	ReportURL         string      `json:"reportUrl,omitempty"`
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
 }
 
@@ -112,6 +115,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 	request.Gateway = params.Gateway
 	request.TypeDetails = params.TypeDetails
 	request.DataCoding = params.DataCoding
+	request.ReportURL = params.ReportURL
 
 	return request, nil
 }
