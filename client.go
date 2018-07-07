@@ -492,7 +492,7 @@ func (c *Client) Lookup(phoneNumber string, params *LookupParams) (*Lookup, erro
 	path := LookupPath + "/" + phoneNumber + "?" + urlParams.Encode()
 
 	lookup := &Lookup{}
-	if err := c.Request(lookup, http.MethodPost, path, nil); err != nil {
+	if err := c.Request(lookup, http.MethodGet, path, nil); err != nil {
 		if err == ErrResponse {
 			return lookup, err
 		}
