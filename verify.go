@@ -15,7 +15,6 @@ type Verify struct {
 	CreatedDatetime    *time.Time
 	ValidUntilDatetime *time.Time
 	Recipient          int
-	Errors             []Error // Deprecated: errors now returned at ErrorResponse instance as error.
 }
 
 // VerifyParams handles optional verification parameters.

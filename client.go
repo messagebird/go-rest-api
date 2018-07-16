@@ -72,12 +72,6 @@ func New(accessKey string) *Client {
 	}
 }
 
-// NewV2 creates a new MessageBird client object.
-// Deprecated: use New factory instead.
-func NewV2(accessKey string) *Client {
-	return New(accessKey)
-}
-
 // Request is for internal use only and unstable.
 func (c *Client) Request(v interface{}, method, path string, data interface{}) error {
 	if !strings.HasPrefix(path, "https://") && !strings.HasPrefix(path, "http://") {

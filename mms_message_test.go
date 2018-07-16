@@ -94,8 +94,10 @@ func TestNewMMSMessage(t *testing.T) {
 	if mmsMessage.Recipients.Items[0].StatusDatetime == nil || mmsMessage.Recipients.Items[0].StatusDatetime.Format(time.RFC3339) != "2017-10-20T12:50:28Z" {
 		t.Errorf("Unexpected datetime status for mmsMessage recipient: %s", mmsMessage.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 	}
-	if len(mmsMessage.Errors) != 0 {
-		t.Errorf("Unexpected number of errors in mmsMessage: %d", len(mmsMessage.Errors))
+
+	errorResponse, ok := err.(ErrorResponse)
+	if ok {
+		t.Errorf("Unexpected error returned with mmsMessage %#v", errorResponse)
 	}
 }
 

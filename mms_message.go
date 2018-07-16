@@ -20,7 +20,6 @@ type MMSMessage struct {
 	ScheduledDatetime *time.Time
 	CreatedDatetime   *time.Time
 	Recipients        Recipients
-	Errors            []Error // Deprecated: errors now returned at ErrorResponse instance as error
 }
 
 // MMSMessageParams represents the parameters that can be supplied when creating
