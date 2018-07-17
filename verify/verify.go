@@ -49,8 +49,8 @@ type verifyRequest struct {
 	TokenLength int    `json:"tokenLength,omitempty"`
 }
 
-// VerifyPath represents the path to the Verify resource.
-const VerifyPath = "verify"
+// path represents the path to the Verify resource.
+const path = "verify"
 
 // Create generates a new One-Time-Password for one recipient.
 func Create(c *messagebird.Client, recipient string, params *VerifyParams) (*Verify, error) {
@@ -60,7 +60,7 @@ func Create(c *messagebird.Client, recipient string, params *VerifyParams) (*Ver
 	}
 
 	verify := &Verify{}
-	if err := c.Request(verify, http.MethodPost, VerifyPath, requestData); err != nil {
+	if err := c.Request(verify, http.MethodPost, path, requestData); err != nil {
 		return nil, err
 	}
 
@@ -72,10 +72,10 @@ func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 	params := &url.Values{}
 	params.Set("token", token)
 
-	path := VerifyPath + "/" + id + "?" + params.Encode()
+	pathWithParams := path + "/" + id + "?" + params.Encode()
 
 	verify := &Verify{}
-	if err := c.Request(verify, http.MethodGet, path, nil); err != nil {
+	if err := c.Request(verify, http.MethodGet, pathWithParams, nil); err != nil {
 		return nil, err
 	}
 

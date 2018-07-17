@@ -80,13 +80,13 @@ type messageRequest struct {
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
 }
 
-// MessagePath represents the path to the Message resource.
-const MessagePath = "messages"
+// path represents the path to the Message resource.
+const path = "messages"
 
 // Read retrieves the information of an existing Message.
 func Read(c *messagebird.Client, id string) (*Message, error) {
 	message := &Message{}
-	if err := c.Request(message, http.MethodGet, MessagePath+"/"+id, nil); err != nil {
+	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -101,7 +101,7 @@ func List(c *messagebird.Client, msgListParams *MessageListParams) (*MessageList
 		return messageList, err
 	}
 
-	if err := c.Request(messageList, http.MethodGet, MessagePath+"?"+params.Encode(), nil); err != nil {
+	if err := c.Request(messageList, http.MethodGet, path+"?"+params.Encode(), nil); err != nil {
 		return nil, err
 	}
 
@@ -116,7 +116,7 @@ func Create(c *messagebird.Client, originator string, recipients []string, body 
 	}
 
 	message := &Message{}
-	if err := c.Request(message, http.MethodPost, MessagePath, requestData); err != nil {
+	if err := c.Request(message, http.MethodPost, path, requestData); err != nil {
 		return nil, err
 	}
 

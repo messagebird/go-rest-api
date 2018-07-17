@@ -38,14 +38,14 @@ type hlrRequest struct {
 	Reference string `json:"reference"`
 }
 
-// HLRPath represents the path to the HLR resource.
-const HLRPath = "hlr"
+// path represents the path to the HLR resource.
+const path = "hlr"
 
 // Read looks up an existing HLR object for the specified id that was previously
 // created by the NewHLR function.
 func Read(c *messagebird.Client, id string) (*HLR, error) {
 	hlr := &HLR{}
-	if err := c.Request(hlr, http.MethodGet, HLRPath+"/"+id, nil); err != nil {
+	if err := c.Request(hlr, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -55,7 +55,7 @@ func Read(c *messagebird.Client, id string) (*HLR, error) {
 // List all HLR objects that were previously created by the Create function.
 func List(c *messagebird.Client) (*HLRList, error) {
 	hlrList := &HLRList{}
-	if err := c.Request(hlrList, http.MethodGet, HLRPath, nil); err != nil {
+	if err := c.Request(hlrList, http.MethodGet, path, nil); err != nil {
 		return nil, err
 	}
 
@@ -71,7 +71,7 @@ func Create(c *messagebird.Client, msisdn string, reference string) (*HLR, error
 
 	hlr := &HLR{}
 
-	if err := c.Request(hlr, http.MethodPost, HLRPath, requestData); err != nil {
+	if err := c.Request(hlr, http.MethodPost, path, requestData); err != nil {
 		return nil, err
 	}
 

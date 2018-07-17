@@ -38,13 +38,16 @@ type lookupRequest struct {
 	Reference   string `json:"reference,omitempty"`
 }
 
-// LookupPath represents the path to the Lookup resource.
-const LookupPath = "lookup"
+// hlrPath represents the path to the HLR resource within the lookup resource.
+const hlrPath = "hlr"
+
+// lookupPath represents the path to the Lookup resource.
+const lookupPath = "lookup"
 
 // Create performs a new lookup for the specified number.
 func Create(c *messagebird.Client, phoneNumber string, params *LookupParams) (*Lookup, error) {
 	urlParams := paramsForLookup(params)
-	path := LookupPath + "/" + phoneNumber + "?" + urlParams.Encode()
+	path := lookupPath + "/" + phoneNumber + "?" + urlParams.Encode()
 
 	lookup := &Lookup{}
 	if err := c.Request(lookup, http.MethodPost, path, nil); err != nil {
@@ -57,7 +60,7 @@ func Create(c *messagebird.Client, phoneNumber string, params *LookupParams) (*L
 // CreateHLR creates a new HLR lookup for the specified number.
 func CreateHLR(c *messagebird.Client, phoneNumber string, params *LookupParams) (*hlr.HLR, error) {
 	requestData := requestDataForLookup(params)
-	path := LookupPath + "/" + phoneNumber + "/" + hlr.HLRPath
+	path := lookupPath + "/" + phoneNumber + "/" + hlrPath
 
 	hlr := &hlr.HLR{}
 	if err := c.Request(hlr, http.MethodPost, path, requestData); err != nil {
@@ -70,7 +73,7 @@ func CreateHLR(c *messagebird.Client, phoneNumber string, params *LookupParams) 
 // ReadHLR performs a HLR lookup for the specified number.
 func ReadHLR(c *messagebird.Client, phoneNumber string, params *LookupParams) (*hlr.HLR, error) {
 	urlParams := paramsForLookup(params)
-	path := LookupPath + "/" + phoneNumber + "/" + hlr.HLRPath + "?" + urlParams.Encode()
+	path := lookupPath + "/" + phoneNumber + "/" + hlrPath + "?" + urlParams.Encode()
 
 	hlr := &hlr.HLR{}
 	if err := c.Request(hlr, http.MethodGet, path, nil); err != nil {

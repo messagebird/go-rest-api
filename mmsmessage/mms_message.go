@@ -35,13 +35,13 @@ type MMSMessageParams struct {
 	ScheduledDatetime time.Time
 }
 
-// MMSPath represents the path to the MMS resource.
-const MMSPath = "mms"
+// path represents the path to the MMS resource.
+const path = "mms"
 
 // Read retrieves the information of an existing MmsMessage.
 func Read(c *messagebird.Client, id string) (*MMSMessage, error) {
 	mmsMessage := &MMSMessage{}
-	if err := c.Request(mmsMessage, http.MethodGet, MMSPath+"/"+id, nil); err != nil {
+	if err := c.Request(mmsMessage, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -59,7 +59,7 @@ func Create(c *messagebird.Client, originator string, recipients []string, msgPa
 	params.Set("recipients", strings.Join(recipients, ","))
 
 	mmsMessage := &MMSMessage{}
-	if err := c.Request(mmsMessage, http.MethodPost, MMSPath, params); err != nil {
+	if err := c.Request(mmsMessage, http.MethodPost, path, params); err != nil {
 		return nil, err
 	}
 
