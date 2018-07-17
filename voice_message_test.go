@@ -98,17 +98,16 @@ func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
 		t.Errorf("Unexpected datetime status for voice message recipient: %s, expected: 2015-01-05T16:11:24Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 	}
 
-	if len(message.Errors) != 0 {
-		t.Errorf("Unexpected number of errors in voice message: %d, expected: 0", len(message.Errors))
-	}
 }
 
 func TestNewVoiceMessage(t *testing.T) {
 	SetServerResponse(http.StatusOK, voiceMessageObject)
 
 	message, err := mbClient.NewVoiceMessage([]string{"31612345678"}, "Hello World", nil)
-	if err != nil {
-		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
+
+	errorResponse, ok := err.(ErrorResponse)
+	if ok {
+		t.Errorf("Unexpected error returned with voiceMessage %#v", errorResponse)
 	}
 
 	assertVoiceMessageObject(t, message)
