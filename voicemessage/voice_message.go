@@ -58,13 +58,13 @@ type voiceMessageRequest struct {
 	ScheduledDatetime string   `json:"scheduledDatetime,omitempty"`
 }
 
-// path represents the path to the VoiceMessage resource.
-const path = "voicemessages"
+// VoiceMessagePath represents the VoiceMessagePath to the VoiceMessage resource.
+const VoiceMessagePath = "voicemessages"
 
 // Read retrieves the information of an existing VoiceMessage.
 func Read(c *messagebird.Client, id string) (*VoiceMessage, error) {
 	message := &VoiceMessage{}
-	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
+	if err := c.Request(message, http.MethodGet, VoiceMessagePath+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -74,7 +74,7 @@ func Read(c *messagebird.Client, id string) (*VoiceMessage, error) {
 // List retrieves all VoiceMessages of the user.
 func List(c *messagebird.Client) (*VoiceMessageList, error) {
 	messageList := &VoiceMessageList{}
-	if err := c.Request(messageList, http.MethodGet, path, nil); err != nil {
+	if err := c.Request(messageList, http.MethodGet, VoiceMessagePath, nil); err != nil {
 		return nil, err
 	}
 
@@ -89,7 +89,7 @@ func Create(c *messagebird.Client, recipients []string, body string, params *Voi
 	}
 
 	message := &VoiceMessage{}
-	if err := c.Request(message, http.MethodPost, path, requestData); err != nil {
+	if err := c.Request(message, http.MethodPost, VoiceMessagePath, requestData); err != nil {
 		return nil, err
 	}
 
