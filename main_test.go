@@ -45,7 +45,7 @@ func startFauxServer() {
 		},
 	}
 
-	mbClient = NewV2("test_gshuPaZoeEG6ovbc8M79w0QyM")
+	mbClient = New("test_gshuPaZoeEG6ovbc8M79w0QyM")
 	mbClient.HTTPClient = &http.Client{Transport: transport}
 
 	if testing.Verbose() {
