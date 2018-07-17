@@ -1,37 +1,164 @@
-package messagebird
+package voicemessage
 
 import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/messagebird/go-rest-api"
+
+	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
 var voiceMessageObject = []byte(`{
-  "id":"430c44a0354aab7ac9553f7a49907463",
-  "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-  "originator":"MessageBird",
-  "body":"Hello World",
-  "reference":null,
-  "language":"en-gb",
-  "voice":"female",
-  "repeat":1,
-  "ifMachine":"continue",
-  "scheduledDatetime":null,
-  "createdDatetime":"2015-01-05T16:11:24+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":1,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"calling",
-        "statusDatetime":"2015-01-05T16:11:24+00:00"
-      }
-    ]
-  }
+	"body": "Hello World",
+	"createdDatetime": "2015-01-05T16:11:24+00:00",
+	"href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+	"id": "430c44a0354aab7ac9553f7a49907463",
+	"ifMachine": "continue",
+	"language": "en-gb",
+	"originator": "MessageBird",
+	"recipients": {
+			"items": [
+					{
+							"recipient": 31612345678,
+							"status": "calling",
+							"statusDatetime": "2015-01-05T16:11:24+00:00"
+					}
+			],
+			"totalCount": 1,
+			"totalDeliveredCount": 0,
+			"totalDeliveryFailedCount": 0,
+			"totalSentCount": 1
+	},
+	"reference": null,
+	"repeat": 1,
+	"scheduledDatetime": null,
+	"voice": "female"
 }`)
+
+var voiceMessageObjectWithParams = []byte(`{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T16:11:24+00:00",
+    "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+    "id": "430c44a0354aab7ac9553f7a49907463",
+    "ifMachine": "hangup",
+    "language": "en-gb",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "calling",
+                "statusDatetime": "2015-01-05T16:11:24+00:00"
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": "MyReference",
+    "repeat": 5,
+    "scheduledDatetime": null,
+    "voice": "male"
+}`)
+
+var voiceMessageObjectWithCreatedDatetime = []byte(`{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T16:11:24+00:00",
+    "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+    "id": "430c44a0354aab7ac9553f7a49907463",
+    "ifMachine": "continue",
+    "language": "en-gb",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "scheduled",
+                "statusDatetime": null
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 0
+    },
+    "reference": null,
+    "repeat": 1,
+    "scheduledDatetime": "2015-01-05T16:12:24+00:00",
+    "voice": "female"
+}`)
+
+var voiceMessageListObject = []byte(`{
+    "count": 2,
+    "items": [
+        {
+            "body": "Hello World",
+            "createdDatetime": "2015-01-05T16:11:24+00:00",
+            "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+            "id": "430c44a0354aab7ac9553f7a49907463",
+            "ifMachine": "continue",
+            "language": "en-gb",
+            "originator": "MessageBird",
+            "recipients": {
+                "items": [
+                    {
+                        "recipient": 31612345678,
+                        "status": "calling",
+                        "statusDatetime": "2015-01-05T16:11:24+00:00"
+                    }
+                ],
+                "totalCount": 1,
+                "totalDeliveredCount": 0,
+                "totalDeliveryFailedCount": 0,
+                "totalSentCount": 1
+            },
+            "reference": null,
+            "repeat": 1,
+            "scheduledDatetime": null,
+            "voice": "female"
+        },
+        {
+            "body": "Hello World",
+            "createdDatetime": "2015-01-05T16:11:24+00:00",
+            "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+            "id": "430c44a0354aab7ac9553f7a49907463",
+            "ifMachine": "continue",
+            "language": "en-gb",
+            "originator": "MessageBird",
+            "recipients": {
+                "items": [
+                    {
+                        "recipient": 31612345678,
+                        "status": "calling",
+                        "statusDatetime": "2015-01-05T16:11:24+00:00"
+                    }
+                ],
+                "totalCount": 1,
+                "totalDeliveredCount": 0,
+                "totalDeliveryFailedCount": 0,
+                "totalSentCount": 1
+            },
+            "reference": null,
+            "repeat": 1,
+            "scheduledDatetime": null,
+            "voice": "female"
+        }
+    ],
+    "limit": 20,
+    "links": {
+        "first": "https://rest.messagebird.com/voicemessages/?offset=0",
+        "last": "https://rest.messagebird.com/voicemessages/?offset=0",
+        "next": null,
+        "previous": null
+    },
+    "offset": 0,
+    "totalCount": 2
+}`)
+
+func TestMain(m *testing.M) {
+	messagebirdtest.EnableServer(m)
+}
 
 func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
 	if message.ID != "430c44a0354aab7ac9553f7a49907463" {
@@ -100,12 +227,13 @@ func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
 
 }
 
-func TestNewVoiceMessage(t *testing.T) {
-	SetServerResponse(http.StatusOK, voiceMessageObject)
+func TestCreate(t *testing.T) {
+	messagebirdtest.WillReturn(voiceMessageObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-	message, err := mbClient.NewVoiceMessage([]string{"31612345678"}, "Hello World", nil)
+	message, err := Create(client, []string{"31612345678"}, "Hello World", nil)
 
-	errorResponse, ok := err.(ErrorResponse)
+	errorResponse, ok := err.(messagebird.ErrorResponse)
 	if ok {
 		t.Errorf("Unexpected error returned with voiceMessage %#v", errorResponse)
 	}
@@ -113,34 +241,9 @@ func TestNewVoiceMessage(t *testing.T) {
 	assertVoiceMessageObject(t, message)
 }
 
-var voiceMessageObjectWithParams = []byte(`{
-  "id":"430c44a0354aab7ac9553f7a49907463",
-  "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-  "body":"Hello World",
-  "reference":"MyReference",
-  "language":"en-gb",
-  "voice":"male",
-  "repeat":5,
-  "ifMachine":"hangup",
-  "scheduledDatetime":null,
-  "createdDatetime":"2015-01-05T16:11:24+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":1,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"calling",
-        "statusDatetime":"2015-01-05T16:11:24+00:00"
-      }
-    ]
-  }
-}`)
-
-func TestNewVoiceMessageWithParams(t *testing.T) {
-	SetServerResponse(http.StatusOK, voiceMessageObjectWithParams)
+func TestCreateWithParams(t *testing.T) {
+	messagebirdtest.WillReturn(voiceMessageObjectWithParams, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
 	params := &VoiceMessageParams{
 		Reference: "MyReference",
@@ -149,7 +252,7 @@ func TestNewVoiceMessageWithParams(t *testing.T) {
 		IfMachine: "hangup",
 	}
 
-	message, err := mbClient.NewVoiceMessage([]string{"31612345678"}, "Hello World", params)
+	message, err := Create(client, []string{"31612345678"}, "Hello World", params)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
 	}
@@ -171,39 +274,15 @@ func TestNewVoiceMessageWithParams(t *testing.T) {
 	}
 }
 
-var voiceMessageObjectWithCreatedDatetime = []byte(`{
-  "id":"430c44a0354aab7ac9553f7a49907463",
-  "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-  "body":"Hello World",
-  "reference":null,
-  "language":"en-gb",
-  "voice":"female",
-  "repeat":1,
-  "ifMachine":"continue",
-  "scheduledDatetime":"2015-01-05T16:12:24+00:00",
-  "createdDatetime":"2015-01-05T16:11:24+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":0,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"scheduled",
-        "statusDatetime":null
-      }
-    ]
-  }
-}`)
-
-func TestNewVoiceMessageWithScheduledDatetime(t *testing.T) {
-	SetServerResponse(http.StatusOK, voiceMessageObjectWithCreatedDatetime)
+func TestCreateWithScheduledDatetime(t *testing.T) {
+	messagebirdtest.WillReturn(voiceMessageObjectWithCreatedDatetime, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T16:12:24+00:00")
 
 	params := &VoiceMessageParams{ScheduledDatetime: scheduledDatetime}
-	message, err := mbClient.NewVoiceMessage([]string{"31612345678"}, "Hello World", params)
+
+	message, err := Create(client, []string{"31612345678"}, "Hello World", params)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
 	}
@@ -229,77 +308,11 @@ func TestNewVoiceMessageWithScheduledDatetime(t *testing.T) {
 	}
 }
 
-var voiceMessageListObject = []byte(`{
-  "offset":0,
-  "limit":20,
-  "count":2,
-  "totalCount":2,
-  "links":{
-    "first":"https://rest.messagebird.com/voicemessages/?offset=0",
-    "previous":null,
-    "next":null,
-    "last":"https://rest.messagebird.com/voicemessages/?offset=0"
-  },
-  "items":[
-    {
-      "id":"430c44a0354aab7ac9553f7a49907463",
-      "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-      "originator":"MessageBird",
-      "body":"Hello World",
-      "reference":null,
-      "language":"en-gb",
-      "voice":"female",
-      "repeat":1,
-      "ifMachine":"continue",
-      "scheduledDatetime":null,
-      "createdDatetime":"2015-01-05T16:11:24+00:00",
-      "recipients":{
-        "totalCount":1,
-        "totalSentCount":1,
-        "totalDeliveredCount":0,
-        "totalDeliveryFailedCount":0,
-        "items":[
-          {
-            "recipient":31612345678,
-            "status":"calling",
-            "statusDatetime":"2015-01-05T16:11:24+00:00"
-          }
-        ]
-      }
-    },
-    {
-      "id":"430c44a0354aab7ac9553f7a49907463",
-      "href":"https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-      "originator":"MessageBird",
-      "body":"Hello World",
-      "reference":null,
-      "language":"en-gb",
-      "voice":"female",
-      "repeat":1,
-      "ifMachine":"continue",
-      "scheduledDatetime":null,
-      "createdDatetime":"2015-01-05T16:11:24+00:00",
-      "recipients":{
-        "totalCount":1,
-        "totalSentCount":1,
-        "totalDeliveredCount":0,
-        "totalDeliveryFailedCount":0,
-        "items":[
-          {
-            "recipient":31612345678,
-            "status":"calling",
-            "statusDatetime":"2015-01-05T16:11:24+00:00"
-          }
-        ]
-      }
-    }
-  ]
-}`)
+func TestList(t *testing.T) {
+	messagebirdtest.WillReturn(voiceMessageListObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-func TestVoiceMessageList(t *testing.T) {
-	SetServerResponse(http.StatusOK, voiceMessageListObject)
-
-	messageList, err := mbClient.VoiceMessages()
+	messageList, err := List(client)
 	if err != nil {
 		t.Fatalf("Didn't expect an error while requesting VoiceMessages: %s", err)
 	}

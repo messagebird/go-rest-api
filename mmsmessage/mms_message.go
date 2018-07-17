@@ -1,10 +1,13 @@
-package messagebird
+package mmsmessage
 
 import (
 	"errors"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	messagebird "github.com/messagebird/go-rest-api"
 )
 
 // MMSMessage represents a MMS Message.
@@ -19,7 +22,7 @@ type MMSMessage struct {
 	MediaUrls         []string
 	ScheduledDatetime *time.Time
 	CreatedDatetime   *time.Time
-	Recipients        Recipients
+	Recipients        messagebird.Recipients
 }
 
 // MMSMessageParams represents the parameters that can be supplied when creating
@@ -30,6 +33,37 @@ type MMSMessageParams struct {
 	Subject           string
 	Reference         string
 	ScheduledDatetime time.Time
+}
+
+// MMSPath represents the path to the MMS resource.
+const MMSPath = "mms"
+
+// Read retrieves the information of an existing MmsMessage.
+func Read(c *messagebird.Client, id string) (*MMSMessage, error) {
+	mmsMessage := &MMSMessage{}
+	if err := c.Request(mmsMessage, http.MethodGet, MMSPath+"/"+id, nil); err != nil {
+		return nil, err
+	}
+
+	return mmsMessage, nil
+}
+
+// Create creates a new MMS message for one or more recipients.
+func Create(c *messagebird.Client, originator string, recipients []string, msgParams *MMSMessageParams) (*MMSMessage, error) {
+	params, err := paramsForMMSMessage(msgParams)
+	if err != nil {
+		return nil, err
+	}
+
+	params.Set("originator", originator)
+	params.Set("recipients", strings.Join(recipients, ","))
+
+	mmsMessage := &MMSMessage{}
+	if err := c.Request(mmsMessage, http.MethodPost, MMSPath, params); err != nil {
+		return nil, err
+	}
+
+	return mmsMessage, nil
 }
 
 // paramsForMMSMessage converts the specified MMSMessageParams struct to a

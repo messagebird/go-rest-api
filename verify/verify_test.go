@@ -1,8 +1,11 @@
-package messagebird
+package verify
 
 import (
+	"net/http"
 	"testing"
 	"time"
+
+	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
 var verifyObject = []byte(`{
@@ -17,6 +20,23 @@ var verifyObject = []byte(`{
   "createdDatetime": "2017-05-26T20:06:07+00:00",
   "validUntilDatetime": "2017-05-26T20:06:37+00:00"
 }`)
+
+var verifyTokenObject = []byte(`{
+	"id": "a3f2edb23592d68163f9694v13904556",
+	"href": "https://rest.messagebird.com/verify/a3f2edb23592d68163f9694v13904556",
+	"recipient": 31612345678,
+	"reference": "MyReference",
+	"messages": {
+	  "href": "https://rest.messagebird.com/messages/63b168423592d681641eb07b76226648"
+	},
+	"status": "verified",
+	"createdDatetime": "2017-05-30T12:39:50+00:00",
+	"validUntilDatetime": "2017-05-30T12:40:20+00:00"
+  }`)
+
+func TestMain(m *testing.M) {
+	messagebirdtest.EnableServer(m)
+}
 
 func assertVerifyObject(t *testing.T, v *Verify) {
 	if v == nil {
@@ -60,10 +80,11 @@ func assertVerifyObject(t *testing.T, v *Verify) {
 	}
 }
 
-func TestVerify(t *testing.T) {
-	SetServerResponse(200, verifyObject)
+func TestCreate(t *testing.T) {
+	messagebirdtest.WillReturn(verifyObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-	v, err := mbClient.NewVerify("31612345678", nil)
+	v, err := Create(client, "31612345678", nil)
 	if err != nil {
 		t.Fatalf("Didn't expect an error while requesting a verification: %s", err)
 	}
@@ -71,23 +92,11 @@ func TestVerify(t *testing.T) {
 	assertVerifyObject(t, v)
 }
 
-var verifyTokenObject = []byte(`{
-  "id": "a3f2edb23592d68163f9694v13904556",
-  "href": "https://rest.messagebird.com/verify/a3f2edb23592d68163f9694v13904556",
-  "recipient": 31612345678,
-  "reference": "MyReference",
-  "messages": {
-    "href": "https://rest.messagebird.com/messages/63b168423592d681641eb07b76226648"
-  },
-  "status": "verified",
-  "createdDatetime": "2017-05-30T12:39:50+00:00",
-  "validUntilDatetime": "2017-05-30T12:40:20+00:00"
-}`)
-
 func TestVerifyToken(t *testing.T) {
-	SetServerResponse(200, verifyTokenObject)
+	messagebirdtest.WillReturn(verifyTokenObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-	v, err := mbClient.VerifyToken("does not", "matter")
+	v, err := VerifyToken(client, "does not", "matter")
 	if err != nil {
 		t.Fatalf("Didn't expect an error while verifying token: %s", err)
 	}

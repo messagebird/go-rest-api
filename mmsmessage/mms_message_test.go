@@ -1,38 +1,50 @@
-package messagebird
+package mmsmessage
 
 import (
+	"net/http"
 	"testing"
 	"time"
+
+	messagebird "github.com/messagebird/go-rest-api"
+	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
 var mmsMessageObject = []byte(`{
-    "id": "6d9e7100b1f9406c81a3c303c30ccf05",
-    "href": "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05",
-    "direction": "mt",
-    "originator": "TestName",
-    "subject": "TestSubject",
     "body": "Hello World",
-    "mediaUrls": ["http://w3.org/1.gif", "http://w3.org/2.gif"],
-    "reference": "TestReference",
-    "scheduledDatetime": null,
     "createdDatetime": "2017-10-20T12:50:28+00:00",
+    "direction": "mt",
+    "href": "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05",
+    "id": "6d9e7100b1f9406c81a3c303c30ccf05",
+    "mediaUrls": [
+        "http://w3.org/1.gif",
+        "http://w3.org/2.gif"
+    ],
+    "originator": "TestName",
     "recipients": {
-        "totalCount": 1,
-        "totalSentCount": 1,
-        "totalDeliveredCount": 0,
-        "totalDeliveryFailedCount": 0,
         "items": [
             {
                 "recipient": 31612345678,
                 "status": "sent",
                 "statusDatetime": "2017-10-20T12:50:28+00:00"
             }
-        ]
-    }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": "TestReference",
+    "scheduledDatetime": null,
+    "subject": "TestSubject"
 }`)
 
-func TestNewMMSMessage(t *testing.T) {
-	SetServerResponse(200, mmsMessageObject)
+func TestMain(m *testing.M) {
+	messagebirdtest.EnableServer(m)
+}
+
+func TestCreate(t *testing.T) {
+	messagebirdtest.WillReturn(mmsMessageObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
 	params := &MMSMessageParams{
 		Body:              "Hello World",
@@ -41,7 +53,8 @@ func TestNewMMSMessage(t *testing.T) {
 		Reference:         "TestReference",
 		ScheduledDatetime: time.Now(),
 	}
-	mmsMessage, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
+
+	mmsMessage, err := Create(client, "TestName", []string{"31612345678"}, params)
 
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new MMS message: %s", err)
@@ -95,14 +108,15 @@ func TestNewMMSMessage(t *testing.T) {
 		t.Errorf("Unexpected datetime status for mmsMessage recipient: %s", mmsMessage.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 	}
 
-	errorResponse, ok := err.(ErrorResponse)
+	errorResponse, ok := err.(messagebird.ErrorResponse)
 	if ok {
 		t.Errorf("Unexpected error returned with mmsMessage %#v", errorResponse)
 	}
 }
 
-func TestNewMMSMessageError(t *testing.T) {
-	SetServerResponse(405, accessKeyErrorObject)
+func TestCreateError(t *testing.T) {
+	messagebirdtest.WillReturnAccessKeyError()
+	client := messagebirdtest.Client(t)
 
 	params := &MMSMessageParams{
 		Body:              "Hello World",
@@ -111,9 +125,10 @@ func TestNewMMSMessageError(t *testing.T) {
 		Reference:         "",
 		ScheduledDatetime: time.Now(),
 	}
-	_, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
 
-	errorResponse, ok := err.(ErrorResponse)
+	_, err := Create(client, "TestName", []string{"31612345678"}, params)
+
+	errorResponse, ok := err.(messagebird.ErrorResponse)
 	if !ok {
 		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
 	}
@@ -131,7 +146,9 @@ func TestNewMMSMessageError(t *testing.T) {
 	}
 }
 
-func TestNewMMSMessageWithEmptyParams(t *testing.T) {
+func TestCreateWithEmptyParams(t *testing.T) {
+	client := messagebirdtest.Client(t)
+
 	params := &MMSMessageParams{
 		Body:              "",
 		MediaUrls:         nil,
@@ -139,7 +156,8 @@ func TestNewMMSMessageWithEmptyParams(t *testing.T) {
 		Reference:         "",
 		ScheduledDatetime: time.Now(),
 	}
-	_, err := mbClient.NewMMSMessage("TestName", []string{"31612345678"}, params)
+
+	_, err := Create(client, "TestName", []string{"31612345678"}, params)
 
 	if err == nil {
 		t.Fatalf("Expected error to be returned, instead I got nil")
