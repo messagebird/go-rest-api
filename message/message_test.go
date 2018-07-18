@@ -131,7 +131,7 @@ func TestCreateWithParams(t *testing.T) {
 	messagebirdtest.WillReturnTestdata(t, "messageWithParamsObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
-	params := &MessageParams{
+	params := &Params{
 		Type:       "sms",
 		Reference:  "TestReference",
 		Validity:   13,
@@ -169,7 +169,7 @@ func TestCreateWithBinaryType(t *testing.T) {
 	messagebirdtest.WillReturnTestdata(t, "binaryMessageObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
-	params := &MessageParams{
+	params := &Params{
 		Type:        "binary",
 		TypeDetails: TypeDetails{"udh": "050003340201"},
 	}
@@ -196,7 +196,7 @@ func TestCreateWithPremiumType(t *testing.T) {
 	messagebirdtest.WillReturnTestdata(t, "premiumMessageObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
-	params := &MessageParams{
+	params := &Params{
 		Type:        "premium",
 		TypeDetails: TypeDetails{"keyword": "RESTAPI", "shortcode": 1008, "tariff": 150},
 	}
@@ -231,7 +231,7 @@ func TestCreateWithFlashType(t *testing.T) {
 	messagebirdtest.WillReturnTestdata(t, "flashMessageObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
-	params := &MessageParams{Type: "flash"}
+	params := &Params{Type: "flash"}
 
 	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	if err != nil {
@@ -249,7 +249,7 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T10:03:59+00:00")
 
-	params := &MessageParams{ScheduledDatetime: scheduledDatetime}
+	params := &Params{ScheduledDatetime: scheduledDatetime}
 
 	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	if err != nil {
@@ -310,7 +310,7 @@ func TestList(t *testing.T) {
 
 func TestRequestDataForMessage(t *testing.T) {
 	currentTime := time.Now()
-	messageParams := &MessageParams{
+	messageParams := &Params{
 		Type:              "binary",
 		Reference:         "MyReference",
 		Validity:          1,

@@ -21,8 +21,8 @@ type Verify struct {
 	Recipient          int
 }
 
-// VerifyParams handles optional verification parameters.
-type VerifyParams struct {
+// Params handles optional verification parameters.
+type Params struct {
 	Originator  string
 	Reference   string
 	Type        string
@@ -53,7 +53,7 @@ type verifyRequest struct {
 const path = "verify"
 
 // Create generates a new One-Time-Password for one recipient.
-func Create(c *messagebird.Client, recipient string, params *VerifyParams) (*Verify, error) {
+func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, error) {
 	requestData, err := requestDataForVerify(recipient, params)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 	return verify, nil
 }
 
-func requestDataForVerify(recipient string, params *VerifyParams) (*verifyRequest, error) {
+func requestDataForVerify(recipient string, params *Params) (*verifyRequest, error) {
 	if recipient == "" {
 		return nil, errors.New("recipient is required")
 	}
