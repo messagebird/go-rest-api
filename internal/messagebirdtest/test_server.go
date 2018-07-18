@@ -36,12 +36,6 @@ func closeServer() {
 	server.Close()
 }
 
-// WillReturn sets the body (r) and status (s) for the test server to respond with.
-func WillReturn(b []byte, s int) {
-	responseBody = b
-	status = s
-}
-
 // WillReturnTestdata sets the status (s) for the test server to respond with.
 // Additionally it reads the bytes from the relativePath file and returns that
 // for requests. It fails the test if the file can not be read. The path is
