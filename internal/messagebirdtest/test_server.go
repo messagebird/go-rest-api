@@ -59,5 +59,5 @@ func WillReturnAccessKeyError() {
 				}
 			]
 		}`)
-	status = 405
+	status = 401
 }

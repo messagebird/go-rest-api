@@ -24,7 +24,7 @@ func (w testWriter) Write(p []byte) (int, error) {
 
 // Client initializes a new MessageBird client that uses the
 func Client(t *testing.T) *messagebird.Client {
-	return client(t, "test_gshuPaZoeEG6ovbc8M79w0QyM")
+	return client(t, "")
 }
 
 func client(t *testing.T, accessKey string) *messagebird.Client {
@@ -42,10 +42,11 @@ func client(t *testing.T, accessKey string) *messagebird.Client {
 		HTTPClient: &http.Client{
 			Transport: transport,
 		},
-		DebugLog: log.New(testWriter{t: t}, "", 0),
+		DebugLog: testLogger(t),
 	}
 }
 
+// testLogger creates a new logger that writes to the test's output.
 func testLogger(t *testing.T) *log.Logger {
 	return log.New(testWriter{t: t}, "", 0)
 }
