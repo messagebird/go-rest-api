@@ -245,7 +245,7 @@ func TestCreateWithParams(t *testing.T) {
 	messagebirdtest.WillReturn(voiceMessageObjectWithParams, http.StatusOK)
 	client := messagebirdtest.Client(t)
 
-	params := &VoiceMessageParams{
+	params := &Params{
 		Reference: "MyReference",
 		Voice:     "male",
 		Repeat:    5,
@@ -280,7 +280,7 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T16:12:24+00:00")
 
-	params := &VoiceMessageParams{ScheduledDatetime: scheduledDatetime}
+	params := &Params{ScheduledDatetime: scheduledDatetime}
 
 	message, err := Create(client, []string{"31612345678"}, "Hello World", params)
 	if err != nil {
@@ -337,7 +337,7 @@ func TestList(t *testing.T) {
 
 func TestRequestDataForVoiceMessage(t *testing.T) {
 	currentTime := time.Now()
-	voiceParams := &VoiceMessageParams{
+	voiceParams := &Params{
 		Originator:        "MSGBIRD",
 		Reference:         "MyReference",
 		Language:          "en-gb",

@@ -35,8 +35,8 @@ type VoiceMessageList struct {
 	Items      []VoiceMessage
 }
 
-// VoiceMessageParams struct provides additional VoiceMessage details.
-type VoiceMessageParams struct {
+// Params struct provides additional VoiceMessage details.
+type Params struct {
 	Originator        string
 	Reference         string
 	Language          string
@@ -82,7 +82,7 @@ func List(c *messagebird.Client) (*VoiceMessageList, error) {
 }
 
 // Create a new voice message for one or more recipients.
-func Create(c *messagebird.Client, recipients []string, body string, params *VoiceMessageParams) (*VoiceMessage, error) {
+func Create(c *messagebird.Client, recipients []string, body string, params *Params) (*VoiceMessage, error) {
 	requestData, err := requestDataForVoiceMessage(recipients, body, params)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func Create(c *messagebird.Client, recipients []string, body string, params *Voi
 	return message, nil
 }
 
-func requestDataForVoiceMessage(recipients []string, body string, params *VoiceMessageParams) (*voiceMessageRequest, error) {
+func requestDataForVoiceMessage(recipients []string, body string, params *Params) (*voiceMessageRequest, error) {
 	if len(recipients) == 0 {
 		return nil, errors.New("at least 1 recipient is required")
 	}

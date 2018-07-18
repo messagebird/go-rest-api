@@ -27,8 +27,8 @@ type Lookup struct {
 	HLR           *hlr.HLR
 }
 
-// LookupParams provide additional lookup information.
-type LookupParams struct {
+// Params provide additional lookup information.
+type Params struct {
 	CountryCode string
 	Reference   string
 }
@@ -45,7 +45,7 @@ const hlrPath = "hlr"
 const lookupPath = "lookup"
 
 // Create performs a new lookup for the specified number.
-func Create(c *messagebird.Client, phoneNumber string, params *LookupParams) (*Lookup, error) {
+func Create(c *messagebird.Client, phoneNumber string, params *Params) (*Lookup, error) {
 	urlParams := paramsForLookup(params)
 	path := lookupPath + "/" + phoneNumber + "?" + urlParams.Encode()
 
@@ -58,7 +58,7 @@ func Create(c *messagebird.Client, phoneNumber string, params *LookupParams) (*L
 }
 
 // CreateHLR creates a new HLR lookup for the specified number.
-func CreateHLR(c *messagebird.Client, phoneNumber string, params *LookupParams) (*hlr.HLR, error) {
+func CreateHLR(c *messagebird.Client, phoneNumber string, params *Params) (*hlr.HLR, error) {
 	requestData := requestDataForLookup(params)
 	path := lookupPath + "/" + phoneNumber + "/" + hlrPath
 
@@ -71,7 +71,7 @@ func CreateHLR(c *messagebird.Client, phoneNumber string, params *LookupParams) 
 }
 
 // ReadHLR performs a HLR lookup for the specified number.
-func ReadHLR(c *messagebird.Client, phoneNumber string, params *LookupParams) (*hlr.HLR, error) {
+func ReadHLR(c *messagebird.Client, phoneNumber string, params *Params) (*hlr.HLR, error) {
 	urlParams := paramsForLookup(params)
 	path := lookupPath + "/" + phoneNumber + "/" + hlrPath + "?" + urlParams.Encode()
 
@@ -83,7 +83,7 @@ func ReadHLR(c *messagebird.Client, phoneNumber string, params *LookupParams) (*
 	return hlr, nil
 }
 
-func requestDataForLookup(params *LookupParams) *lookupRequest {
+func requestDataForLookup(params *Params) *lookupRequest {
 	request := &lookupRequest{}
 
 	if params == nil {
@@ -96,7 +96,7 @@ func requestDataForLookup(params *LookupParams) *lookupRequest {
 	return request
 }
 
-func paramsForLookup(params *LookupParams) *url.Values {
+func paramsForLookup(params *Params) *url.Values {
 	urlParams := &url.Values{}
 
 	if params == nil {

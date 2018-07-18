@@ -147,7 +147,7 @@ func assertVerifyTokenObject(t *testing.T, v *Verify) {
 }
 
 func TestRequestDataForVerify(t *testing.T) {
-	verifyParams := &VerifyParams{
+	verifyParams := &Params{
 		Originator:  "MSGBIRD",
 		Reference:   "MyReference",
 		Type:        "sms",

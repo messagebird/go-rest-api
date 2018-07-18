@@ -44,8 +44,8 @@ type MessageList struct {
 	Items      []Message
 }
 
-// MessageParams provide additional message send options and used in URL as params.
-type MessageParams struct {
+// Params provide additional message send options and used in URL as params.
+type Params struct {
 	Type              string
 	Reference         string
 	Validity          int
@@ -56,8 +56,8 @@ type MessageParams struct {
 	ScheduledDatetime time.Time
 }
 
-// MessageListParams provides additional message list options.
-type MessageListParams struct {
+// ListParams provides additional message list options.
+type ListParams struct {
 	Originator string
 	Direction  string
 	Type       string
@@ -94,7 +94,7 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 }
 
 // List retrieves all messages of the user represented as a MessageList object.
-func List(c *messagebird.Client, msgListParams *MessageListParams) (*MessageList, error) {
+func List(c *messagebird.Client, msgListParams *ListParams) (*MessageList, error) {
 	messageList := &MessageList{}
 	params, err := paramsForMessageList(msgListParams)
 	if err != nil {
@@ -109,7 +109,7 @@ func List(c *messagebird.Client, msgListParams *MessageListParams) (*MessageList
 }
 
 // Create creates a new message for one or more recipients.
-func Create(c *messagebird.Client, originator string, recipients []string, body string, msgParams *MessageParams) (*Message, error) {
+func Create(c *messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
 	requestData, err := requestDataForMessage(originator, recipients, body, msgParams)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func Create(c *messagebird.Client, originator string, recipients []string, body 
 	return message, nil
 }
 
-func requestDataForMessage(originator string, recipients []string, body string, params *MessageParams) (*messageRequest, error) {
+func requestDataForMessage(originator string, recipients []string, body string, params *Params) (*messageRequest, error) {
 	if originator == "" {
 		return nil, errors.New("originator is required")
 	}
@@ -167,7 +167,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 
 // paramsForMessageList converts the specified MessageListParams struct to a
 // url.Values pointer and returns it.
-func paramsForMessageList(params *MessageListParams) (*url.Values, error) {
+func paramsForMessageList(params *ListParams) (*url.Values, error) {
 	urlParams := &url.Values{}
 
 	if params == nil {

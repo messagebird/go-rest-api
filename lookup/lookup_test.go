@@ -49,7 +49,7 @@ func TestCreate(t *testing.T) {
 	client := messagebirdtest.Client(t)
 
 	phoneNumber := "31624971134"
-	lookup, err := Create(client, phoneNumber, &LookupParams{CountryCode: "NL"})
+	lookup, err := Create(client, phoneNumber, &Params{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
@@ -94,7 +94,7 @@ func TestReadHLR(t *testing.T) {
 	messagebirdtest.WillReturn(lookupHLRObject, http.StatusOK)
 	client := messagebirdtest.Client(t)
 
-	hlr, err := ReadHLR(client, "31624971134", &LookupParams{CountryCode: "NL"})
+	hlr, err := ReadHLR(client, "31624971134", &Params{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
@@ -102,7 +102,7 @@ func TestReadHLR(t *testing.T) {
 }
 
 func TestRequestDataForLookupHLR(t *testing.T) {
-	lookupParams := &LookupParams{
+	lookupParams := &Params{
 		CountryCode: "NL",
 		Reference:   "MyReference",
 	}
@@ -120,7 +120,7 @@ func TestCreateHLR(t *testing.T) {
 	messagebirdtest.WillReturn(lookupHLRObject, http.StatusCreated)
 	client := messagebirdtest.Client(t)
 
-	hlr, err := CreateHLR(client, "31624971134", &LookupParams{CountryCode: "NL", Reference: "reference2000"})
+	hlr, err := CreateHLR(client, "31624971134", &Params{CountryCode: "NL", Reference: "reference2000"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}

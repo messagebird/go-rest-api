@@ -46,7 +46,7 @@ func TestCreate(t *testing.T) {
 	messagebirdtest.WillReturn(mmsMessageObject, http.StatusOK)
 	client := messagebirdtest.Client(t)
 
-	params := &MMSMessageParams{
+	params := &Params{
 		Body:              "Hello World",
 		MediaUrls:         []string{"http://w3.org/1.gif", "http://w3.org/2.gif"},
 		Subject:           "TestSubject",
@@ -118,7 +118,7 @@ func TestCreateError(t *testing.T) {
 	messagebirdtest.WillReturnAccessKeyError()
 	client := messagebirdtest.Client(t)
 
-	params := &MMSMessageParams{
+	params := &Params{
 		Body:              "Hello World",
 		MediaUrls:         nil,
 		Subject:           "",
@@ -149,7 +149,7 @@ func TestCreateError(t *testing.T) {
 func TestCreateWithEmptyParams(t *testing.T) {
 	client := messagebirdtest.Client(t)
 
-	params := &MMSMessageParams{
+	params := &Params{
 		Body:              "",
 		MediaUrls:         nil,
 		Subject:           "",

@@ -25,9 +25,9 @@ type MMSMessage struct {
 	Recipients        messagebird.Recipients
 }
 
-// MMSMessageParams represents the parameters that can be supplied when creating
+// Params represents the parameters that can be supplied when creating
 // a request.
-type MMSMessageParams struct {
+type Params struct {
 	Body              string
 	MediaUrls         []string
 	Subject           string
@@ -49,7 +49,7 @@ func Read(c *messagebird.Client, id string) (*MMSMessage, error) {
 }
 
 // Create creates a new MMS message for one or more recipients.
-func Create(c *messagebird.Client, originator string, recipients []string, msgParams *MMSMessageParams) (*MMSMessage, error) {
+func Create(c *messagebird.Client, originator string, recipients []string, msgParams *Params) (*MMSMessage, error) {
 	params, err := paramsForMMSMessage(msgParams)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func Create(c *messagebird.Client, originator string, recipients []string, msgPa
 
 // paramsForMMSMessage converts the specified MMSMessageParams struct to a
 // url.Values pointer and returns it.
-func paramsForMMSMessage(params *MMSMessageParams) (*url.Values, error) {
+func paramsForMMSMessage(params *Params) (*url.Values, error) {
 	urlParams := &url.Values{}
 
 	if params.Body == "" && params.MediaUrls == nil {
