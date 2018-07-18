@@ -36,12 +36,18 @@ func closeServer() {
 	server.Close()
 }
 
-// WillReturn sets the body (r) and status (s) for the test server to respond with.
-func WillReturn(b []byte, s int) {
-	responseBody = b
+// WillReturnTestdata sets the status (s) for the test server to respond with.
+// Additionally it reads the bytes from the relativePath file and returns that
+// for requests. It fails the test if the file can not be read. The path is
+// relative to the testdata directory (the go tool ignores directories named
+// "testdata" in test packages: https://golang.org/cmd/go/#hdr-Test_packages).
+func WillReturnTestdata(t *testing.T, relativePath string, s int) {
+	responseBody = testdata(t, relativePath)
 	status = s
 }
 
+// WillReturnAccessKeyError sets the response body and status for requests to
+// indicate the request is not allowed due to an incorrect access key.
 func WillReturnAccessKeyError() {
 	responseBody = []byte(`
 		{

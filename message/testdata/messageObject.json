@@ -1,0 +1,29 @@
+{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "datacoding": "plain",
+    "direction": "mt",
+    "gateway": 239,
+    "href": "https:\/\/rest.messagebird.com\/messages\/6fe65f90454aa61536e6a88b88972670",
+    "id": "6fe65f90454aa61536e6a88b88972670",
+    "mclass": 1,
+    "originator": "TestName",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "sent",
+                "statusDatetime": "2015-01-05T10:02:59+00:00"
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": null,
+    "scheduledDatetime": null,
+    "type": "sms",
+    "typeDetails": {},
+    "validity": null
+}

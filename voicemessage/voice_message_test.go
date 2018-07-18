@@ -10,152 +10,6 @@ import (
 	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
-var voiceMessageObject = []byte(`{
-	"body": "Hello World",
-	"createdDatetime": "2015-01-05T16:11:24+00:00",
-	"href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-	"id": "430c44a0354aab7ac9553f7a49907463",
-	"ifMachine": "continue",
-	"language": "en-gb",
-	"originator": "MessageBird",
-	"recipients": {
-			"items": [
-					{
-							"recipient": 31612345678,
-							"status": "calling",
-							"statusDatetime": "2015-01-05T16:11:24+00:00"
-					}
-			],
-			"totalCount": 1,
-			"totalDeliveredCount": 0,
-			"totalDeliveryFailedCount": 0,
-			"totalSentCount": 1
-	},
-	"reference": null,
-	"repeat": 1,
-	"scheduledDatetime": null,
-	"voice": "female"
-}`)
-
-var voiceMessageObjectWithParams = []byte(`{
-    "body": "Hello World",
-    "createdDatetime": "2015-01-05T16:11:24+00:00",
-    "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-    "id": "430c44a0354aab7ac9553f7a49907463",
-    "ifMachine": "hangup",
-    "language": "en-gb",
-    "recipients": {
-        "items": [
-            {
-                "recipient": 31612345678,
-                "status": "calling",
-                "statusDatetime": "2015-01-05T16:11:24+00:00"
-            }
-        ],
-        "totalCount": 1,
-        "totalDeliveredCount": 0,
-        "totalDeliveryFailedCount": 0,
-        "totalSentCount": 1
-    },
-    "reference": "MyReference",
-    "repeat": 5,
-    "scheduledDatetime": null,
-    "voice": "male"
-}`)
-
-var voiceMessageObjectWithCreatedDatetime = []byte(`{
-    "body": "Hello World",
-    "createdDatetime": "2015-01-05T16:11:24+00:00",
-    "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-    "id": "430c44a0354aab7ac9553f7a49907463",
-    "ifMachine": "continue",
-    "language": "en-gb",
-    "recipients": {
-        "items": [
-            {
-                "recipient": 31612345678,
-                "status": "scheduled",
-                "statusDatetime": null
-            }
-        ],
-        "totalCount": 1,
-        "totalDeliveredCount": 0,
-        "totalDeliveryFailedCount": 0,
-        "totalSentCount": 0
-    },
-    "reference": null,
-    "repeat": 1,
-    "scheduledDatetime": "2015-01-05T16:12:24+00:00",
-    "voice": "female"
-}`)
-
-var voiceMessageListObject = []byte(`{
-    "count": 2,
-    "items": [
-        {
-            "body": "Hello World",
-            "createdDatetime": "2015-01-05T16:11:24+00:00",
-            "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-            "id": "430c44a0354aab7ac9553f7a49907463",
-            "ifMachine": "continue",
-            "language": "en-gb",
-            "originator": "MessageBird",
-            "recipients": {
-                "items": [
-                    {
-                        "recipient": 31612345678,
-                        "status": "calling",
-                        "statusDatetime": "2015-01-05T16:11:24+00:00"
-                    }
-                ],
-                "totalCount": 1,
-                "totalDeliveredCount": 0,
-                "totalDeliveryFailedCount": 0,
-                "totalSentCount": 1
-            },
-            "reference": null,
-            "repeat": 1,
-            "scheduledDatetime": null,
-            "voice": "female"
-        },
-        {
-            "body": "Hello World",
-            "createdDatetime": "2015-01-05T16:11:24+00:00",
-            "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
-            "id": "430c44a0354aab7ac9553f7a49907463",
-            "ifMachine": "continue",
-            "language": "en-gb",
-            "originator": "MessageBird",
-            "recipients": {
-                "items": [
-                    {
-                        "recipient": 31612345678,
-                        "status": "calling",
-                        "statusDatetime": "2015-01-05T16:11:24+00:00"
-                    }
-                ],
-                "totalCount": 1,
-                "totalDeliveredCount": 0,
-                "totalDeliveryFailedCount": 0,
-                "totalSentCount": 1
-            },
-            "reference": null,
-            "repeat": 1,
-            "scheduledDatetime": null,
-            "voice": "female"
-        }
-    ],
-    "limit": 20,
-    "links": {
-        "first": "https://rest.messagebird.com/voicemessages/?offset=0",
-        "last": "https://rest.messagebird.com/voicemessages/?offset=0",
-        "next": null,
-        "previous": null
-    },
-    "offset": 0,
-    "totalCount": 2
-}`)
-
 func TestMain(m *testing.M) {
 	messagebirdtest.EnableServer(m)
 }
@@ -228,7 +82,7 @@ func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturn(voiceMessageObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "voiceMessageObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	message, err := Create(client, []string{"31612345678"}, "Hello World", nil)
@@ -242,7 +96,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateWithParams(t *testing.T) {
-	messagebirdtest.WillReturn(voiceMessageObjectWithParams, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "voiceMessageObjectWithParams.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	params := &Params{
@@ -275,7 +129,7 @@ func TestCreateWithParams(t *testing.T) {
 }
 
 func TestCreateWithScheduledDatetime(t *testing.T) {
-	messagebirdtest.WillReturn(voiceMessageObjectWithCreatedDatetime, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "voiceMessageObjectWithCreatedDatetime.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T16:12:24+00:00")
@@ -309,7 +163,7 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	messagebirdtest.WillReturn(voiceMessageListObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "voiceMessageListObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	messageList, err := List(client)

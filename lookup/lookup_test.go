@@ -9,43 +9,12 @@ import (
 	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
-var lookupObject = []byte(`{
-    "href":"https://rest.messagebird.com/lookup/31624971134",
-    "countryCode":"NL",
-    "countryPrefix":31,
-    "phoneNumber":31624971134,
-    "type":"mobile",
-    "formats":{
-        "e164":"+31624971134",
-        "international":"+31 6 24971134",
-        "national":"06 24971134",
-        "rfc3966":"tel:+31-6-24971134"
-    },
-    "hlr":{
-        "id":"6118d3f06566fcd0cdc8962h65065907",
-        "network":20416,
-        "reference":"referece2000",
-        "status":"active",
-        "createdDatetime":"2015-12-15T08:19:24+00:00",
-        "statusDatetime":"2015-12-15T08:19:25+00:00"
-    }
-}`)
-
-var lookupHLRObject = []byte(`{
-    "id":"6118d3f06566fcd0cdc8962h65065907",
-    "network":20416,
-    "reference":"referece2000",
-    "status":"active",
-    "createdDatetime":"2015-12-15T08:19:24+00:00",
-    "statusDatetime":"2015-12-15T08:19:25+00:00"
-}`)
-
 func TestMain(m *testing.M) {
 	messagebirdtest.EnableServer(m)
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturn(lookupObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "lookupObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	phoneNumber := "31624971134"
@@ -91,7 +60,7 @@ func checkHLR(t *testing.T, hlr *hlr.HLR) {
 }
 
 func TestReadHLR(t *testing.T) {
-	messagebirdtest.WillReturn(lookupHLRObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "lookupHLRObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	hlr, err := ReadHLR(client, "31624971134", &Params{CountryCode: "NL"})
@@ -117,7 +86,7 @@ func TestRequestDataForLookupHLR(t *testing.T) {
 }
 
 func TestCreateHLR(t *testing.T) {
-	messagebirdtest.WillReturn(lookupHLRObject, http.StatusCreated)
+	messagebirdtest.WillReturnTestdata(t, "lookupHLRObject.json", http.StatusCreated)
 	client := messagebirdtest.Client(t)
 
 	hlr, err := CreateHLR(client, "31624971134", &Params{CountryCode: "NL", Reference: "reference2000"})

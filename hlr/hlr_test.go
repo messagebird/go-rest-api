@@ -10,52 +10,6 @@ import (
 	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
-var hlrObject = []byte(`{
-  "id":"27978c50354a93ca0ca8de6h54340177",
-  "href":"https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177",
-  "msisdn":31612345678,
-  "network":20406,
-  "reference":"MyReference",
-  "status":"sent",
-  "createdDatetime":"2015-01-04T13:14:08+00:00",
-  "statusDatetime":"2015-01-04T13:14:09+00:00"
-}`)
-
-var hlrListObject = []byte(`{
-  "offset":0,
-  "limit":20,
-  "count":2,
-  "totalCount":2,
-  "links":{
-    "first":"https://rest.messagebird.com/hlr/?offset=0",
-    "previous":null,
-    "next":null,
-    "last":"https://rest.messagebird.com/hlr/?offset=0"
-  },
-  "items":[
-    {
-      "id":"27978c50354a93ca0ca8de6h54340177",
-      "href":"https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177",
-      "msisdn":31612345678,
-      "network":20406,
-      "reference":"MyReference",
-      "status":"sent",
-      "createdDatetime":"2015-01-04T13:14:08+00:00",
-      "statusDatetime":"2015-01-04T13:14:09+00:00"
-    },
-    {
-      "id":"27978c50354a93ca0ca8de6h54340177",
-      "href":"https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177",
-      "msisdn":31612345678,
-      "network":20406,
-      "reference":"MyReference",
-      "status":"sent",
-      "createdDatetime":"2015-01-04T13:14:08+00:00",
-      "statusDatetime":"2015-01-04T13:14:09+00:00"
-    }
-  ]
-}`)
-
 func TestMain(m *testing.M) {
 	messagebirdtest.EnableServer(m)
 }
@@ -95,7 +49,7 @@ func assertHLRObject(t *testing.T, hlr *HLR) {
 }
 
 func TestRead(t *testing.T) {
-	messagebirdtest.WillReturn(hlrObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "hlrObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	hlr, err := Read(client, "27978c50354a93ca0ca8de6h54340177")
@@ -122,7 +76,7 @@ func TestRequestDataForHLR(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturn(hlrObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "hlrObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	hlr, err := Create(client, "31612345678", "MyReference")
@@ -158,7 +112,7 @@ func TestHLRError(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	messagebirdtest.WillReturn(hlrListObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "hlrListObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	hlrList, err := List(client)

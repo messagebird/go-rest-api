@@ -8,32 +8,6 @@ import (
 	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
-var verifyObject = []byte(`{
-  "id": "15498233759288aaf929661v21936686",
-  "href": "https://rest.messagebird.com/verify/15498233759288aaf929661v21936686",
-  "recipient": 31612345678,
-  "reference": "MyReference",
-  "messages": {
-    "href": "https://rest.messagebird.com/messages/c2bbd563759288aaf962910b56023756"
-  },
-  "status": "sent",
-  "createdDatetime": "2017-05-26T20:06:07+00:00",
-  "validUntilDatetime": "2017-05-26T20:06:37+00:00"
-}`)
-
-var verifyTokenObject = []byte(`{
-	"id": "a3f2edb23592d68163f9694v13904556",
-	"href": "https://rest.messagebird.com/verify/a3f2edb23592d68163f9694v13904556",
-	"recipient": 31612345678,
-	"reference": "MyReference",
-	"messages": {
-	  "href": "https://rest.messagebird.com/messages/63b168423592d681641eb07b76226648"
-	},
-	"status": "verified",
-	"createdDatetime": "2017-05-30T12:39:50+00:00",
-	"validUntilDatetime": "2017-05-30T12:40:20+00:00"
-  }`)
-
 func TestMain(m *testing.M) {
 	messagebirdtest.EnableServer(m)
 }
@@ -81,7 +55,7 @@ func assertVerifyObject(t *testing.T, v *Verify) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturn(verifyObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "verifyObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	v, err := Create(client, "31612345678", nil)
@@ -93,7 +67,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestVerifyToken(t *testing.T) {
-	messagebirdtest.WillReturn(verifyTokenObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "verifyTokenObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	v, err := VerifyToken(client, "does not", "matter")
