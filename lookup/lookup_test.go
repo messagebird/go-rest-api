@@ -1,8 +1,12 @@
-package messagebird
+package lookup
 
 import (
+	"net/http"
 	"strconv"
 	"testing"
+
+	"github.com/messagebird/go-rest-api/hlr"
+	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
 var lookupObject = []byte(`{
@@ -36,11 +40,16 @@ var lookupHLRObject = []byte(`{
     "statusDatetime":"2015-12-15T08:19:25+00:00"
 }`)
 
-func TestLookup(t *testing.T) {
-	SetServerResponse(200, lookupObject)
+func TestMain(m *testing.M) {
+	messagebirdtest.EnableServer(m)
+}
+
+func TestCreate(t *testing.T) {
+	messagebirdtest.WillReturn(lookupObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
 	phoneNumber := "31624971134"
-	lookup, err := mbClient.Lookup(phoneNumber, &LookupParams{CountryCode: "NL"})
+	lookup, err := Create(client, phoneNumber, &Params{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
@@ -48,6 +57,7 @@ func TestLookup(t *testing.T) {
 	if lookup.Href != "https://rest.messagebird.com/lookup/31624971134" {
 		t.Errorf("Unexpected lookup href: %s", lookup.Href)
 	}
+
 	if strconv.FormatInt(lookup.PhoneNumber, 10) != phoneNumber {
 		t.Errorf("Unexpected lookup phoneNumber: %d", lookup.PhoneNumber)
 	}
@@ -65,7 +75,7 @@ func TestLookup(t *testing.T) {
 	}
 }
 
-func checkHLR(t *testing.T, hlr *HLR) {
+func checkHLR(t *testing.T, hlr *hlr.HLR) {
 	if hlr.ID != "6118d3f06566fcd0cdc8962h65065907" {
 		t.Errorf("Unexpected hlr id: %s", hlr.ID)
 	}
@@ -80,10 +90,11 @@ func checkHLR(t *testing.T, hlr *HLR) {
 	}
 }
 
-func TestLookupHLR(t *testing.T) {
-	SetServerResponse(200, lookupHLRObject)
+func TestReadHLR(t *testing.T) {
+	messagebirdtest.WillReturn(lookupHLRObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-	hlr, err := mbClient.LookupHLR("31624971134", &LookupParams{CountryCode: "NL"})
+	hlr, err := ReadHLR(client, "31624971134", &Params{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
@@ -91,7 +102,7 @@ func TestLookupHLR(t *testing.T) {
 }
 
 func TestRequestDataForLookupHLR(t *testing.T) {
-	lookupParams := &LookupParams{
+	lookupParams := &Params{
 		CountryCode: "NL",
 		Reference:   "MyReference",
 	}
@@ -105,10 +116,11 @@ func TestRequestDataForLookupHLR(t *testing.T) {
 	}
 }
 
-func TestNewLookupHLR(t *testing.T) {
-	SetServerResponse(201, lookupHLRObject)
+func TestCreateHLR(t *testing.T) {
+	messagebirdtest.WillReturn(lookupHLRObject, http.StatusCreated)
+	client := messagebirdtest.Client(t)
 
-	hlr, err := mbClient.NewLookupHLR("31624971134", &LookupParams{CountryCode: "NL", Reference: "reference2000"})
+	hlr, err := CreateHLR(client, "31624971134", &Params{CountryCode: "NL", Reference: "reference2000"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}

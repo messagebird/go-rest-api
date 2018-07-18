@@ -36,7 +36,7 @@ Now you can query the API for information or send data. For example, if we want 
 
 ```go
 // Request the balance information, returned as a Balance object.
-balance, err := client.Balance()
+balance, err := balance.Read(client)
 if err != nil {
 	switch errResp := err.(type) {
 	case messagebird.ErrorResponse:

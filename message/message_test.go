@@ -1,42 +1,280 @@
-package messagebird
+package message
 
 import (
 	"net/http"
 	"testing"
 	"time"
+
+	messagebird "github.com/messagebird/go-rest-api"
+	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
 var messageObject = []byte(`{
-  "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-  "direction":"mt",
-  "type":"sms",
-  "originator":"TestName",
-  "body":"Hello World",
-  "reference":null,
-  "validity":null,
-  "gateway":239,
-  "typeDetails":{
-
-  },
-  "datacoding":"plain",
-  "mclass":1,
-  "scheduledDatetime":null,
-  "createdDatetime":"2015-01-05T10:02:59+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":1,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"sent",
-        "statusDatetime":"2015-01-05T10:02:59+00:00"
-      }
-    ]
-  }
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "datacoding": "plain",
+    "direction": "mt",
+    "gateway": 239,
+    "href": "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+    "id": "6fe65f90454aa61536e6a88b88972670",
+    "mclass": 1,
+    "originator": "TestName",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "sent",
+                "statusDatetime": "2015-01-05T10:02:59+00:00"
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": null,
+    "scheduledDatetime": null,
+    "type": "sms",
+    "typeDetails": {},
+    "validity": null
 }`)
+
+var messageWithParamsObject = []byte(`{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "datacoding": "unicode",
+    "direction": "mt",
+    "gateway": 10,
+    "href": "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+    "id": "6fe65f90454aa61536e6a88b88972670",
+    "mclass": 1,
+    "originator": "TestName",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "sent",
+                "statusDatetime": "2015-01-05T10:02:59+00:00"
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": "TestReference",
+    "scheduledDatetime": null,
+    "type": "sms",
+    "typeDetails": {},
+    "validity": 13
+}`)
+
+var binaryMessageObject = []byte(`{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "datacoding": "unicode",
+    "direction": "mt",
+    "gateway": 10,
+    "href": "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+    "id": "6fe65f90454aa61536e6a88b88972670",
+    "mclass": 1,
+    "originator": "TestName",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "sent",
+                "statusDatetime": "2015-01-05T10:02:59+00:00"
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": "TestReference",
+    "scheduledDatetime": null,
+    "type": "binary",
+    "typeDetails": {
+        "udh": "050003340201"
+    },
+    "validity": 13
+}`)
+
+var premiumMessageObject = []byte(`{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "datacoding": "unicode",
+    "direction": "mt",
+    "gateway": 10,
+    "href": "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+    "id": "6fe65f90454aa61536e6a88b88972670",
+    "mclass": 1,
+    "originator": "TestName",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "sent",
+                "statusDatetime": "2015-01-05T10:02:59+00:00"
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": "TestReference",
+    "scheduledDatetime": null,
+    "type": "premium",
+    "typeDetails": {
+        "keyword": "RESTAPI",
+        "shortcode": 1008,
+        "tariff": 150
+    },
+    "validity": 13
+}`)
+
+var flashMessageObject = []byte(`{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "datacoding": "unicode",
+    "direction": "mt",
+    "gateway": 10,
+    "href": "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+    "id": "6fe65f90454aa61536e6a88b88972670",
+    "mclass": 0,
+    "originator": "TestName",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "sent",
+                "statusDatetime": "2015-01-05T10:02:59+00:00"
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 1
+    },
+    "reference": "TestReference",
+    "scheduledDatetime": null,
+    "type": "flash",
+    "typeDetails": {},
+    "validity": 13
+}`)
+
+var messageObjectWithCreatedDatetime = []byte(`{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "datacoding": "plain",
+    "direction": "mt",
+    "gateway": 239,
+    "href": "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+    "id": "6fe65f90454aa61536e6a88b88972670",
+    "mclass": 1,
+    "originator": "TestName",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "scheduled",
+                "statusDatetime": null
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 0
+    },
+    "reference": null,
+    "scheduledDatetime": "2015-01-05T10:03:59+00:00",
+    "type": "sms",
+    "typeDetails": {},
+    "validity": null
+}`)
+
+var messageListObject = []byte(`{
+	"offset":0,
+	"limit":20,
+	"count":2,
+	"totalCount":2,
+	"links":{
+	  "first":"https://rest.messagebird.com/messages/?offset=0",
+	  "previous":null,
+	  "next":null,
+	  "last":"https://rest.messagebird.com/messages/?offset=0"
+	},
+	"items":[
+	  {
+		"id":"6fe65f90454aa61536e6a88b88972670",
+		"href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+		"direction":"mt",
+		"type":"sms",
+		"originator":"TestName",
+		"body":"Hello World",
+		"reference":null,
+		"validity":null,
+		"gateway":239,
+		"typeDetails":{
+  
+		},
+		"datacoding":"plain",
+		"mclass":1,
+		"scheduledDatetime":null,
+		"createdDatetime":"2015-01-05T10:02:59+00:00",
+		"recipients":{
+		  "totalCount":1,
+		  "totalSentCount":1,
+		  "totalDeliveredCount":0,
+		  "totalDeliveryFailedCount":0,
+		  "items":[
+			{
+			  "recipient":31612345678,
+			  "status":"sent",
+			  "statusDatetime":"2015-01-05T10:02:59+00:00"
+			}
+		  ]
+		}
+	  },
+	  {
+		"id":"6fe65f90454aa61536e6a88b88972670",
+		"href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
+		"direction":"mt",
+		"type":"sms",
+		"originator":"TestName",
+		"body":"Hello World",
+		"reference":null,
+		"validity":null,
+		"gateway":239,
+		"typeDetails":{
+  
+		},
+		"datacoding":"plain",
+		"mclass":1,
+		"scheduledDatetime":null,
+		"createdDatetime":"2015-01-05T10:02:59+00:00",
+		"recipients":{
+		  "totalCount":1,
+		  "totalSentCount":1,
+		  "totalDeliveredCount":0,
+		  "totalDeliveryFailedCount":0,
+		  "items":[
+			{
+			  "recipient":31612345678,
+			  "status":"sent",
+			  "statusDatetime":"2015-01-05T10:02:59+00:00"
+			}
+		  ]
+		}
+	  }
+	]
+  }`)
+
+func TestMain(m *testing.M) {
+	messagebirdtest.EnableServer(m)
+}
 
 func assertMessageObject(t *testing.T, message *Message) {
 	if message.ID != "6fe65f90454aa61536e6a88b88972670" {
@@ -116,10 +354,11 @@ func assertMessageObject(t *testing.T, message *Message) {
 	}
 }
 
-func TestNewMessage(t *testing.T) {
-	SetServerResponse(http.StatusOK, messageObject)
+func TestCreate(t *testing.T) {
+	messagebirdtest.WillReturn(messageObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", nil)
+	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", nil)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
@@ -127,11 +366,13 @@ func TestNewMessage(t *testing.T) {
 	assertMessageObject(t, message)
 }
 
-func TestNewMessageError(t *testing.T) {
-	SetServerResponse(http.StatusMethodNotAllowed, accessKeyErrorObject)
-	_, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", nil)
+func TestCreateError(t *testing.T) {
+	messagebirdtest.WillReturnAccessKeyError()
+	client := messagebirdtest.Client(t)
 
-	errorResponse, ok := err.(ErrorResponse)
+	_, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", nil)
+
+	errorResponse, ok := err.(messagebird.ErrorResponse)
 	if !ok {
 		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
 	}
@@ -149,42 +390,11 @@ func TestNewMessageError(t *testing.T) {
 	}
 }
 
-var messageWithParamsObject = []byte(`{
-  "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-  "direction":"mt",
-  "type":"sms",
-  "originator":"TestName",
-  "body":"Hello World",
-  "reference":"TestReference",
-  "validity":13,
-  "gateway":10,
-  "typeDetails":{
+func TestCreateWithParams(t *testing.T) {
+	messagebirdtest.WillReturn(messageWithParamsObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-  },
-  "datacoding":"unicode",
-  "mclass":1,
-  "scheduledDatetime":null,
-  "createdDatetime":"2015-01-05T10:02:59+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":1,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"sent",
-        "statusDatetime":"2015-01-05T10:02:59+00:00"
-      }
-    ]
-  }
-}`)
-
-func TestNewMessageWithParams(t *testing.T) {
-	SetServerResponse(http.StatusOK, messageWithParamsObject)
-
-	params := &MessageParams{
+	params := &Params{
 		Type:       "sms",
 		Reference:  "TestReference",
 		Validity:   13,
@@ -192,7 +402,7 @@ func TestNewMessageWithParams(t *testing.T) {
 		DataCoding: "unicode",
 	}
 
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
@@ -218,47 +428,16 @@ func TestNewMessageWithParams(t *testing.T) {
 	}
 }
 
-var binaryMessageObject = []byte(`{
-  "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-  "direction":"mt",
-  "type":"binary",
-  "originator":"TestName",
-  "body":"Hello World",
-  "reference":"TestReference",
-  "validity":13,
-  "gateway":10,
-  "typeDetails":{
-    "udh":"050003340201"
-  },
-  "datacoding":"unicode",
-  "mclass":1,
-  "scheduledDatetime":null,
-  "createdDatetime":"2015-01-05T10:02:59+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":1,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"sent",
-        "statusDatetime":"2015-01-05T10:02:59+00:00"
-      }
-    ]
-  }
-}`)
+func TestCreateWithBinaryType(t *testing.T) {
+	messagebirdtest.WillReturn(binaryMessageObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-func TestNewMessageWithBinaryType(t *testing.T) {
-	SetServerResponse(http.StatusOK, binaryMessageObject)
-
-	params := &MessageParams{
+	params := &Params{
 		Type:        "binary",
 		TypeDetails: TypeDetails{"udh": "050003340201"},
 	}
 
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
@@ -276,49 +455,16 @@ func TestNewMessageWithBinaryType(t *testing.T) {
 	}
 }
 
-var premiumMessageObject = []byte(`{
-  "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-  "direction":"mt",
-  "type":"premium",
-  "originator":"TestName",
-  "body":"Hello World",
-  "reference":"TestReference",
-  "validity":13,
-  "gateway":10,
-  "typeDetails":{
-    "tariff":150,
-    "shortcode":1008,
-    "keyword":"RESTAPI"
-  },
-  "datacoding":"unicode",
-  "mclass":1,
-  "scheduledDatetime":null,
-  "createdDatetime":"2015-01-05T10:02:59+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":1,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"sent",
-        "statusDatetime":"2015-01-05T10:02:59+00:00"
-      }
-    ]
-  }
-}`)
+func TestCreateWithPremiumType(t *testing.T) {
+	messagebirdtest.WillReturn(premiumMessageObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-func TestNewMessageWithPremiumType(t *testing.T) {
-	SetServerResponse(http.StatusOK, premiumMessageObject)
-
-	params := &MessageParams{
+	params := &Params{
 		Type:        "premium",
 		TypeDetails: TypeDetails{"keyword": "RESTAPI", "shortcode": 1008, "tariff": 150},
 	}
 
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
@@ -344,44 +490,13 @@ func TestNewMessageWithPremiumType(t *testing.T) {
 	}
 }
 
-var flashMessageObject = []byte(`{
-  "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-  "direction":"mt",
-  "type":"flash",
-  "originator":"TestName",
-  "body":"Hello World",
-  "reference":"TestReference",
-  "validity":13,
-  "gateway":10,
-  "typeDetails":{
+func TestCreateWithFlashType(t *testing.T) {
+	messagebirdtest.WillReturn(flashMessageObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-  },
-  "datacoding":"unicode",
-  "mclass":0,
-  "scheduledDatetime":null,
-  "createdDatetime":"2015-01-05T10:02:59+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":1,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"sent",
-        "statusDatetime":"2015-01-05T10:02:59+00:00"
-      }
-    ]
-  }
-}`)
+	params := &Params{Type: "flash"}
 
-func TestNewMessageWithFlashType(t *testing.T) {
-	SetServerResponse(http.StatusOK, flashMessageObject)
-
-	params := &MessageParams{Type: "flash"}
-
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
@@ -391,45 +506,15 @@ func TestNewMessageWithFlashType(t *testing.T) {
 	}
 }
 
-var messageObjectWithCreatedDatetime = []byte(`{
-  "id":"6fe65f90454aa61536e6a88b88972670",
-  "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-  "direction":"mt",
-  "type":"sms",
-  "originator":"TestName",
-  "body":"Hello World",
-  "reference":null,
-  "validity":null,
-  "gateway":239,
-  "typeDetails":{
-
-  },
-  "datacoding":"plain",
-  "mclass":1,
-  "scheduledDatetime":"2015-01-05T10:03:59+00:00",
-  "createdDatetime":"2015-01-05T10:02:59+00:00",
-  "recipients":{
-    "totalCount":1,
-    "totalSentCount":0,
-    "totalDeliveredCount":0,
-    "totalDeliveryFailedCount":0,
-    "items":[
-      {
-        "recipient":31612345678,
-        "status":"scheduled",
-        "statusDatetime":null
-      }
-    ]
-  }
-}`)
-
-func TestNewMessageWithScheduledDatetime(t *testing.T) {
-	SetServerResponse(http.StatusOK, messageObjectWithCreatedDatetime)
+func TestCreateWithScheduledDatetime(t *testing.T) {
+	messagebirdtest.WillReturn(messageObjectWithCreatedDatetime, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T10:03:59+00:00")
 
-	params := &MessageParams{ScheduledDatetime: scheduledDatetime}
-	message, err := mbClient.NewMessage("TestName", []string{"31612345678"}, "Hello World", params)
+	params := &Params{ScheduledDatetime: scheduledDatetime}
+
+	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new message: %s", err)
 	}
@@ -459,87 +544,11 @@ func TestNewMessageWithScheduledDatetime(t *testing.T) {
 	}
 }
 
-var messageListObject = []byte(`{
-  "offset":0,
-  "limit":20,
-  "count":2,
-  "totalCount":2,
-  "links":{
-    "first":"https://rest.messagebird.com/messages/?offset=0",
-    "previous":null,
-    "next":null,
-    "last":"https://rest.messagebird.com/messages/?offset=0"
-  },
-  "items":[
-    {
-      "id":"6fe65f90454aa61536e6a88b88972670",
-      "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-      "direction":"mt",
-      "type":"sms",
-      "originator":"TestName",
-      "body":"Hello World",
-      "reference":null,
-      "validity":null,
-      "gateway":239,
-      "typeDetails":{
+func TestList(t *testing.T) {
+	messagebirdtest.WillReturn(messageListObject, http.StatusOK)
+	client := messagebirdtest.Client(t)
 
-      },
-      "datacoding":"plain",
-      "mclass":1,
-      "scheduledDatetime":null,
-      "createdDatetime":"2015-01-05T10:02:59+00:00",
-      "recipients":{
-        "totalCount":1,
-        "totalSentCount":1,
-        "totalDeliveredCount":0,
-        "totalDeliveryFailedCount":0,
-        "items":[
-          {
-            "recipient":31612345678,
-            "status":"sent",
-            "statusDatetime":"2015-01-05T10:02:59+00:00"
-          }
-        ]
-      }
-    },
-    {
-      "id":"6fe65f90454aa61536e6a88b88972670",
-      "href":"https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
-      "direction":"mt",
-      "type":"sms",
-      "originator":"TestName",
-      "body":"Hello World",
-      "reference":null,
-      "validity":null,
-      "gateway":239,
-      "typeDetails":{
-
-      },
-      "datacoding":"plain",
-      "mclass":1,
-      "scheduledDatetime":null,
-      "createdDatetime":"2015-01-05T10:02:59+00:00",
-      "recipients":{
-        "totalCount":1,
-        "totalSentCount":1,
-        "totalDeliveredCount":0,
-        "totalDeliveryFailedCount":0,
-        "items":[
-          {
-            "recipient":31612345678,
-            "status":"sent",
-            "statusDatetime":"2015-01-05T10:02:59+00:00"
-          }
-        ]
-      }
-    }
-  ]
-}`)
-
-func TestMessageList(t *testing.T) {
-	SetServerResponse(http.StatusOK, messageListObject)
-
-	messageList, err := mbClient.Messages(nil)
+	messageList, err := List(client, nil)
 	if err != nil {
 		t.Fatalf("Didn't expect an error while requesting Messages: %s", err)
 	}
@@ -564,7 +573,7 @@ func TestMessageList(t *testing.T) {
 
 func TestRequestDataForMessage(t *testing.T) {
 	currentTime := time.Now()
-	messageParams := &MessageParams{
+	messageParams := &Params{
 		Type:              "binary",
 		Reference:         "MyReference",
 		Validity:          1,

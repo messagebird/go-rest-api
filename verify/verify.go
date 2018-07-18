@@ -1,8 +1,12 @@
-package messagebird
+package verify
 
 import (
 	"errors"
+	"net/http"
+	"net/url"
 	"time"
+
+	messagebird "github.com/messagebird/go-rest-api"
 )
 
 // Verify object represents MessageBird server response.
@@ -17,8 +21,8 @@ type Verify struct {
 	Recipient          int
 }
 
-// VerifyParams handles optional verification parameters.
-type VerifyParams struct {
+// Params handles optional verification parameters.
+type Params struct {
 	Originator  string
 	Reference   string
 	Type        string
@@ -45,7 +49,40 @@ type verifyRequest struct {
 	TokenLength int    `json:"tokenLength,omitempty"`
 }
 
-func requestDataForVerify(recipient string, params *VerifyParams) (*verifyRequest, error) {
+// path represents the path to the Verify resource.
+const path = "verify"
+
+// Create generates a new One-Time-Password for one recipient.
+func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, error) {
+	requestData, err := requestDataForVerify(recipient, params)
+	if err != nil {
+		return nil, err
+	}
+
+	verify := &Verify{}
+	if err := c.Request(verify, http.MethodPost, path, requestData); err != nil {
+		return nil, err
+	}
+
+	return verify, nil
+}
+
+// VerifyToken performs token value check against MessageBird API.
+func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
+	params := &url.Values{}
+	params.Set("token", token)
+
+	pathWithParams := path + "/" + id + "?" + params.Encode()
+
+	verify := &Verify{}
+	if err := c.Request(verify, http.MethodGet, pathWithParams, nil); err != nil {
+		return nil, err
+	}
+
+	return verify, nil
+}
+
+func requestDataForVerify(recipient string, params *Params) (*verifyRequest, error) {
 	if recipient == "" {
 		return nil, errors.New("recipient is required")
 	}

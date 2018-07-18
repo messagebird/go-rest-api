@@ -1,10 +1,13 @@
-package messagebird
+package message
 
 import (
 	"errors"
+	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	messagebird "github.com/messagebird/go-rest-api"
 )
 
 // TypeDetails is a hash with extra information.
@@ -28,7 +31,7 @@ type Message struct {
 	ReportURL         string
 	ScheduledDatetime *time.Time
 	CreatedDatetime   *time.Time
-	Recipients        Recipients
+	Recipients        messagebird.Recipients
 }
 
 // MessageList represents a list of Messages.
@@ -41,8 +44,8 @@ type MessageList struct {
 	Items      []Message
 }
 
-// MessageParams provide additional message send options and used in URL as params.
-type MessageParams struct {
+// Params provide additional message send options and used in URL as params.
+type Params struct {
 	Type              string
 	Reference         string
 	Validity          int
@@ -53,8 +56,8 @@ type MessageParams struct {
 	ScheduledDatetime time.Time
 }
 
-// MessageListParams provides additional message list options.
-type MessageListParams struct {
+// ListParams provides additional message list options.
+type ListParams struct {
 	Originator string
 	Direction  string
 	Type       string
@@ -77,7 +80,50 @@ type messageRequest struct {
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
 }
 
-func requestDataForMessage(originator string, recipients []string, body string, params *MessageParams) (*messageRequest, error) {
+// path represents the path to the Message resource.
+const path = "messages"
+
+// Read retrieves the information of an existing Message.
+func Read(c *messagebird.Client, id string) (*Message, error) {
+	message := &Message{}
+	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
+		return nil, err
+	}
+
+	return message, nil
+}
+
+// List retrieves all messages of the user represented as a MessageList object.
+func List(c *messagebird.Client, msgListParams *ListParams) (*MessageList, error) {
+	messageList := &MessageList{}
+	params, err := paramsForMessageList(msgListParams)
+	if err != nil {
+		return messageList, err
+	}
+
+	if err := c.Request(messageList, http.MethodGet, path+"?"+params.Encode(), nil); err != nil {
+		return nil, err
+	}
+
+	return messageList, nil
+}
+
+// Create creates a new message for one or more recipients.
+func Create(c *messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
+	requestData, err := requestDataForMessage(originator, recipients, body, msgParams)
+	if err != nil {
+		return nil, err
+	}
+
+	message := &Message{}
+	if err := c.Request(message, http.MethodPost, path, requestData); err != nil {
+		return nil, err
+	}
+
+	return message, nil
+}
+
+func requestDataForMessage(originator string, recipients []string, body string, params *Params) (*messageRequest, error) {
 	if originator == "" {
 		return nil, errors.New("originator is required")
 	}
@@ -121,7 +167,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 
 // paramsForMessageList converts the specified MessageListParams struct to a
 // url.Values pointer and returns it.
-func paramsForMessageList(params *MessageListParams) (*url.Values, error) {
+func paramsForMessageList(params *ListParams) (*url.Values, error) {
 	urlParams := &url.Values{}
 
 	if params == nil {
