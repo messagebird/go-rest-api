@@ -1,4 +1,4 @@
-package mmsmessage
+package mms
 
 import (
 	"net/http"
