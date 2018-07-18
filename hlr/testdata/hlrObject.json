@@ -1,10 +1,10 @@
 {
-    "id":"27978c50354a93ca0ca8de6h54340177",
-    "href":"https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177",
-    "msisdn":31612345678,
-    "network":20406,
-    "reference":"MyReference",
-    "status":"sent",
-    "createdDatetime":"2015-01-04T13:14:08+00:00",
-    "statusDatetime":"2015-01-04T13:14:09+00:00"
-  }
+    "id": "27978c50354a93ca0ca8de6h54340177",
+    "href": "https:\/\/rest.messagebird.com\/hlr\/27978c50354a93ca0ca8de6h54340177",
+    "msisdn": 31612345678,
+    "network": 20406,
+    "reference": "MyReference",
+    "status": "sent",
+    "createdDatetime": "2015-01-04T13:14:08+00:00",
+    "statusDatetime": "2015-01-04T13:14:09+00:00"
+}

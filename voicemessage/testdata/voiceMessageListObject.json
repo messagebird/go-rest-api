@@ -4,7 +4,7 @@
         {
             "body": "Hello World",
             "createdDatetime": "2015-01-05T16:11:24+00:00",
-            "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+            "href": "https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
             "id": "430c44a0354aab7ac9553f7a49907463",
             "ifMachine": "continue",
             "language": "en-gb",
@@ -30,7 +30,7 @@
         {
             "body": "Hello World",
             "createdDatetime": "2015-01-05T16:11:24+00:00",
-            "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+            "href": "https:\/\/rest.messagebird.com\/voicemessages\/430c44a0354aab7ac9553f7a49907463",
             "id": "430c44a0354aab7ac9553f7a49907463",
             "ifMachine": "continue",
             "language": "en-gb",
@@ -56,8 +56,8 @@
     ],
     "limit": 20,
     "links": {
-        "first": "https://rest.messagebird.com/voicemessages/?offset=0",
-        "last": "https://rest.messagebird.com/voicemessages/?offset=0",
+        "first": "https:\/\/rest.messagebird.com\/voicemessages\/?offset=0",
+        "last": "https:\/\/rest.messagebird.com\/voicemessages\/?offset=0",
         "next": null,
         "previous": null
     },
