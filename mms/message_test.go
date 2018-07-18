@@ -54,63 +54,63 @@ func TestCreate(t *testing.T) {
 		ScheduledDatetime: time.Now(),
 	}
 
-	mmsMessage, err := Create(client, "TestName", []string{"31612345678"}, params)
+	message, err := Create(client, "TestName", []string{"31612345678"}, params)
 
 	if err != nil {
 		t.Fatalf("Didn't expect error while creating a new MMS message: %s", err)
 	}
-	if mmsMessage.ID != "6d9e7100b1f9406c81a3c303c30ccf05" {
-		t.Errorf("Unexpected mmsMessage id: %s", mmsMessage.ID)
+	if message.ID != "6d9e7100b1f9406c81a3c303c30ccf05" {
+		t.Errorf("Unexpected message id: %s", message.ID)
 	}
-	if mmsMessage.HRef != "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05" {
-		t.Errorf("Unexpected mmsMessage href: %s", mmsMessage.HRef)
+	if message.HRef != "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05" {
+		t.Errorf("Unexpected message href: %s", message.HRef)
 	}
-	if mmsMessage.Direction != "mt" {
-		t.Errorf("Unexpected mmsMessage direction: %s", mmsMessage.Direction)
+	if message.Direction != "mt" {
+		t.Errorf("Unexpected message direction: %s", message.Direction)
 	}
-	if mmsMessage.Originator != "TestName" {
-		t.Errorf("Unexpected mmsMessage originator: %s", mmsMessage.Originator)
+	if message.Originator != "TestName" {
+		t.Errorf("Unexpected message originator: %s", message.Originator)
 	}
-	if mmsMessage.Body != "Hello World" {
-		t.Errorf("Unexpected mmsMessage body: %s", mmsMessage.Body)
+	if message.Body != "Hello World" {
+		t.Errorf("Unexpected message body: %s", message.Body)
 	}
-	if mmsMessage.MediaUrls[0] != "http://w3.org/1.gif" {
-		t.Errorf("Unexpected mmsMessage mediaUrl: %s", mmsMessage.MediaUrls[0])
+	if message.MediaUrls[0] != "http://w3.org/1.gif" {
+		t.Errorf("Unexpected message mediaUrl: %s", message.MediaUrls[0])
 	}
-	if mmsMessage.MediaUrls[1] != "http://w3.org/2.gif" {
-		t.Errorf("Unexpected mmsMessage mediaUrl: %s", mmsMessage.MediaUrls[1])
+	if message.MediaUrls[1] != "http://w3.org/2.gif" {
+		t.Errorf("Unexpected message mediaUrl: %s", message.MediaUrls[1])
 	}
-	if mmsMessage.Reference != "TestReference" {
-		t.Errorf("Unexpected mmsMessage reference: %s", mmsMessage.Reference)
+	if message.Reference != "TestReference" {
+		t.Errorf("Unexpected message reference: %s", message.Reference)
 	}
-	if mmsMessage.Subject != "TestSubject" {
-		t.Errorf("Unexpected mmsMessage reference: %s", mmsMessage.Subject)
+	if message.Subject != "TestSubject" {
+		t.Errorf("Unexpected message reference: %s", message.Subject)
 	}
-	if mmsMessage.ScheduledDatetime != nil {
-		t.Errorf("Unexpected mmsMessage scheduled datetime: %s", mmsMessage.ScheduledDatetime)
+	if message.ScheduledDatetime != nil {
+		t.Errorf("Unexpected message scheduled datetime: %s", message.ScheduledDatetime)
 	}
-	if mmsMessage.CreatedDatetime == nil || mmsMessage.CreatedDatetime.Format(time.RFC3339) != "2017-10-20T12:50:28Z" {
-		t.Errorf("Unexpected mmsMessage created datetime: %s", mmsMessage.CreatedDatetime)
+	if message.CreatedDatetime == nil || message.CreatedDatetime.Format(time.RFC3339) != "2017-10-20T12:50:28Z" {
+		t.Errorf("Unexpected message created datetime: %s", message.CreatedDatetime)
 	}
-	if mmsMessage.Recipients.TotalCount != 1 {
-		t.Fatalf("Unexpected number of total count: %d", mmsMessage.Recipients.TotalCount)
+	if message.Recipients.TotalCount != 1 {
+		t.Fatalf("Unexpected number of total count: %d", message.Recipients.TotalCount)
 	}
-	if mmsMessage.Recipients.TotalSentCount != 1 {
-		t.Errorf("Unexpected number of total sent count: %d", mmsMessage.Recipients.TotalSentCount)
+	if message.Recipients.TotalSentCount != 1 {
+		t.Errorf("Unexpected number of total sent count: %d", message.Recipients.TotalSentCount)
 	}
-	if mmsMessage.Recipients.Items[0].Recipient != 31612345678 {
-		t.Errorf("Unexpected mmsMessage recipient: %d", mmsMessage.Recipients.Items[0].Recipient)
+	if message.Recipients.Items[0].Recipient != 31612345678 {
+		t.Errorf("Unexpected message recipient: %d", message.Recipients.Items[0].Recipient)
 	}
-	if mmsMessage.Recipients.Items[0].Status != "sent" {
-		t.Errorf("Unexpected mmsMessage recipient status: %s", mmsMessage.Recipients.Items[0].Status)
+	if message.Recipients.Items[0].Status != "sent" {
+		t.Errorf("Unexpected message recipient status: %s", message.Recipients.Items[0].Status)
 	}
-	if mmsMessage.Recipients.Items[0].StatusDatetime == nil || mmsMessage.Recipients.Items[0].StatusDatetime.Format(time.RFC3339) != "2017-10-20T12:50:28Z" {
-		t.Errorf("Unexpected datetime status for mmsMessage recipient: %s", mmsMessage.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
+	if message.Recipients.Items[0].StatusDatetime == nil || message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339) != "2017-10-20T12:50:28Z" {
+		t.Errorf("Unexpected datetime status for message recipient: %s", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 	}
 
 	errorResponse, ok := err.(messagebird.ErrorResponse)
 	if ok {
-		t.Errorf("Unexpected error returned with mmsMessage %#v", errorResponse)
+		t.Errorf("Unexpected error returned with message %#v", errorResponse)
 	}
 }
 

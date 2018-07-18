@@ -10,8 +10,8 @@ import (
 	messagebird "github.com/messagebird/go-rest-api"
 )
 
-// MMSMessage represents a MMS Message.
-type MMSMessage struct {
+// Message represents a MMS Message.
+type Message struct {
 	ID                string
 	HRef              string
 	Direction         string
@@ -39,8 +39,8 @@ type Params struct {
 const path = "mms"
 
 // Read retrieves the information of an existing MmsMessage.
-func Read(c *messagebird.Client, id string) (*MMSMessage, error) {
-	mmsMessage := &MMSMessage{}
+func Read(c *messagebird.Client, id string) (*Message, error) {
+	mmsMessage := &Message{}
 	if err := c.Request(mmsMessage, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
@@ -49,8 +49,8 @@ func Read(c *messagebird.Client, id string) (*MMSMessage, error) {
 }
 
 // Create creates a new MMS message for one or more recipients.
-func Create(c *messagebird.Client, originator string, recipients []string, msgParams *Params) (*MMSMessage, error) {
-	params, err := paramsForMMSMessage(msgParams)
+func Create(c *messagebird.Client, originator string, recipients []string, msgParams *Params) (*Message, error) {
+	params, err := paramsForMessage(msgParams)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func Create(c *messagebird.Client, originator string, recipients []string, msgPa
 	params.Set("originator", originator)
 	params.Set("recipients", strings.Join(recipients, ","))
 
-	mmsMessage := &MMSMessage{}
+	mmsMessage := &Message{}
 	if err := c.Request(mmsMessage, http.MethodPost, path, params); err != nil {
 		return nil, err
 	}
@@ -66,9 +66,9 @@ func Create(c *messagebird.Client, originator string, recipients []string, msgPa
 	return mmsMessage, nil
 }
 
-// paramsForMMSMessage converts the specified MMSMessageParams struct to a
-// url.Values pointer and returns it.
-func paramsForMMSMessage(params *Params) (*url.Values, error) {
+// paramsForMessage converts the specified Parmas struct to a url.Values
+// pointer and returns it.
+func paramsForMessage(params *Params) (*url.Values, error) {
 	urlParams := &url.Values{}
 
 	if params.Body == "" && params.MediaUrls == nil {
