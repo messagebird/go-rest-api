@@ -42,7 +42,7 @@ func closeServer() {
 // relative to the testdata directory (the go tool ignores directories named
 // "testdata" in test packages: https://golang.org/cmd/go/#hdr-Test_packages).
 func WillReturnTestdata(t *testing.T, relativePath string, s int) {
-	responseBody = Testdata(t, relativePath)
+	responseBody = testdata(t, relativePath)
 	status = s
 }
 
