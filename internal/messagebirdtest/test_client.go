@@ -17,7 +17,7 @@ type testWriter struct {
 
 // Write logs the provided buffer to the current test's error log.
 func (w testWriter) Write(p []byte) (int, error) {
-	w.t.Log(p)
+	w.t.Logf("%s", p)
 
 	return len(p), nil
 }
