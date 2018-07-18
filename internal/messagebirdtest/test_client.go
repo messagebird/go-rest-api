@@ -24,7 +24,7 @@ func (w testWriter) Write(p []byte) (int, error) {
 
 // Client initializes a new MessageBird client that uses the
 func Client(t *testing.T) *messagebird.Client {
-	return client(t, "test_gshuPaZoeEG6ovbc8M79w0QyM")
+	return client(t, "")
 }
 
 func client(t *testing.T, accessKey string) *messagebird.Client {
