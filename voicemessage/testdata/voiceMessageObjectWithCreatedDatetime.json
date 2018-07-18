@@ -1,0 +1,25 @@
+{
+    "body": "Hello World",
+    "createdDatetime": "2015-01-05T16:11:24+00:00",
+    "href": "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463",
+    "id": "430c44a0354aab7ac9553f7a49907463",
+    "ifMachine": "continue",
+    "language": "en-gb",
+    "recipients": {
+        "items": [
+            {
+                "recipient": 31612345678,
+                "status": "scheduled",
+                "statusDatetime": null
+            }
+        ],
+        "totalCount": 1,
+        "totalDeliveredCount": 0,
+        "totalDeliveryFailedCount": 0,
+        "totalSentCount": 0
+    },
+    "reference": null,
+    "repeat": 1,
+    "scheduledDatetime": "2015-01-05T16:12:24+00:00",
+    "voice": "female"
+}
