@@ -59,7 +59,7 @@ Before, the errors returned by the MessageBird API would be included in the resu
 
 ```go
 balance, err := balance.Read(client)
-if err != nil && err == messagebird.ErrResponse{
+if err != nil && err == messagebird.ErrResponse {
     for _, mbError := range balance.Errors {
         // Do something with mbError.
     }
