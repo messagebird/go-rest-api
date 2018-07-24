@@ -10,7 +10,7 @@ import (
 var server *httptest.Server
 
 var responseBody []byte
-var status int
+var status int = 200
 
 // EnableServer starts a fake server, runs the test and closes the server.
 func EnableServer(m *testing.M) {
