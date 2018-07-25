@@ -9,41 +9,12 @@ import (
 	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
-var mmsMessageObject = []byte(`{
-    "body": "Hello World",
-    "createdDatetime": "2017-10-20T12:50:28+00:00",
-    "direction": "mt",
-    "href": "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05",
-    "id": "6d9e7100b1f9406c81a3c303c30ccf05",
-    "mediaUrls": [
-        "http://w3.org/1.gif",
-        "http://w3.org/2.gif"
-    ],
-    "originator": "TestName",
-    "recipients": {
-        "items": [
-            {
-                "recipient": 31612345678,
-                "status": "sent",
-                "statusDatetime": "2017-10-20T12:50:28+00:00"
-            }
-        ],
-        "totalCount": 1,
-        "totalDeliveredCount": 0,
-        "totalDeliveryFailedCount": 0,
-        "totalSentCount": 1
-    },
-    "reference": "TestReference",
-    "scheduledDatetime": null,
-    "subject": "TestSubject"
-}`)
-
 func TestMain(m *testing.M) {
 	messagebirdtest.EnableServer(m)
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturn(mmsMessageObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "mmsMessageObject.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	params := &Params{

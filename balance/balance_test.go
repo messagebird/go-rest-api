@@ -8,12 +8,6 @@ import (
 	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
 )
 
-var balanceObject = []byte(`{
-  		"payment":"prepaid",
-  		"type":"credits",
-  		"amount":9.2
-	}`)
-
 const Epsilon float32 = 0.001
 
 func cmpFloat32(a, b float32) bool {
@@ -25,7 +19,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestRead(t *testing.T) {
-	messagebirdtest.WillReturn(balanceObject, http.StatusOK)
+	messagebirdtest.WillReturnTestdata(t, "balance.json", http.StatusOK)
 	client := messagebirdtest.Client(t)
 
 	balance, err := Read(client)
