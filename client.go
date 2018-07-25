@@ -111,12 +111,19 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 
 	// Status code 500 is a server error and means nothing can be done at this
 	// point.
-	if response.StatusCode == 500 {
+	if response.StatusCode == http.StatusInternalServerError {
 		return ErrUnexpectedResponse
 	}
+
+	// Status code 204 is returned for successful DELETE requests. Don't try to
+	// unmarshal the body: that would return errors.
+	if response.StatusCode == http.StatusNoContent && response.ContentLength == 0 {
+		return nil
+	}
+
 	// Status codes 200 and 201 are indicative of being able to convert the
 	// response body to the struct that was specified.
-	if response.StatusCode == 200 || response.StatusCode == 201 {
+	if response.StatusCode == http.StatusOK || response.StatusCode == http.StatusCreated {
 		if err := json.Unmarshal(responseBody, &v); err != nil {
 			return fmt.Errorf("could not decode response JSON, %s: %v", string(responseBody), err)
 		}
