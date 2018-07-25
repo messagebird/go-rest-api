@@ -9,8 +9,6 @@ import (
 	"testing"
 )
 
-type resetFunc func()
-
 type request struct {
 	Body   []byte
 	Method string
