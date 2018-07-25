@@ -43,6 +43,8 @@ func initAndStartServer() {
 
 		var err error
 
+		// Reading from the request body is fine, as it's not used elsewhere.
+		// Server always returns fake data/testdata.
 		Request.Body, err = ioutil.ReadAll(r.Body)
 		if err != nil {
 			panic(err.Error())
@@ -59,23 +61,6 @@ func initAndStartServer() {
 
 func closeServer() {
 	server.Close()
-}
-
-// setRequest sets some basic fields from the http.Request in our global Request
-// struct.
-func setRequest(r *http.Request) error {
-	Request := request{
-		Method: r.Method,
-		URL:    r.URL,
-	}
-
-	var err error
-
-	// Reading from the request body is fine, as it's not used elsewhere.
-	// Server always returns fake data/testdata.
-	Request.Body, err = ioutil.ReadAll(r.Body)
-
-	return err
 }
 
 func WillReturn(b []byte, s int) {
