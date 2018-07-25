@@ -4,15 +4,15 @@
     "count": 2,
     "totalCount": 2,
     "links": {
-        "first": "https:\/\/rest.messagebird.com\/hlr\/?offset=0",
+        "first": "https://rest.messagebird.com/hlr/?offset=0",
         "previous": null,
         "next": null,
-        "last": "https:\/\/rest.messagebird.com\/hlr\/?offset=0"
+        "last": "https://rest.messagebird.com/hlr/?offset=0"
     },
     "items": [
         {
             "id": "27978c50354a93ca0ca8de6h54340177",
-            "href": "https:\/\/rest.messagebird.com\/hlr\/27978c50354a93ca0ca8de6h54340177",
+            "href": "https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177",
             "msisdn": 31612345678,
             "network": 20406,
             "reference": "MyReference",
@@ -22,7 +22,7 @@
         },
         {
             "id": "27978c50354a93ca0ca8de6h54340177",
-            "href": "https:\/\/rest.messagebird.com\/hlr\/27978c50354a93ca0ca8de6h54340177",
+            "href": "https://rest.messagebird.com/hlr/27978c50354a93ca0ca8de6h54340177",
             "msisdn": 31612345678,
             "network": 20406,
             "reference": "MyReference",
