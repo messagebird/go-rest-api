@@ -105,5 +105,5 @@ func WillReturnAccessKeyError() {
 				}
 			]
 		}
-	`), 401)
+	`), http.StatusUnauthorized)
 }
