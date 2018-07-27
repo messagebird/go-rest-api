@@ -61,6 +61,9 @@ func closeServer() {
 	server.Close()
 }
 
+// WillReturn sets the response body (b) and status (s) to be returned by the
+// server for incoming requests. These can be used by tests to assert
+// unmarshalling responses works as intended.
 func WillReturn(b []byte, s int) {
 	responseBody = b
 	status = s
