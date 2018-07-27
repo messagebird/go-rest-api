@@ -116,6 +116,7 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		if err := json.Unmarshal(responseBody, &v); err != nil {
 			return fmt.Errorf("could not decode response JSON, %s: %v", string(responseBody), err)
 		}
+
 		return nil
 	case http.StatusNoContent:
 		// Status code 204 is returned for successful DELETE requests. Don't try to
