@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	messagebird "github.com/messagebird/go-rest-api"
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 const Epsilon float32 = 0.001
@@ -15,12 +15,12 @@ func cmpFloat32(a, b float32) bool {
 }
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func TestRead(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "balance.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "balance.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	balance, err := Read(client)
 	if err != nil {
@@ -41,8 +41,8 @@ func TestRead(t *testing.T) {
 }
 
 func TestReadError(t *testing.T) {
-	messagebirdtest.WillReturnAccessKeyError()
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnAccessKeyError()
+	client := mbtest.Client(t)
 
 	_, err := Read(client)
 
