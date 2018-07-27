@@ -240,8 +240,6 @@ func TestListContacts(t *testing.T) {
 		t.Fatalf("expected third-contact-id, got %s", list.Items[2].ID)
 	}
 
-	client.DebugLog.Printf("list:\n%#v\n", list)
-
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
 }
 
