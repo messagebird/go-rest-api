@@ -6,12 +6,11 @@ import (
 	"time"
 
 	"github.com/messagebird/go-rest-api"
-
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func assertHLRObject(t *testing.T, hlr *HLR) {
@@ -49,8 +48,8 @@ func assertHLRObject(t *testing.T, hlr *HLR) {
 }
 
 func TestRead(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "hlrObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "hlrObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	hlr, err := Read(client, "27978c50354a93ca0ca8de6h54340177")
 	if err != nil {
@@ -76,8 +75,8 @@ func TestRequestDataForHLR(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "hlrObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "hlrObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	hlr, err := Create(client, "31612345678", "MyReference")
 	if err != nil {
@@ -88,8 +87,8 @@ func TestCreate(t *testing.T) {
 }
 
 func TestHLRError(t *testing.T) {
-	messagebirdtest.WillReturnAccessKeyError()
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnAccessKeyError()
+	client := mbtest.Client(t)
 
 	_, err := Read(client, "dummy_hlr_id")
 
@@ -112,8 +111,8 @@ func TestHLRError(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "hlrListObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "hlrListObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	hlrList, err := List(client)
 	if err != nil {

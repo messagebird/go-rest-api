@@ -6,16 +6,16 @@ import (
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api"
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "mmsMessageObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "mmsMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	params := &Params{
 		Body:              "Hello World",
@@ -86,8 +86,8 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateError(t *testing.T) {
-	messagebirdtest.WillReturnAccessKeyError()
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnAccessKeyError()
+	client := mbtest.Client(t)
 
 	params := &Params{
 		Body:              "Hello World",
@@ -118,7 +118,7 @@ func TestCreateError(t *testing.T) {
 }
 
 func TestCreateWithEmptyParams(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	params := &Params{
 		Body:              "",

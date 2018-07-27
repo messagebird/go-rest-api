@@ -5,11 +5,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func assertVerifyObject(t *testing.T, v *Verify) {
@@ -55,8 +55,8 @@ func assertVerifyObject(t *testing.T, v *Verify) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "verifyObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "verifyObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	v, err := Create(client, "31612345678", nil)
 	if err != nil {
@@ -67,8 +67,8 @@ func TestCreate(t *testing.T) {
 }
 
 func TestVerifyToken(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "verifyTokenObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "verifyTokenObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	v, err := VerifyToken(client, "does not", "matter")
 	if err != nil {

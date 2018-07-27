@@ -5,15 +5,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func TestCreateWithEmptyMSISDN(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	if _, err := Create(client, &Request{}); err == nil {
 		t.Fatalf("expected error, got nil")
@@ -21,8 +21,8 @@ func TestCreateWithEmptyMSISDN(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "contactObject.json", http.StatusCreated)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "contactObject.json", http.StatusCreated)
+	client := mbtest.Client(t)
 
 	contact, err := Create(client, &Request{
 		MSISDN:    "31612345678",
@@ -35,8 +35,8 @@ func TestCreate(t *testing.T) {
 		t.Fatalf("unexpected error creating Contact: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodPost, "/contacts")
-	messagebirdtest.AssertTestdata(t, "contactRequestObjectCreate.json", messagebirdtest.Request.Body)
+	mbtest.AssertEndpointCalled(t, http.MethodPost, "/contacts")
+	mbtest.AssertTestdata(t, "contactRequestObjectCreate.json", mbtest.Request.Body)
 
 	if contact.MSISDN != 31612345678 {
 		t.Fatalf("expected 31612345678, got %d", contact.MSISDN)
@@ -68,18 +68,18 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	messagebirdtest.WillReturn([]byte(""), http.StatusNoContent)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturn([]byte(""), http.StatusNoContent)
+	client := mbtest.Client(t)
 
 	if err := Delete(client, "contact-id"); err != nil {
 		t.Fatalf("unexpected error deleting Contact: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodDelete, "/contacts/contact-id")
+	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/contacts/contact-id")
 }
 
 func TestDeleteWithEmptyID(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	if err := Delete(client, ""); err == nil {
 		t.Fatalf("expected error, got nil")
@@ -87,8 +87,8 @@ func TestDeleteWithEmptyID(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "contactListObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "contactListObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	list, err := List(client, DefaultListOptions)
 	if err != nil {
@@ -123,11 +123,11 @@ func TestList(t *testing.T) {
 		t.Fatalf("expected second-id, got %s", list.Items[1].ID)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodGet, "/contacts")
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/contacts")
 }
 
 func TestListPagination(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	tt := []struct {
 		expected string
@@ -141,22 +141,22 @@ func TestListPagination(t *testing.T) {
 	for _, tc := range tt {
 		List(client, tc.options)
 
-		if query := messagebirdtest.Request.URL.RawQuery; query != tc.expected {
+		if query := mbtest.Request.URL.RawQuery; query != tc.expected {
 			t.Fatalf("expected %s, got %s", tc.expected, query)
 		}
 	}
 }
 
 func TestRead(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "contactObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "contactObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	contact, err := Read(client, "contact-id")
 	if err != nil {
 		t.Fatalf("unexpected error reading Contact: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")
 
 	if contact.ID != "contact-id" {
 		t.Fatalf("expected contact-id, got %s", contact.ID)
@@ -206,15 +206,15 @@ func TestRead(t *testing.T) {
 }
 
 func TestReadWithCustomDetails(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "contactObjectWithCustomDetails.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "contactObjectWithCustomDetails.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	contact, err := Read(client, "contact-id")
 	if err != nil {
 		t.Fatalf("unexpected error reading Contact with custom details: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")
 
 	if contact.CustomDetails.Custom1 != "First" {
 		t.Fatalf("expected First, got %s", contact.CustomDetails.Custom1)
@@ -234,7 +234,7 @@ func TestReadWithCustomDetails(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	tt := []struct {
 		expectedTestdata string
@@ -250,7 +250,7 @@ func TestUpdate(t *testing.T) {
 			t.Fatalf("unexpected error updating Contact: %s\n", err)
 		}
 
-		messagebirdtest.AssertEndpointCalled(t, http.MethodPatch, "/contacts/contact-id")
-		messagebirdtest.AssertTestdata(t, tc.expectedTestdata, messagebirdtest.Request.Body)
+		mbtest.AssertEndpointCalled(t, http.MethodPatch, "/contacts/contact-id")
+		mbtest.AssertTestdata(t, tc.expectedTestdata, mbtest.Request.Body)
 	}
 }

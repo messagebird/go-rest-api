@@ -1,4 +1,4 @@
-package messagebirdtest
+package mbtest
 
 import (
 	"crypto/tls"
