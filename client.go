@@ -109,32 +109,29 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		c.DebugLog.Printf("HTTP RESPONSE: %s", string(responseBody))
 	}
 
-	// Status code 500 is a server error and means nothing can be done at this
-	// point.
-	if response.StatusCode == http.StatusInternalServerError {
-		return ErrUnexpectedResponse
-	}
-
-	// Status code 204 is returned for successful DELETE requests. Don't try to
-	// unmarshal the body: that would return errors.
-	if response.StatusCode == http.StatusNoContent && response.ContentLength == 0 {
-		return nil
-	}
-
-	// Status codes 200 and 201 are indicative of being able to convert the
-	// response body to the struct that was specified.
-	if response.StatusCode == http.StatusOK || response.StatusCode == http.StatusCreated {
+	switch response.StatusCode {
+	case http.StatusOK, http.StatusCreated:
+		// Status codes 200 and 201 are indicative of being able to convert the
+		// response body to the struct that was specified.
 		if err := json.Unmarshal(responseBody, &v); err != nil {
 			return fmt.Errorf("could not decode response JSON, %s: %v", string(responseBody), err)
 		}
 		return nil
-	}
+	case http.StatusNoContent:
+		// Status code 204 is returned for successful DELETE requests. Don't try to
+		// unmarshal the body: that would return errors.
+		return nil
+	case http.StatusInternalServerError:
+		// Status code 500 is a server error and means nothing can be done at this
+		// point.
+		return ErrUnexpectedResponse
+	default:
+		// Anything else than a 200/201/204/500 should be a JSON error.
+		var errorResponse ErrorResponse
+		if err := json.Unmarshal(responseBody, &errorResponse); err != nil {
+			return err
+		}
 
-	// Anything else than a 200/201/500 should be a JSON error.
-	var errorResponse ErrorResponse
-	if err := json.Unmarshal(responseBody, &errorResponse); err != nil {
-		return err
+		return errorResponse
 	}
-
-	return errorResponse
 }
