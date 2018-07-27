@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/mbtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/groups")
-	mbtest.AssertTestdata(t, "groupRequestCreateObject.json", messagebirdtest.Request.Body)
+	mbtest.AssertTestdata(t, "groupRequestCreateObject.json", mbtest.Request.Body)
 
 	if group.Name != "Friends" {
 		t.Fatalf("expected Friends, got %s", group.Name)
@@ -158,7 +158,7 @@ func TestUpdate(t *testing.T) {
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/groups/group-id")
-	mbtest.AssertTestdata(t, "groupRequestUpdateObject.json", messagebirdtest.Request.Body)
+	mbtest.AssertTestdata(t, "groupRequestUpdateObject.json", mbtest.Request.Body)
 }
 
 func TestAddContacts(t *testing.T) {
@@ -172,7 +172,7 @@ func TestAddContacts(t *testing.T) {
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
 
 	if mbtest.Request.URL.RawQuery != "_method=PUT&ids[]=first-contact-id&ids[]=second-contact-id" {
-		t.Fatalf("expected _method=PUT&ids[]=first-contact-id&ids[]=second-contact-id, got %s", messagebirdtest.Request.URL.RawQuery)
+		t.Fatalf("expected _method=PUT&ids[]=first-contact-id&ids[]=second-contact-id, got %s", mbtest.Request.URL.RawQuery)
 	}
 }
 
