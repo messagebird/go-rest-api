@@ -5,24 +5,24 @@ import (
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "groupObject.json", http.StatusCreated)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "groupObject.json", http.StatusCreated)
+	client := mbtest.Client(t)
 
 	group, err := Create(client, &Request{"Friends"})
 	if err != nil {
 		t.Fatalf("unexpected error creating Group: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodPost, "/groups")
-	messagebirdtest.AssertTestdata(t, "groupRequestCreateObject.json", messagebirdtest.Request.Body)
+	mbtest.AssertEndpointCalled(t, http.MethodPost, "/groups")
+	mbtest.AssertTestdata(t, "groupRequestCreateObject.json", messagebirdtest.Request.Body)
 
 	if group.Name != "Friends" {
 		t.Fatalf("expected Friends, got %s", group.Name)
@@ -30,7 +30,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateWithEmptyName(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	if _, err := Create(client, &Request{""}); err == nil {
 		t.Fatalf("expected error, got nil")
@@ -38,19 +38,19 @@ func TestCreateWithEmptyName(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	messagebirdtest.WillReturn([]byte(""), http.StatusNoContent)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturn([]byte(""), http.StatusNoContent)
+	client := mbtest.Client(t)
 
 	if err := Delete(client, "group-id"); err != nil {
 		t.Fatalf("unexpected error deleting Group: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodDelete, "/groups/group-id")
+	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/groups/group-id")
 }
 
 func TestList(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "groupListObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "groupListObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	list, err := List(client, DefaultListOptions)
 	if err != nil {
@@ -85,11 +85,11 @@ func TestList(t *testing.T) {
 		t.Fatalf("expected second-id, got %s", list.Items[1].ID)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodGet, "/groups")
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups")
 }
 
 func TestListPagination(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	tt := []struct {
 		expected string
@@ -103,22 +103,22 @@ func TestListPagination(t *testing.T) {
 	for _, tc := range tt {
 		List(client, tc.options)
 
-		if query := messagebirdtest.Request.URL.RawQuery; query != tc.expected {
+		if query := mbtest.Request.URL.RawQuery; query != tc.expected {
 			t.Fatalf("expected %s, got %s", tc.expected, query)
 		}
 	}
 }
 
 func TestRead(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "groupObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "groupObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	group, err := Read(client, "group-id")
 	if err != nil {
 		t.Fatalf("unexpected error reading Group: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id")
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id")
 
 	if group.ID != "group-id" {
 		t.Fatalf("expected group-id, got %s", group.ID)
@@ -150,34 +150,34 @@ func TestRead(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	messagebirdtest.WillReturn([]byte(""), http.StatusNoContent)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturn([]byte(""), http.StatusNoContent)
+	client := mbtest.Client(t)
 
 	if err := Update(client, "group-id", &Request{"Family"}); err != nil {
 		t.Fatalf("unexpected error updating Group: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodPatch, "/groups/group-id")
-	messagebirdtest.AssertTestdata(t, "groupRequestUpdateObject.json", messagebirdtest.Request.Body)
+	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/groups/group-id")
+	mbtest.AssertTestdata(t, "groupRequestUpdateObject.json", messagebirdtest.Request.Body)
 }
 
 func TestAddContacts(t *testing.T) {
-	messagebirdtest.WillReturn([]byte(""), http.StatusNoContent)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturn([]byte(""), http.StatusNoContent)
+	client := mbtest.Client(t)
 
 	if err := AddContacts(client, "group-id", []string{"first-contact-id", "second-contact-id"}); err != nil {
 		t.Fatalf("unexpected error removing Contacts from Group: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
 
-	if messagebirdtest.Request.URL.RawQuery != "_method=PUT&ids[]=first-contact-id&ids[]=second-contact-id" {
+	if mbtest.Request.URL.RawQuery != "_method=PUT&ids[]=first-contact-id&ids[]=second-contact-id" {
 		t.Fatalf("expected _method=PUT&ids[]=first-contact-id&ids[]=second-contact-id, got %s", messagebirdtest.Request.URL.RawQuery)
 	}
 }
 
 func TestAddContactsWithEmptyContacts(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	tt := []struct {
 		contactIDS []string
@@ -194,7 +194,7 @@ func TestAddContactsWithEmptyContacts(t *testing.T) {
 }
 
 func TestAddContactsWithTooManyContacts(t *testing.T) {
-	client := messagebirdtest.Client(t)
+	client := mbtest.Client(t)
 
 	contactIDS := make([]string, 51)
 
@@ -204,8 +204,8 @@ func TestAddContactsWithTooManyContacts(t *testing.T) {
 }
 
 func TestListContacts(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "groupContactListObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "groupContactListObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	list, err := ListContacts(client, "group-id", DefaultListOptions)
 	if err != nil {
@@ -242,16 +242,16 @@ func TestListContacts(t *testing.T) {
 
 	client.DebugLog.Printf("list:\n%#v\n", list)
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
 }
 
 func TestRemoveContact(t *testing.T) {
-	messagebirdtest.WillReturn([]byte(""), http.StatusNoContent)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturn([]byte(""), http.StatusNoContent)
+	client := mbtest.Client(t)
 
 	if err := RemoveContact(client, "group-id", "contact-id"); err != nil {
 		t.Fatalf("unexpected error deleting Group: %s", err)
 	}
 
-	messagebirdtest.AssertEndpointCalled(t, http.MethodDelete, "/groups/group-id/contacts/contact-id")
+	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/groups/group-id/contacts/contact-id")
 }
