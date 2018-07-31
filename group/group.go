@@ -72,9 +72,7 @@ func Create(c *messagebird.Client, request *Request) (*Group, error) {
 	}
 
 	group := &Group{}
-
-	err := c.Request(group, http.MethodPost, path, request)
-	if err != nil {
+	if err := c.Request(group, http.MethodPost, path, request); err != nil {
 		return nil, err
 	}
 
@@ -104,7 +102,6 @@ func List(c *messagebird.Client, options *ListOptions) (*GroupList, error) {
 	}
 
 	groupList := &GroupList{}
-
 	if err := c.Request(groupList, http.MethodGet, path+"?"+query, nil); err != nil {
 		return nil, err
 	}
@@ -132,9 +129,7 @@ func listQuery(options *ListOptions) (string, error) {
 // Read retrieves the information of an existing group.
 func Read(c *messagebird.Client, id string) (*Group, error) {
 	group := &Group{}
-
-	err := c.Request(group, http.MethodGet, path+"/"+id, nil)
-	if err != nil {
+	if err := c.Request(group, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -165,7 +160,6 @@ func AddContacts(c *messagebird.Client, groupID string, contactIDS []string) err
 	}
 
 	query := addContactsQuery(contactIDS)
-
 	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, query)
 
 	return c.Request(nil, http.MethodGet, formattedPath, nil)
@@ -194,7 +188,6 @@ func validateAddContacts(contactIDS []string) error {
 func addContactsQuery(contactIDS []string) string {
 	// Slice's length is one bigger than len(IDs) for the _method param.
 	params := make([]string, 0, len(contactIDS)+1)
-
 	params = append(params, "_method="+http.MethodPut)
 
 	for _, contactID := range contactIDS {
@@ -214,10 +207,7 @@ func ListContacts(c *messagebird.Client, groupID string, options *ListOptions) (
 	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, query)
 
 	contacts := &contact.ContactList{}
-
-	err = c.Request(contacts, http.MethodGet, formattedPath, nil)
-
-	if err != nil {
+	if err = c.Request(contacts, http.MethodGet, formattedPath, nil); err != nil {
 		return nil, err
 	}
 

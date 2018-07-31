@@ -196,6 +196,7 @@ func TestAddContactsWithEmptyContacts(t *testing.T) {
 func TestAddContactsWithTooManyContacts(t *testing.T) {
 	client := mbtest.Client(t)
 
+	// Only 50 contacts are allowed at a time.
 	contactIDS := make([]string, 51)
 
 	if err := AddContacts(client, "group-id", contactIDS); err == nil {
