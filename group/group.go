@@ -9,9 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/messagebird/go-rest-api/contact"
-
 	messagebird "github.com/messagebird/go-rest-api"
+	"github.com/messagebird/go-rest-api/contact"
 )
 
 // Group gets returned by the API.
@@ -119,7 +118,6 @@ func listQuery(options *ListOptions) (string, error) {
 	}
 
 	values := &url.Values{}
-
 	values.Set("limit", strconv.Itoa(options.Limit))
 	values.Set("offset", strconv.Itoa(options.Offset))
 
