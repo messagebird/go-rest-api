@@ -6,16 +6,16 @@ import (
 	"testing"
 
 	"github.com/messagebird/go-rest-api/hlr"
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "lookupObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "lookupObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	phoneNumber := "31624971134"
 	lookup, err := Create(client, phoneNumber, &Params{CountryCode: "NL"})
@@ -60,8 +60,8 @@ func checkHLR(t *testing.T, hlr *hlr.HLR) {
 }
 
 func TestReadHLR(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "lookupHLRObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "lookupHLRObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	hlr, err := ReadHLR(client, "31624971134", &Params{CountryCode: "NL"})
 	if err != nil {
@@ -86,8 +86,8 @@ func TestRequestDataForLookupHLR(t *testing.T) {
 }
 
 func TestCreateHLR(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "lookupHLRObject.json", http.StatusCreated)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "lookupHLRObject.json", http.StatusCreated)
+	client := mbtest.Client(t)
 
 	hlr, err := CreateHLR(client, "31624971134", &Params{CountryCode: "NL", Reference: "reference2000"})
 	if err != nil {

@@ -6,12 +6,11 @@ import (
 	"time"
 
 	"github.com/messagebird/go-rest-api"
-
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
@@ -82,8 +81,8 @@ func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "voiceMessageObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "voiceMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	message, err := Create(client, []string{"31612345678"}, "Hello World", nil)
 
@@ -96,8 +95,8 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateWithParams(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "voiceMessageObjectWithParams.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "voiceMessageObjectWithParams.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	params := &Params{
 		Reference: "MyReference",
@@ -129,8 +128,8 @@ func TestCreateWithParams(t *testing.T) {
 }
 
 func TestCreateWithScheduledDatetime(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "voiceMessageObjectWithCreatedDatetime.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "voiceMessageObjectWithCreatedDatetime.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T16:12:24+00:00")
 
@@ -163,8 +162,8 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "voiceMessageListObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "voiceMessageListObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	messageList, err := List(client)
 	if err != nil {

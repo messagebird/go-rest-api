@@ -6,11 +6,11 @@ import (
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api"
-	"github.com/messagebird/go-rest-api/internal/messagebirdtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
-	messagebirdtest.EnableServer(m)
+	mbtest.EnableServer(m)
 }
 
 func assertMessageObject(t *testing.T, message *Message) {
@@ -92,8 +92,8 @@ func assertMessageObject(t *testing.T, message *Message) {
 }
 
 func TestCreate(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "messageObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", nil)
 	if err != nil {
@@ -104,8 +104,8 @@ func TestCreate(t *testing.T) {
 }
 
 func TestCreateError(t *testing.T) {
-	messagebirdtest.WillReturnAccessKeyError()
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnAccessKeyError()
+	client := mbtest.Client(t)
 
 	_, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", nil)
 
@@ -128,8 +128,8 @@ func TestCreateError(t *testing.T) {
 }
 
 func TestCreateWithParams(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "messageWithParamsObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "messageWithParamsObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	params := &Params{
 		Type:       "sms",
@@ -166,8 +166,8 @@ func TestCreateWithParams(t *testing.T) {
 }
 
 func TestCreateWithBinaryType(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "binaryMessageObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "binaryMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	params := &Params{
 		Type:        "binary",
@@ -193,8 +193,8 @@ func TestCreateWithBinaryType(t *testing.T) {
 }
 
 func TestCreateWithPremiumType(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "premiumMessageObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "premiumMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	params := &Params{
 		Type:        "premium",
@@ -228,8 +228,8 @@ func TestCreateWithPremiumType(t *testing.T) {
 }
 
 func TestCreateWithFlashType(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "flashMessageObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "flashMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	params := &Params{Type: "flash"}
 
@@ -244,8 +244,8 @@ func TestCreateWithFlashType(t *testing.T) {
 }
 
 func TestCreateWithScheduledDatetime(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "messageObjectWithCreatedDatetime.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "messageObjectWithCreatedDatetime.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T10:03:59+00:00")
 
@@ -282,8 +282,8 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	messagebirdtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
-	client := messagebirdtest.Client(t)
+	mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	messageList, err := List(client, nil)
 	if err != nil {
