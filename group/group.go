@@ -168,7 +168,7 @@ func validateAddContacts(contactIDs []string) error {
 
 	// len(nil) == 0: https://golang.org/ref/spec#Length_and_capacity
 	if count == 0 {
-		return fmt.Errorf("contactIDs is required")
+		return fmt.Errorf("at least one contactID is required")
 	}
 
 	if count > 50 {
