@@ -74,7 +74,6 @@ func Create(c *messagebird.Client, contactRequest *Request) (*Contact, error) {
 	}
 
 	contact := &Contact{}
-
 	if err := c.Request(contact, http.MethodPost, path, contactRequest); err != nil {
 		return nil, err
 	}
@@ -109,10 +108,11 @@ func List(c *messagebird.Client, options *ListOptions) (*ContactList, error) {
 	}
 
 	contactList := &ContactList{}
+	if err = c.Request(contactList, http.MethodGet, path+"?"+query, nil); err != nil {
+		return nil, err
+	}
 
-	err = c.Request(contactList, http.MethodGet, path+"?"+query, nil)
-
-	return contactList, err
+	return contactList, nil
 }
 
 func listQuery(options *ListOptions) (string, error) {
@@ -135,7 +135,6 @@ func listQuery(options *ListOptions) (string, error) {
 // Read retrieves the information of an existing contact.
 func Read(c *messagebird.Client, id string) (*Contact, error) {
 	contact := &Contact{}
-
 	if err := c.Request(contact, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
@@ -147,7 +146,6 @@ func Read(c *messagebird.Client, id string) (*Contact, error) {
 // Do not set any values that should not be updated.
 func Update(c *messagebird.Client, id string, contactRequest *Request) (*Contact, error) {
 	contact := &Contact{}
-
 	if err := c.Request(contact, http.MethodPatch, path+"/"+id, contactRequest); err != nil {
 		return nil, err
 	}
