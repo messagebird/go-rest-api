@@ -22,9 +22,11 @@ func Testdata(t *testing.T, relativePath string) []byte {
 	return b
 }
 
-// AssertTestdata gets testdata and asserts it equals actual.
+// AssertTestdata gets testdata and asserts it equals actual. We start by
+// slicing off all leading and trailing white space, as defined by Unicode.
 func AssertTestdata(t *testing.T, relativePath string, actual []byte) {
-	expected := Testdata(t, relativePath)
+	expected := bytes.TrimSpace(Testdata(t, relativePath))
+	actual = bytes.TrimSpace(actual)
 
 	if !bytes.Equal(expected, actual) {
 		t.Fatalf("expected %s, got %s", expected, actual)
