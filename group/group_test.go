@@ -180,14 +180,14 @@ func TestAddContactsWithEmptyContacts(t *testing.T) {
 	client := mbtest.Client(t)
 
 	tt := []struct {
-		contactIDS []string
+		contactIDs []string
 	}{
 		{[]string{}},
 		{nil},
 	}
 
 	for _, tc := range tt {
-		if err := AddContacts(client, "group-id", tc.contactIDS); err == nil {
+		if err := AddContacts(client, "group-id", tc.contactIDs); err == nil {
 			t.Fatalf("expected error, got nil")
 		}
 	}
@@ -197,9 +197,9 @@ func TestAddContactsWithTooManyContacts(t *testing.T) {
 	client := mbtest.Client(t)
 
 	// Only 50 contacts are allowed at a time.
-	contactIDS := make([]string, 51)
+	contactIDs := make([]string, 51)
 
-	if err := AddContacts(client, "group-id", contactIDS); err == nil {
+	if err := AddContacts(client, "group-id", contactIDs); err == nil {
 		t.Fatalf("expected error, got nil")
 	}
 }

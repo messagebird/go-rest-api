@@ -152,23 +152,23 @@ func validateUpdate(request *Request) error {
 }
 
 // AddContacts adds a maximum of 50 contacts to the group.
-func AddContacts(c *messagebird.Client, groupID string, contactIDS []string) error {
-	if err := validateAddContacts(contactIDS); err != nil {
+func AddContacts(c *messagebird.Client, groupID string, contactIDs []string) error {
+	if err := validateAddContacts(contactIDs); err != nil {
 		return err
 	}
 
-	query := addContactsQuery(contactIDS)
+	query := addContactsQuery(contactIDs)
 	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, query)
 
 	return c.Request(nil, http.MethodGet, formattedPath, nil)
 }
 
-func validateAddContacts(contactIDS []string) error {
-	count := len(contactIDS)
+func validateAddContacts(contactIDs []string) error {
+	count := len(contactIDs)
 
 	// len(nil) == 0: https://golang.org/ref/spec#Length_and_capacity
 	if count == 0 {
-		return fmt.Errorf("contactIDS is required")
+		return fmt.Errorf("contactIDs is required")
 	}
 
 	if count > 50 {
@@ -183,12 +183,12 @@ func validateAddContacts(contactIDS []string) error {
 // as GET params. Sending these in the request body would require a painful
 // workaround, as client.Request sends request bodies as JSON by default. See
 // also: https://developers.messagebird.com/docs/alternatives.
-func addContactsQuery(contactIDS []string) string {
+func addContactsQuery(contactIDs []string) string {
 	// Slice's length is one bigger than len(IDs) for the _method param.
-	params := make([]string, 0, len(contactIDS)+1)
+	params := make([]string, 0, len(contactIDs)+1)
 	params = append(params, "_method="+http.MethodPut)
 
-	for _, contactID := range contactIDS {
+	for _, contactID := range contactIDs {
 		params = append(params, "ids[]="+contactID)
 	}
 
