@@ -25,7 +25,7 @@ func TestCreate(t *testing.T) {
 	mbtest.AssertTestdata(t, "groupRequestCreateObject.json", mbtest.Request.Body)
 
 	if group.Name != "Friends" {
-		t.Fatalf("expected Friends, got %s", group.Name)
+		t.Fatalf("got %s, expected Friends", group.Name)
 	}
 }
 
@@ -33,7 +33,7 @@ func TestCreateWithEmptyName(t *testing.T) {
 	client := mbtest.Client(t)
 
 	if _, err := Create(client, &Request{""}); err == nil {
-		t.Fatalf("expected error, got nil")
+		t.Fatalf("got nil, expected error")
 	}
 }
 
@@ -58,31 +58,31 @@ func TestList(t *testing.T) {
 	}
 
 	if list.Offset != 0 {
-		t.Fatalf("expected 0, got %d", list.Offset)
+		t.Fatalf("got %d, expected 0", list.Offset)
 	}
 
 	if list.Limit != 10 {
-		t.Fatalf("expected 10, got %d", list.Limit)
+		t.Fatalf("got %d, expected 10", list.Limit)
 	}
 
 	if list.Count != 2 {
-		t.Fatalf("expected 2, got %d", list.Count)
+		t.Fatalf("got %d, expected 2", list.Count)
 	}
 
 	if list.TotalCount != 2 {
-		t.Fatalf("expected 2, got %d", list.TotalCount)
+		t.Fatalf("got %d, expected 2", list.TotalCount)
 	}
 
 	if actualCount := len(list.Items); actualCount != 2 {
-		t.Fatalf("expected 2, got %d", actualCount)
+		t.Fatalf("got %d, expected 2", actualCount)
 	}
 
 	if list.Items[0].ID != "first-id" {
-		t.Fatalf("expected first-id, got %s", list.Items[0].ID)
+		t.Fatalf("got %s, expected first-id", list.Items[0].ID)
 	}
 
 	if list.Items[1].ID != "second-id" {
-		t.Fatalf("expected second-id, got %s", list.Items[1].ID)
+		t.Fatalf("got %s, expected second-id", list.Items[1].ID)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups")
@@ -104,7 +104,7 @@ func TestListPagination(t *testing.T) {
 		List(client, tc.options)
 
 		if query := mbtest.Request.URL.RawQuery; query != tc.expected {
-			t.Fatalf("expected %s, got %s", tc.expected, query)
+			t.Fatalf("got %s, expected %s", tc.expected, query)
 		}
 	}
 }
@@ -121,31 +121,31 @@ func TestRead(t *testing.T) {
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id")
 
 	if group.ID != "group-id" {
-		t.Fatalf("expected group-id, got %s", group.ID)
+		t.Fatalf("got %s, expected group-id", group.ID)
 	}
 
 	if group.HRef != "https://rest.messagebird.com/groups/group-id" {
-		t.Fatalf("expected https://rest.messagebird.com/groups/group-id, got %s", group.HRef)
+		t.Fatalf("got %s, expected https://rest.messagebird.com/groups/group-id", group.HRef)
 	}
 
 	if group.Name != "Friends" {
-		t.Fatalf("expected Friends, got %s", group.Name)
+		t.Fatalf("got %s, expected Friends", group.Name)
 	}
 
 	if group.Contacts.TotalCount != 3 {
-		t.Fatalf("expected 3, got %d", group.Contacts.TotalCount)
+		t.Fatalf("got %d, expected 3", group.Contacts.TotalCount)
 	}
 
 	if group.Contacts.HRef != "https://rest.messagebird.com/groups/group-id" {
-		t.Fatalf("expected https://rest.messagebird.com/groups/group-id, got %s", group.Contacts.HRef)
+		t.Fatalf("got %s, expected https://rest.messagebird.com/groups/group-id", group.Contacts.HRef)
 	}
 
 	if created, _ := time.Parse(time.RFC3339, "2018-07-25T12:16:10+00:00"); !created.Equal(group.CreatedDatetime) {
-		t.Fatalf("expected 2018-07-25T12:16:10+00:00, got %s", group.CreatedDatetime)
+		t.Fatalf("got %s, expected 2018-07-25T12:16:10+00:00", group.CreatedDatetime)
 	}
 
 	if updated, _ := time.Parse(time.RFC3339, "2018-07-25T12:16:23+00:00"); !updated.Equal(group.UpdatedDatetime) {
-		t.Fatalf("expected 2018-07-25T12:16:23+00:00, got %s", group.UpdatedDatetime)
+		t.Fatalf("got %s, expected 2018-07-25T12:16:23+00:00", group.UpdatedDatetime)
 	}
 }
 
@@ -172,7 +172,7 @@ func TestAddContacts(t *testing.T) {
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
 
 	if mbtest.Request.URL.RawQuery != "_method=PUT&ids[]=first-contact-id&ids[]=second-contact-id" {
-		t.Fatalf("expected _method=PUT&ids[]=first-contact-id&ids[]=second-contact-id, got %s", mbtest.Request.URL.RawQuery)
+		t.Fatalf("got %s, expected _method=PUT&ids[]=first-contact-id&ids[]=second-contact-id", mbtest.Request.URL.RawQuery)
 	}
 }
 
@@ -188,7 +188,7 @@ func TestAddContactsWithEmptyContacts(t *testing.T) {
 
 	for _, tc := range tt {
 		if err := AddContacts(client, "group-id", tc.contactIDs); err == nil {
-			t.Fatalf("expected error, got nil")
+			t.Fatalf("got nil, expected error")
 		}
 	}
 }
@@ -200,7 +200,7 @@ func TestAddContactsWithTooManyContacts(t *testing.T) {
 	contactIDs := make([]string, 51)
 
 	if err := AddContacts(client, "group-id", contactIDs); err == nil {
-		t.Fatalf("expected error, got nil")
+		t.Fatalf("got nil, expected error")
 	}
 }
 
@@ -214,31 +214,31 @@ func TestListContacts(t *testing.T) {
 	}
 
 	if list.Offset != 0 {
-		t.Fatalf("expected 0, got %d", list.Offset)
+		t.Fatalf("got %d, expected 0", list.Offset)
 	}
 
 	if list.Limit != 20 {
-		t.Fatalf("expected 20, got %d", list.Limit)
+		t.Fatalf("got %d, expected 20", list.Limit)
 	}
 
 	if list.Count != 3 {
-		t.Fatalf("expected 3, got %d", list.Count)
+		t.Fatalf("got %d, expected 3", list.Count)
 	}
 
 	if list.TotalCount != 3 {
-		t.Fatalf("expected 3, got %d", list.TotalCount)
+		t.Fatalf("got %d, expected 3", list.TotalCount)
 	}
 
 	if list.Items[0].ID != "first-contact-id" {
-		t.Fatalf("expected first-contact-id, got %s", list.Items[0].ID)
+		t.Fatalf("got %s, expected first-contact-id", list.Items[0].ID)
 	}
 
 	if list.Items[1].ID != "second-contact-id" {
-		t.Fatalf("expected second-contact-id, got %s", list.Items[1].ID)
+		t.Fatalf("got %s, expected second-contact-id", list.Items[1].ID)
 	}
 
 	if list.Items[2].ID != "third-contact-id" {
-		t.Fatalf("expected third-contact-id, got %s", list.Items[2].ID)
+		t.Fatalf("got %s, expected third-contact-id", list.Items[2].ID)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
