@@ -183,10 +183,14 @@ func validateAddContacts(contactIDs []string) error {
 }
 
 // addContactsQuery gets a query string to add contacts to a group. We're using
-// the alternative "/foo?_method=PUT&key=value" syntax to send the contact IDs
+// the alternative "/foo?_method=PUT&key=value" format to send the contact IDs
 // as GET params. Sending these in the request body would require a painful
 // workaround, as client.Request sends request bodies as JSON by default. See
 // also: https://developers.messagebird.com/docs/alternatives.
+//
+// It should also be noted that we're intentionally not using url.Values for
+// building the query string: the API expects `ids[]=foo&ids[]=bar` format,
+// while url.Values encodes to `ids=foo&ids=bar`.
 func addContactsQuery(contactIDs []string) string {
 	// Slice's length is one bigger than len(IDs) for the _method param.
 	params := make([]string, 0, len(contactIDs)+1)
