@@ -89,3 +89,6 @@ if err != nil {
     }
 }
 ```
+
+### Other improvements
+Although those are all breaking changes, it's worth mentioning this new version brings a number of other improvements. An example is that the client now supports contacts and groups - enjoy!
