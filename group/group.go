@@ -137,16 +137,16 @@ func Read(c *messagebird.Client, id string) (*Group, error) {
 }
 
 // Update overrides the group with any values provided in request.
-func Update(c *messagebird.Client, id string, groupRequest *Request) error {
-	if err := validateUpdate(groupRequest); err != nil {
+func Update(c *messagebird.Client, id string, request *Request) error {
+	if err := validateUpdate(request); err != nil {
 		return err
 	}
 
-	return c.Request(nil, http.MethodPatch, path+"/"+id, groupRequest)
+	return c.Request(nil, http.MethodPatch, path+"/"+id, request)
 }
 
-func validateUpdate(groupRequest *Request) error {
-	if groupRequest.Name == "" {
+func validateUpdate(request *Request) error {
+	if request.Name == "" {
 		return errors.New("name is required")
 	}
 
