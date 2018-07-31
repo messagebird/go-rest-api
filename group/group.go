@@ -59,6 +59,10 @@ const (
 	contactPath = "contacts"
 )
 
+// maximumContactsPerRequest is the maxium number of contacts that can be
+// created in a single request.
+const maximumContactsPerRequest = 50
+
 // DefaultListOptions provides reasonable values for List().
 var DefaultListOptions = &ListOptions{
 	Limit:  10,
@@ -171,8 +175,8 @@ func validateAddContacts(contactIDs []string) error {
 		return fmt.Errorf("at least one contactID is required")
 	}
 
-	if count > 50 {
-		return fmt.Errorf("can not add more than 50 contacts per request, got %d", count)
+	if count > maximumContactsPerRequest {
+		return fmt.Errorf("can not add more than %d contacts per request, got %d", maximumContactsPerRequest, count)
 	}
 
 	return nil
