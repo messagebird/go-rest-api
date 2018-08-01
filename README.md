@@ -68,6 +68,10 @@ Documentation
 Complete documentation, instructions, and examples are available at:
 [https://developers.messagebird.com](https://developers.messagebird.com).
 
+Upgrading
+---------
+If you're upgrading from older versions, please read the [Messagebird `go-rest-api` uprading guide](UPGRADING.md).
+
 License
 -------
 The MessageBird REST Client for Go is licensed under [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause). Copyright (c) 2014, 2015, MessageBird
