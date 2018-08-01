@@ -1,0 +1,11 @@
+{
+    "id": "group-id",
+    "href": "https://rest.messagebird.com/groups/group-id",
+    "name": "Friends",
+    "contacts": {
+        "totalCount": 3,
+        "href": "https://rest.messagebird.com/groups/group-id"
+    },
+    "createdDatetime": "2018-07-25T12:16:10+00:00",
+    "updatedDatetime": "2018-07-25T12:16:23+00:00"
+}

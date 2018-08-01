@@ -1,0 +1,83 @@
+{
+    "offset": 0,
+    "limit": 20,
+    "count": 3,
+    "totalCount": 3,
+    "links": {
+        "first": "https://rest.messagebird.com/groups/group-id/contacts?offset=0",
+        "previous": null,
+        "next": null,
+        "last": "https://rest.messagebird.com/groups/group-id/contacts?offset=0"
+    },
+    "items": [
+        {
+            "id": "first-contact-id",
+            "href": "https://rest.messagebird.com/contacts/first-contact-id",
+            "msisdn": 31612345678,
+            "firstName": "Foo",
+            "lastName": "Bar",
+            "customDetails": {
+                "custom1": null,
+                "custom2": null,
+                "custom3": null,
+                "custom4": null
+            },
+            "groups": {
+                "totalCount": 1,
+                "href": "https://rest.messagebird.com/contacts/first-contact-id/groups"
+            },
+            "messages": {
+                "totalCount": 3,
+                "href": "https://rest.messagebird.com/contacts/first-contact-id/messages"
+            },
+            "createdDatetime": "2018-07-13T10:33:52+00:00",
+            "updatedDatetime": null
+        },
+        {
+            "id": "second-contact-id",
+            "href": "https://rest.messagebird.com/contacts/second-contact-id",
+            "msisdn": 31687654321,
+            "firstName": "Hello",
+            "lastName": "World",
+            "customDetails": {
+                "custom1": null,
+                "custom2": null,
+                "custom3": null,
+                "custom4": null
+            },
+            "groups": {
+                "totalCount": 2,
+                "href": "https://rest.messagebird.com/contacts/second-contact-id/groups"
+            },
+            "messages": {
+                "totalCount": 0,
+                "href": "https://rest.messagebird.com/contacts/second-contact-id/messages"
+            },
+            "createdDatetime": "2018-07-13T10:26:00+00:00",
+            "updatedDatetime": "2018-07-13T10:26:00+00:00"
+        },
+        {
+            "id": "third-contact-id",
+            "href": "https://rest.messagebird.com/contacts/third-contact-id",
+            "msisdn": 31612563478,
+            "firstName": "Foo",
+            "lastName": "Baz",
+            "customDetails": {
+                "custom1": null,
+                "custom2": null,
+                "custom3": null,
+                "custom4": null
+            },
+            "groups": {
+                "totalCount": 1,
+                "href": "https://rest.messagebird.com/contacts/third-contact-id/groups"
+            },
+            "messages": {
+                "totalCount": 0,
+                "href": "https://rest.messagebird.com/contacts/third-contact-id/messages"
+            },
+            "createdDatetime": "2018-07-13T10:23:45+00:00",
+            "updatedDatetime": null
+        }
+    ]
+}
