@@ -44,13 +44,13 @@ const hlrPath = "hlr"
 // lookupPath represents the path to the Lookup resource.
 const lookupPath = "lookup"
 
-// Create performs a new lookup for the specified number.
-func Create(c *messagebird.Client, phoneNumber string, params *Params) (*Lookup, error) {
+// Read performs a new lookup for the specified number.
+func Read(c *messagebird.Client, phoneNumber string, params *Params) (*Lookup, error) {
 	urlParams := paramsForLookup(params)
 	path := lookupPath + "/" + phoneNumber + "?" + urlParams.Encode()
 
 	lookup := &Lookup{}
-	if err := c.Request(lookup, http.MethodPost, path, nil); err != nil {
+	if err := c.Request(lookup, http.MethodGet, path, nil); err != nil {
 		return nil, err
 	}
 
