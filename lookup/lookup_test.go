@@ -13,12 +13,12 @@ func TestMain(m *testing.M) {
 	mbtest.EnableServer(m)
 }
 
-func TestCreate(t *testing.T) {
+func TestRead(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "lookupObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
 	phoneNumber := "31624971134"
-	lookup, err := Create(client, phoneNumber, &Params{CountryCode: "NL"})
+	lookup, err := Read(client, phoneNumber, &Params{CountryCode: "NL"})
 	if err != nil {
 		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
 	}
