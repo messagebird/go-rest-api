@@ -1,0 +1,23 @@
+{
+    "id": "contact-id",
+    "href": "https://rest.messagebird.com/contacts/contact-id",
+    "msisdn": 31612345678,
+    "firstName": "Foo",
+    "lastName": "Bar",
+    "customDetails": {
+        "custom1": "First",
+        "custom2": "Second",
+        "custom3": "Third",
+        "custom4": "Fourth"
+    },
+    "groups": {
+        "totalCount": 0,
+        "href": "https://rest.messagebird.com/contacts/contact-id/groups"
+    },
+    "messages": {
+        "totalCount": 0,
+        "href": "https://rest.messagebird.com/contacts/contact-id/messages"
+    },
+    "createdDatetime": "2018-07-13T10:34:08+00:00",
+    "updatedDatetime": "2018-07-13T10:44:08+00:00"
+}
