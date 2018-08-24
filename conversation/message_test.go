@@ -8,7 +8,7 @@ import (
 )
 
 func TestCreateMessage(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "conversationMessageObject.json", http.StatusCreated)
+	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusCreated)
 	client := mbtest.Client(t)
 
 	message, err := CreateMessage(client, "convid", &MessageCreateRequest{
@@ -27,11 +27,11 @@ func TestCreateMessage(t *testing.T) {
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/convid/messages")
-	mbtest.AssertTestdata(t, "conversationCreateMessageRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestdata(t, "messageCreateRequest.json", mbtest.Request.Body)
 }
 
 func TestListMessages(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "conversationListMessageObject.json", http.StatusOK)
+	mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
 	messageList, err := ListMessages(client, "convid", DefaultListOptions)
@@ -51,7 +51,7 @@ func TestListMessages(t *testing.T) {
 }
 
 func TestReadMessage(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "conversationMessageObject.json", http.StatusOK)
+	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
 	message, err := ReadMessage(client, "mesid")
