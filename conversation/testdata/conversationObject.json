@@ -1,0 +1,38 @@
+{
+    "id": "convid",
+    "contactId": "contid",
+    "contact": {
+        "id": "contid",
+        "href": "https://chat.messagebird.com/1/contacts/contid",
+        "msisdn": 31612345678,
+        "firstName": "Foo",
+        "lastName": "Bar",
+        "customDetails": {
+            "avatar": "https://example.com/assets/image.jpg",
+            "firstName": "Foo",
+            "lastName": "Bar",
+            "userId": 12345678 
+        },
+        "createdDatetime": "2018-08-22T15:47:32Z",
+        "updatedDatetime": null
+    },
+    "channels": [
+        {
+            "id": "chid",
+            "name": "chname",
+            "platformId": "telegram",
+            "status": "active",
+            "createdDatetime": "2018-08-22T15:18:11Z",
+            "updatedDatetime": "2018-08-22T15:18:13Z"
+        }
+    ],
+    "status": "active",
+    "createdDatetime": "2018-08-22T15:47:34Z",
+    "updatedDatetime": "2018-08-22T16:05:15Z",
+    "lastReceivedDatetime": "2018-08-22T15:47:34Z",
+    "lastUsedChannelId": "chid",
+    "messages": {
+        "totalCount": 1,
+        "href": "https://conversations.messagebird.com/v1/conversations/convid/messages"
+    }
+}

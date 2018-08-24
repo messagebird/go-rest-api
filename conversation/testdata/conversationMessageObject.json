@@ -1,0 +1,13 @@
+{
+    "id": "mesid",
+    "conversationId": "convid",
+    "channelId": "chid",
+    "status": "failed",
+    "type": "text",
+    "direction": "received",
+    "content": {
+        "text": "Hello world"
+    },
+    "createdDatetime": "2018-08-24T09:49:01Z",
+    "updatedDatetime": "2018-08-24T09:49:01Z"
+}
