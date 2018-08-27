@@ -30,13 +30,7 @@ type ConversationList struct {
 	Limit      int
 	Count      int
 	TotalCount int
-	Links      struct {
-		First    string
-		Previous string
-		Next     string
-		Last     string
-	}
-	Items []*Conversation
+	Items      []*Conversation
 }
 
 type Conversation struct {
@@ -96,13 +90,7 @@ type MessageList struct {
 	Limit      int
 	Count      int
 	TotalCount int
-	Links      struct {
-		First    string
-		Previous string
-		Next     string
-		Last     string
-	}
-	Items []*Message
+	Items      []*Message
 }
 
 type Message struct {
@@ -190,13 +178,7 @@ type WebhookList struct {
 	Limit      int
 	Count      int
 	TotalCount int
-	Links      struct {
-		First    string
-		Previous string
-		Next     string
-		Last     string
-	}
-	Items []*Webhook
+	Items      []*Webhook
 }
 
 type Webhook struct {
