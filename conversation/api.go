@@ -48,8 +48,8 @@ type Conversation struct {
 	Messages             *MessagesCount
 	Status               ConversationStatus
 	CreatedDatetime      time.Time
-	UpdatedDatetime      time.Time
-	LastReceivedDatetime time.Time
+	UpdatedDatetime      *time.Time
+	LastReceivedDatetime *time.Time
 }
 
 type Contact struct {
@@ -60,7 +60,7 @@ type Contact struct {
 	LastName      string
 	CustomDetails map[string]interface{}
 	CreatedAt     time.Time
-	UpdatedAt     time.Time
+	UpdatedAt     *time.Time
 }
 
 type Channel struct {
@@ -69,7 +69,7 @@ type Channel struct {
 	PlatformID      string
 	Status          string
 	CreatedDatetime time.Time
-	UpdatedDatetime time.Time
+	UpdatedDatetime *time.Time
 }
 
 type MessagesCount struct {
@@ -114,7 +114,7 @@ type Message struct {
 	Type            MessageType
 	Content         MessageContent
 	CreatedDatetime time.Time
-	UpdatedDatetime time.Time
+	UpdatedDatetime *time.Time
 }
 
 type MessageDirection string
@@ -205,7 +205,7 @@ type Webhook struct {
 	Events          []WebhookEvent
 	URL             string
 	CreatedDatetime time.Time
-	UpdatedDatetime time.Time
+	UpdatedDatetime *time.Time
 }
 
 type WebhookEvent string
@@ -236,7 +236,7 @@ func (c *Contact) UnmarshalJSON(data []byte) error {
 		LastName      string
 		CustomDetails map[string]interface{}
 		CreatedAt     time.Time
-		UpdatedAt     time.Time
+		UpdatedAt     *time.Time
 	}{}
 
 	if err := json.Unmarshal(data, &target); err != nil {
