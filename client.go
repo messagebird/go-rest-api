@@ -47,6 +47,14 @@ type Client struct {
 	DebugLog   *log.Logger  // Optional logger for debugging purposes
 }
 
+type contentType string
+
+const (
+	contentTypeEmpty          contentType = ""
+	contentTypeJSON           contentType = "application/json"
+	contentTypeFormURLEncoded contentType = "application/x-www-form-urlencoded"
+)
+
 // New creates a new MessageBird client object.
 func New(accessKey string) *Client {
 	return &Client{
@@ -67,27 +75,24 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		return err
 	}
 
-	var jsonEncoded []byte
-	if data != nil {
-		jsonEncoded, err = json.Marshal(data)
-		if err != nil {
-			return err
-		}
-	}
-
-	request, err := http.NewRequest(method, uri.String(), bytes.NewBuffer(jsonEncoded))
+	body, contentType, err := prepareRequestBody(data)
 	if err != nil {
 		return err
 	}
 
-	request.Header.Set("Content-Type", "application/json")
+	request, err := http.NewRequest(method, uri.String(), bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+
+	request.Header.Set("Content-Type", string(contentType))
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Authorization", "AccessKey "+c.AccessKey)
 	request.Header.Set("User-Agent", "MessageBird/ApiClient/"+ClientVersion+" Go/"+runtime.Version())
 
 	if c.DebugLog != nil {
 		if data != nil {
-			c.DebugLog.Printf("HTTP REQUEST: %s %s %s", method, uri.String(), jsonEncoded)
+			c.DebugLog.Printf("HTTP REQUEST: %s %s %s", method, uri.String(), body)
 		} else {
 			c.DebugLog.Printf("HTTP REQUEST: %s %s", method, uri.String())
 		}
@@ -135,4 +140,25 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 
 		return errorResponse
 	}
+}
+
+// prepareRequestBody takes untyped data and attempts constructing a meaningful
+// request body from it. It also returns the appropriate Content-Type.
+func prepareRequestBody(data interface{}) ([]byte, contentType, error) {
+	// Nil bodies are accepted by `net/http`, so this is not an error.
+	if data == nil {
+		return nil, contentTypeEmpty, nil
+	}
+
+	s, ok := data.(string)
+	if ok {
+		return []byte(s), contentTypeFormURLEncoded, nil
+	}
+
+	b, err := json.Marshal(data)
+	if err != nil {
+		return nil, contentType(""), err
+	}
+
+	return b, contentTypeJSON, nil
 }
