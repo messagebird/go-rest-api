@@ -47,7 +47,7 @@ type Conversation struct {
 	Channels             []*Channel
 	Messages             *MessagesCount
 	Status               ConversationStatus
-	CreatedDatetime      time.Time
+	CreatedDatetime      *time.Time
 	UpdatedDatetime      *time.Time
 	LastReceivedDatetime *time.Time
 }
@@ -59,7 +59,7 @@ type Contact struct {
 	FirstName     string
 	LastName      string
 	CustomDetails map[string]interface{}
-	CreatedAt     time.Time
+	CreatedAt     *time.Time
 	UpdatedAt     *time.Time
 }
 
@@ -68,7 +68,7 @@ type Channel struct {
 	Name            string
 	PlatformID      string
 	Status          string
-	CreatedDatetime time.Time
+	CreatedDatetime *time.Time
 	UpdatedDatetime *time.Time
 }
 
@@ -113,7 +113,7 @@ type Message struct {
 	Status          MessageStatus
 	Type            MessageType
 	Content         MessageContent
-	CreatedDatetime time.Time
+	CreatedDatetime *time.Time
 	UpdatedDatetime *time.Time
 }
 
@@ -204,7 +204,7 @@ type Webhook struct {
 	ChannelID       string
 	Events          []WebhookEvent
 	URL             string
-	CreatedDatetime time.Time
+	CreatedDatetime *time.Time
 	UpdatedDatetime *time.Time
 }
 
@@ -235,7 +235,7 @@ func (c *Contact) UnmarshalJSON(data []byte) error {
 		FirstName     string
 		LastName      string
 		CustomDetails map[string]interface{}
-		CreatedAt     time.Time
+		CreatedAt     *time.Time
 		UpdatedAt     *time.Time
 	}{}
 

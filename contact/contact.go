@@ -32,8 +32,8 @@ type Contact struct {
 		TotalCount int
 		HRef       string
 	}
-	CreatedDatetime time.Time
-	UpdatedDatetime time.Time
+	CreatedDatetime *time.Time
+	UpdatedDatetime *time.Time
 }
 
 type ContactList struct {

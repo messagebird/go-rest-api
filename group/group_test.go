@@ -140,11 +140,11 @@ func TestRead(t *testing.T) {
 		t.Fatalf("got %s, expected https://rest.messagebird.com/groups/group-id", group.Contacts.HRef)
 	}
 
-	if created, _ := time.Parse(time.RFC3339, "2018-07-25T12:16:10+00:00"); !created.Equal(group.CreatedDatetime) {
+	if created, _ := time.Parse(time.RFC3339, "2018-07-25T12:16:10+00:00"); !created.Equal(*group.CreatedDatetime) {
 		t.Fatalf("got %s, expected 2018-07-25T12:16:10+00:00", group.CreatedDatetime)
 	}
 
-	if updated, _ := time.Parse(time.RFC3339, "2018-07-25T12:16:23+00:00"); !updated.Equal(group.UpdatedDatetime) {
+	if updated, _ := time.Parse(time.RFC3339, "2018-07-25T12:16:23+00:00"); !updated.Equal(*group.UpdatedDatetime) {
 		t.Fatalf("got %s, expected 2018-07-25T12:16:23+00:00", group.UpdatedDatetime)
 	}
 }
