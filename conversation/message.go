@@ -29,10 +29,11 @@ func CreateMessage(c *messagebird.Client, conversationID string, req *MessageCre
 // ListMessages gets a collection of messages from a conversation. Pagination
 // can be set in the options.
 func ListMessages(c *messagebird.Client, conversationID string, options *ListOptions) (*MessageList, error) {
-	uri := fmt.Sprintf("%s/%s/%s", path, conversationID, messagesPath)
+	query := paginationQuery(options)
+	uri := fmt.Sprintf("%s/%s/%s?%s", path, conversationID, messagesPath, query)
 
 	messageList := &MessageList{}
-	if err := request(c, messageList, http.MethodGet, uri, options); err != nil {
+	if err := request(c, messageList, http.MethodGet, uri, nil); err != nil {
 		return nil, err
 	}
 

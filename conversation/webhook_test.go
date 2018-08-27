@@ -60,6 +60,10 @@ func TestListWebhooks(t *testing.T) {
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/webhooks")
+
+	if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=0" {
+		t.Fatalf("got %s, expected limit=10&offset=0", query)
+	}
 }
 
 func TestReadWebhook(t *testing.T) {

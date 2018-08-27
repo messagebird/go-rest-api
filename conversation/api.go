@@ -3,6 +3,8 @@ package conversation
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api"
@@ -204,6 +206,15 @@ const (
 // doesn't "handle" this for us: by default, it uses the REST API.
 func request(c *messagebird.Client, v interface{}, method, path string, data interface{}) error {
 	return c.Request(v, method, fmt.Sprintf("%s/%s", apiRoot, path), data)
+}
+
+// paginationQuery builds the query string for paginated endpoints.
+func paginationQuery(options *ListOptions) string {
+	query := url.Values{}
+	query.Set("limit", strconv.Itoa(options.Limit))
+	query.Set("offset", strconv.Itoa(options.Offset))
+
+	return query.Encode()
 }
 
 // UnmarshalJSON is used to unmarshal the MSISDN to a string rather than an

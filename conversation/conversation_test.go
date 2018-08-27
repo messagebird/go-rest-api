@@ -30,6 +30,10 @@ func TestList(t *testing.T) {
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations")
+
+	if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=20" {
+		t.Fatalf("got %s, expected limit=10&offset=20", query)
+	}
 }
 
 func TestRead(t *testing.T) {

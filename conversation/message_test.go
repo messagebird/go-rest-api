@@ -48,6 +48,10 @@ func TestListMessages(t *testing.T) {
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/convid/messages")
+
+	if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=0" {
+		t.Fatalf("got %s, expected limit=10&offset=0", query)
+	}
 }
 
 func TestReadMessage(t *testing.T) {
