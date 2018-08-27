@@ -9,9 +9,19 @@ import (
 )
 
 const (
-	apiRoot      = "https://conversations.messagebird.com/v1"
-	path         = "conversations"
+	// apiRoot is the absolute URL of the Converstations API. All paths are
+	// relative to apiRoot (e.g.
+	// https://conversations.messagebird.com/v1/webhooks).
+	apiRoot = "https://conversations.messagebird.com/v1"
+
+	// path is the path for the Conversation resource, relative to apiRoot.
+	path = "conversations"
+
+	// messagesPath is the path for the Message resource, relative to apiRoot
+	// and path.
 	messagesPath = "messages"
+
+	// webhooksPath is the path for the Webhook resource, relative to apiRoot.
 	webhooksPath = "webhooks"
 )
 
@@ -71,7 +81,13 @@ type MessagesCount struct {
 type ConversationStatus string
 
 const (
-	ConversationStatusActive   ConversationStatus = "active"
+	// ConversationStatusActive is returned when the Conversation is active.
+	// Only one active conversation can ever exist for a given contact.
+	ConversationStatusActive ConversationStatus = "active"
+
+	// ConversationStatusArchived is returned when the Conversation is
+	// archived. When this is the case, a new Conversation is created when a
+	// message is received from a contact.
 	ConversationStatusArchived ConversationStatus = "archived"
 )
 
@@ -101,6 +117,125 @@ type Message struct {
 	UpdatedDatetime time.Time
 }
 
+type MessageDirection string
+
+const (
+	// MessageDirectionReceived indicates an inbound message received from the customer.
+	MessageDirectionReceived MessageDirection = "received"
+
+	// MessageDirectionSent indicates an outbound message sent from the API.
+	MessageDirectionSent MessageDirection = "sent"
+)
+
+// MessageStatus is a field set by the API. It indicates what the state of the
+// message is, e.g. whether it has been successfully delivered or read.
+type MessageStatus string
+
+const (
+	MessageStatusDeleted     MessageStatus = "deleted"
+	MessageStatusDelivered   MessageStatus = "delivered"
+	MessageStatusFailed      MessageStatus = "failed"
+	MessageStatusPending     MessageStatus = "pending"
+	MessageStatusRead        MessageStatus = "read"
+	MessageStatusReceived    MessageStatus = "received"
+	MessageStatusSent        MessageStatus = "sent"
+	MessageStatusUnsupported MessageStatus = "unsupported"
+)
+
+// MessageType indicates what kind of content a Message has, e.g. audio or
+// text.
+type MessageType string
+
+const (
+	MessageTypeAudio    MessageType = "audio"
+	MessageTypeFile     MessageType = "file"
+	MessageTypeHSM      MessageType = "hsm"
+	MessageTypeImage    MessageType = "image"
+	MessageTypeLocation MessageType = "location"
+	MessageTypeText     MessageType = "text"
+	MessageTypeVideo    MessageType = "video"
+)
+
+// MessageContent holds a message's actual content. Only one field can be set
+// per request.
+type MessageContent struct {
+	Audio    *Audio    `json:"audio,omitempty"`
+	HSM      *HSM      `json:"hsm,omitempty"`
+	File     *File     `json:"file,omitempty"`
+	Image    *Image    `json:"image,omitempty"`
+	Location *Location `json:"location,omitempty"`
+	Video    *Video    `json:"video,omitempty"`
+	Text     string    `json:"text,omitempty"`
+}
+
+type Media struct {
+	URL string `json:"url"`
+}
+
+type Audio Media
+type File Media
+type Image Media
+type Video Media
+
+// HSM is a pre-approved, reusable message template required when messaging
+// over WhatsApp. It allows you to just send the required parameter values
+// instead of the full message. It also allows for localization of the message
+// and decreases the possibility of being blocked on the first contact as the
+// message is pre-approved by WhatsApp.
+type HSM struct {
+	Namespace             string                     `json:"namespace"`
+	TemplateName          string                     `json:"templateName"`
+	Language              *HSMLanguage               `json:"language"`
+	LocalizableParameters []*HSMLocalizableParameter `json:"params"`
+}
+
+// HSMLanguage is used to set the message's locale.
+type HSMLanguage struct {
+	Policy HSMLanguagePolicy `json:"policy"`
+
+	// Code can be both language and language_locale formats (e.g. en and
+	// en_US).
+	Code string `json:"code"`
+}
+
+// HSMLanguagePolicy sets how the provided language is enforced.
+type HSMLanguagePolicy string
+
+const (
+	// HSMLanguagePolicyFallback will deliver the message template in the
+	// user's device language. If the settings can't be found on the user's
+	// device the fallback language is used.
+	HSMLanguagePolicyFallback HSMLanguagePolicy = "fallback"
+
+	// HSMLanguagePolicyDeterministic will deliver the message template
+	// exactly in the language and locale asked for.
+	HSMLanguagePolicyDeterministic HSMLanguagePolicy = "deterministic"
+)
+
+// HSMLocalizableParameter are used to replace the placeholders in the message
+// template. They will be localized by WhatsApp. Default values are used when
+// localization fails. Default is required. Additionally, currency OR DateTime
+// may be present in a request.
+type HSMLocalizableParameter struct {
+	Default  string                           `json:"default"`
+	Currency *HSMLocalizableParameterCurrency `json:"currency,omitempty"`
+	DateTime *time.Time                       `json:"dateTime,omitempty"`
+}
+
+type HSMLocalizableParameterCurrency struct {
+	// Code is the currency code in ISO 4217 format.
+	Code string `json:"currencyCode"`
+
+	// Amount is the total amount, including cents, multiplied by 1000. E.g.
+	// 12.34 become 12340.
+	Amount int64 `json:"amount"`
+}
+
+type Location struct {
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
+}
+
 type WebhookList struct {
 	Offset     int
 	Limit      int
@@ -124,97 +259,6 @@ type Webhook struct {
 	UpdatedDatetime time.Time
 }
 
-type MessageContent struct {
-	Audio    *Audio    `json:"audio,omitempty"`
-	HSM      *HSM      `json:"hsm,omitempty"`
-	File     *File     `json:"file,omitempty"`
-	Image    *Image    `json:"image,omitempty"`
-	Location *Location `json:"location,omitempty"`
-	Video    *Video    `json:"video,omitempty"`
-	Text     string    `json:"text,omitempty"`
-}
-
-type Media struct {
-	URL string `json:"url"`
-}
-
-type Audio Media
-type File Media
-type Image Media
-type Video Media
-
-type HSM struct {
-	Namespace             string                     `json:"namespace"`
-	TemplateName          string                     `json:"templateName"`
-	Language              *HSMLanguage               `json:"language"`
-	LocalizableParameters []*HSMLocalizableParameter `json:"params"`
-}
-
-type HSMLanguage struct {
-	Policy HSMLanguagePolicy `json:"policy"`
-	Code   string            `json:"code"`
-}
-
-type HSMLanguagePolicy string
-
-type HSMLocalizableParameter struct {
-	Default  string                           `json:"default"`
-	Currency *HSMLocalizableParameterCurrency `json:"currency,omitempty"`
-	DateTime *time.Time                       `json:"dateTime,omitempty"`
-}
-
-type HSMLocalizableParameterCurrency struct {
-	Code   string `json:"currencyCode"`
-	Amount int64  `json:"amount"`
-}
-
-const (
-	HSMLanguagePolicyFallback      HSMLanguagePolicy = "fallback"
-	HSMLanguagePolicyDeterministic HSMLanguagePolicy = "deterministic"
-)
-
-type Location struct {
-	Latitude  float32 `json:"latitude"`
-	Longitude float32 `json:"longitude"`
-}
-
-// MessageType indicates what kind of content a Message has, e.g. audio or
-// text.
-type MessageType string
-
-const (
-	MessageTypeAudio    MessageType = "audio"
-	MessageTypeFile     MessageType = "file"
-	MessageTypeHSM      MessageType = "hsm"
-	MessageTypeImage    MessageType = "image"
-	MessageTypeLocation MessageType = "location"
-	MessageTypeText     MessageType = "text"
-	MessageTypeVideo    MessageType = "video"
-)
-
-type MessageDirection string
-
-const (
-	// MessageDirectionReceived indicates an inbound message received from the customer.
-	MessageDirectionReceived MessageDirection = "received"
-
-	// MessageDirectionSent indicates an outbound message sent from the API.
-	MessageDirectionSent MessageDirection = "sent"
-)
-
-type MessageStatus string
-
-const (
-	MessageStatusDeleted     MessageStatus = "deleted"
-	MessageStatusDelivered   MessageStatus = "delivered"
-	MessageStatusFailed      MessageStatus = "failed"
-	MessageStatusPending     MessageStatus = "pending"
-	MessageStatusRead        MessageStatus = "read"
-	MessageStatusReceived    MessageStatus = "received"
-	MessageStatusSent        MessageStatus = "sent"
-	MessageStatusUnsupported MessageStatus = "unsupported"
-)
-
 type WebhookEvent string
 
 const (
@@ -224,7 +268,7 @@ const (
 	WebhookEventMessageUpdated      WebhookEvent = "message.updated"
 )
 
-// request does the exact same thign as Client.Request. It does, however,
+// request does the exact same thing as Client.Request. It does, however,
 // prefix the path with the Conversation API's root. This ensures the client
 // doesn't "handle" this for us: by default, it uses the REST API.
 func request(c *messagebird.Client, v interface{}, method, path string, data interface{}) error {
