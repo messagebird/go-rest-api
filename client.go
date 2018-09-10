@@ -85,10 +85,12 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		return err
 	}
 
-	request.Header.Set("Content-Type", string(contentType))
 	request.Header.Set("Accept", "application/json")
 	request.Header.Set("Authorization", "AccessKey "+c.AccessKey)
 	request.Header.Set("User-Agent", "MessageBird/ApiClient/"+ClientVersion+" Go/"+runtime.Version())
+	if contentType != contentTypeEmpty {
+		request.Header.Set("Content-Type", string(contentType))
+	}
 
 	if c.DebugLog != nil {
 		if data != nil {
