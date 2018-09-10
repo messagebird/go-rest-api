@@ -159,6 +159,10 @@ func TestUpdate(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/groups/group-id")
 	mbtest.AssertTestdata(t, "groupRequestUpdateObject.json", mbtest.Request.Body)
+
+	if mbtest.Request.ContentType != "application/json" {
+		t.Fatalf("got %s, expected application/json", mbtest.Request.ContentType)
+	}
 }
 
 func TestAddContacts(t *testing.T) {
