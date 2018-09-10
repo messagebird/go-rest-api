@@ -147,20 +147,18 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 // prepareRequestBody takes untyped data and attempts constructing a meaningful
 // request body from it. It also returns the appropriate Content-Type.
 func prepareRequestBody(data interface{}) ([]byte, contentType, error) {
-	// Nil bodies are accepted by `net/http`, so this is not an error.
-	if data == nil {
+	switch data := data.(type) {
+	case nil:
+		// Nil bodies are accepted by `net/http`, so this is not an error.
 		return nil, contentTypeEmpty, nil
-	}
+	case string:
+		return []byte(data), contentTypeFormURLEncoded, nil
+	default:
+		b, err := json.Marshal(data)
+		if err != nil {
+			return nil, contentType(""), err
+		}
 
-	s, ok := data.(string)
-	if ok {
-		return []byte(s), contentTypeFormURLEncoded, nil
+		return b, contentTypeJSON, nil
 	}
-
-	b, err := json.Marshal(data)
-	if err != nil {
-		return nil, contentType(""), err
-	}
-
-	return b, contentTypeJSON, nil
 }
