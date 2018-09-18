@@ -66,6 +66,33 @@ func TestCreate(t *testing.T) {
 	assertVerifyObject(t, v)
 }
 
+func TestDelete(t *testing.T) {
+	mbtest.WillReturn([]byte(""), http.StatusNoContent)
+	client := mbtest.Client(t)
+
+	if err := Delete(client, "15498233759288aaf929661v21936686"); err != nil {
+		t.Fatalf("unexpected error deleting Verify: %s", err)
+	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/verify/15498233759288aaf929661v21936686")
+}
+
+func TestRead(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "verifyObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	v, err := Read(client, "15498233759288aaf929661v21936686")
+	if err != nil {
+		t.Fatalf("unexpected error reading Verify: %s", err)
+	}
+
+	if v.ID != "15498233759288aaf929661v21936686" {
+		t.Fatalf("got %s, expected 15498233759288aaf929661v21936686", v.ID)
+	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/verify/15498233759288aaf929661v21936686")
+}
+
 func TestVerifyToken(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "verifyTokenObject.json", http.StatusOK)
 	client := mbtest.Client(t)
