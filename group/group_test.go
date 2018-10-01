@@ -159,6 +159,10 @@ func TestUpdate(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/groups/group-id")
 	mbtest.AssertTestdata(t, "groupRequestUpdateObject.json", mbtest.Request.Body)
+
+	if mbtest.Request.ContentType != "application/json" {
+		t.Fatalf("got %s, expected application/json", mbtest.Request.ContentType)
+	}
 }
 
 func TestAddContacts(t *testing.T) {
@@ -169,10 +173,11 @@ func TestAddContacts(t *testing.T) {
 		t.Fatalf("unexpected error removing Contacts from Group: %s", err)
 	}
 
-	mbtest.AssertEndpointCalled(t, http.MethodGet, "/groups/group-id/contacts")
+	mbtest.AssertEndpointCalled(t, http.MethodPut, "/groups/group-id/contacts")
+	mbtest.AssertTestdata(t, "groupRequestAddContactsObject.txt", mbtest.Request.Body)
 
-	if mbtest.Request.URL.RawQuery != "_method=PUT&ids[]=first-contact-id&ids[]=second-contact-id" {
-		t.Fatalf("got %s, expected _method=PUT&ids[]=first-contact-id&ids[]=second-contact-id", mbtest.Request.URL.RawQuery)
+	if mbtest.Request.ContentType != "application/x-www-form-urlencoded" {
+		t.Fatalf("got %s, expected application/x-www-form-urlencoded", mbtest.Request.ContentType)
 	}
 }
 

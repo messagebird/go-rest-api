@@ -10,9 +10,9 @@ import (
 )
 
 type request struct {
-	Body   []byte
-	Method string
-	URL    *url.URL
+	Body                []byte
+	ContentType, Method string
+	URL                 *url.URL
 }
 
 // Request contains the lastly received http.Request by the fake server.
@@ -35,8 +35,9 @@ func EnableServer(m *testing.M) {
 func initAndStartServer() {
 	server = httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Request = request{
-			Method: r.Method,
-			URL:    r.URL,
+			ContentType: r.Header.Get("Content-Type"),
+			Method:      r.Method,
+			URL:         r.URL,
 		}
 
 		var err error
