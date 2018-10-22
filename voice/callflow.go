@@ -439,6 +439,8 @@ type CallFlowRecordStep struct {
 	//
 	// Allowed values: de-DE, en-AU, en-UK, en-US, es-ES, es-LA, fr-FR, it-IT, nl-NL, pt-BR.
 	TranscribeLanguage string
+
+	OnFinish string
 }
 
 type jsonCallFlowRecordStep struct {
@@ -449,6 +451,7 @@ type jsonCallFlowRecordStep struct {
 		Timeout            int    `json:"timeout"`
 		FinishOnKey        string `json:"finishOnKey"`
 		TranscribeLanguage string `json:"transcribeLanguage"`
+		OnFinish string `json:"onFinish"`
 	} `json:"options"`
 }
 
@@ -461,6 +464,7 @@ func (step *CallFlowRecordStep) MarshalJSON() ([]byte, error) {
 	data.Options.Timeout = int(step.Timeout / time.Second)
 	data.Options.FinishOnKey = step.FinishOnKey
 	data.Options.TranscribeLanguage = step.TranscribeLanguage
+	data.Options.OnFinish = step.OnFinish
 	return json.Marshal(data)
 }
 
@@ -476,6 +480,7 @@ func (step *CallFlowRecordStep) UnmarshalJSON(data []byte) error {
 		Timeout:            time.Duration(raw.Options.Timeout) * time.Second,
 		FinishOnKey:        raw.Options.FinishOnKey,
 		TranscribeLanguage: raw.Options.TranscribeLanguage,
+		OnFinish: raw.Options.OnFinish,
 	}
 	return nil
 }
