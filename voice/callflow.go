@@ -440,6 +440,18 @@ type CallFlowRecordStep struct {
 	// Allowed values: de-DE, en-AU, en-UK, en-US, es-ES, es-LA, fr-FR, it-IT, nl-NL, pt-BR.
 	TranscribeLanguage string
 
+	// (Optional) OnFinish contains the URL to get a new CallFlow from when the recording terminates and this CallFlowRecordStep ends.
+	//
+	// The URL must contain a schema e.g. http://... or https://...
+	// This attribute is used for chaining call flows. When the current step ends,
+	// a POST request containing information about the recording is sent to the URL specified.
+	// This gets a new callflow from the URL specified, but re-uses the original Call ID and Leg ID i.e. it's the same Call.
+	//
+	// To get at the recording information from the POST request body, you must call (instead of relying on req.Form):
+	// ```go
+	// body,_ := ioutil.ReadAll(req.Body)
+	// recordingInfo := string(body[:])
+	// ```
 	OnFinish string
 }
 
@@ -451,7 +463,7 @@ type jsonCallFlowRecordStep struct {
 		Timeout            int    `json:"timeout"`
 		FinishOnKey        string `json:"finishOnKey"`
 		TranscribeLanguage string `json:"transcribeLanguage"`
-		OnFinish string `json:"onFinish"`
+		OnFinish           string `json:"onFinish"`
 	} `json:"options"`
 }
 
@@ -480,7 +492,7 @@ func (step *CallFlowRecordStep) UnmarshalJSON(data []byte) error {
 		Timeout:            time.Duration(raw.Options.Timeout) * time.Second,
 		FinishOnKey:        raw.Options.FinishOnKey,
 		TranscribeLanguage: raw.Options.TranscribeLanguage,
-		OnFinish: raw.Options.OnFinish,
+		OnFinish:           raw.Options.OnFinish,
 	}
 	return nil
 }
