@@ -93,6 +93,16 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 	return message, nil
 }
 
+// Cancel sending Scheduled Sms
+func Cancel(c *messagebird.Client, id string) (*Message, error) {
+	message := &Message{}
+	if err := c.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
+		return nil, err
+	}
+
+	return message, nil
+}
+
 // List retrieves all messages of the user represented as a MessageList object.
 func List(c *messagebird.Client, msgListParams *ListParams) (*MessageList, error) {
 	messageList := &MessageList{}
