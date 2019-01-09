@@ -45,6 +45,7 @@ type Client struct {
 	AccessKey  string       // The API access key
 	HTTPClient *http.Client // The HTTP client to send requests on
 	DebugLog   *log.Logger  // Optional logger for debugging purposes
+	URL        string       // Use for tests with MessageBird mock
 }
 
 type contentType string
@@ -68,7 +69,11 @@ func New(accessKey string) *Client {
 // Request is for internal use only and unstable.
 func (c *Client) Request(v interface{}, method, path string, data interface{}) error {
 	if !strings.HasPrefix(path, "https://") && !strings.HasPrefix(path, "http://") {
-		path = fmt.Sprintf("%s/%s", Endpoint, path)
+		endpoint := Endpoint
+		if c.URL != "" {
+			endpoint = c.URL
+		}
+		path = fmt.Sprintf("%s/%s", endpoint, path)
 	}
 	uri, err := url.Parse(path)
 	if err != nil {
