@@ -169,10 +169,6 @@ func TestValidSignature(t *testing.T) {
 		}
 	}
 }
-
-func testHandler(w http.ResponseWriter, r *http.Request) {
-
-}
 func TestValidate(t *testing.T) {
 	var cases = []struct {
 		k   string
