@@ -22,7 +22,7 @@ const sHeader = "MessageBird-Signature"
 type ValidityPeriod *float64
 
 // StringToTime converts from Unicod Epoch enconded timestamps to time.Time Go objects
-func StringToTime(s string) (time.Time, error) {
+func stringToTime(s string) (time.Time, error) {
 	sec, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		return time.Time{}, err
@@ -32,7 +32,7 @@ func StringToTime(s string) (time.Time, error) {
 
 // HMACSHA256 generates HMACS enconded hashes using the provided Key and SHA256
 // encoding for the message
-func HMACSHA256(message, key []byte) ([]byte, error) {
+func hMACSHA256(message, key []byte) ([]byte, error) {
 	mac := hmac.New(sha256.New, []byte(key))
 	if _, err := mac.Write(message); err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func NewValidator(signingKey string, period ValidityPeriod, log *log.Logger, mes
 // ValidTimestamp validates if the MessageBird-Request-Timestamp is a valid
 // date and if the request is older than the validator Period.
 func (v *Validator) ValidTimestamp(ts string) bool {
-	t, err := StringToTime(ts)
+	t, err := stringToTime(ts)
 	if err != nil {
 		return false
 	}
@@ -84,7 +84,7 @@ func (v *Validator) CalculateSignature(ts, qp string, b []byte) ([]byte, error) 
 	var m bytes.Buffer
 	bh := sha256.Sum256(b)
 	fmt.Fprintf(&m, "%s\n%s\n%s", ts, qp, bh[:])
-	s, err := HMACSHA256(m.Bytes(), []byte(v.SigningKey))
+	s, err := hMACSHA256(m.Bytes(), []byte(v.SigningKey))
 	if err != nil {
 		return nil, err
 	}
