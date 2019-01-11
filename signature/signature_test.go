@@ -226,7 +226,7 @@ func TestValidate(t *testing.T) {
 			k:   testKey,
 			ts:  testTs,
 			s:   testSignature,
-			sh:  sHeader
+			sh:  sHeader,
 			tsh: "wrong-header",
 			e:   http.StatusUnauthorized,
 		},
