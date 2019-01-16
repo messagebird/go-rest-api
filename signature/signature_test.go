@@ -19,6 +19,7 @@ const testKey = "other-secret"
 
 func TestCalculateSignature(t *testing.T) {
 	var cases = []struct {
+		name string
 		sKey string
 		ts   string
 		qp   string
@@ -27,6 +28,7 @@ func TestCalculateSignature(t *testing.T) {
 		e    bool
 	}{
 		{
+			name: "Succesful",
 			sKey: testKey,
 			ts:   testTs,
 			qp:   testQp,
@@ -35,6 +37,7 @@ func TestCalculateSignature(t *testing.T) {
 			e:    true,
 		},
 		{
+			name: "Wrong signature",
 			sKey: testKey,
 			ts:   testTs,
 			qp:   testQp,
@@ -43,6 +46,7 @@ func TestCalculateSignature(t *testing.T) {
 			e:    false,
 		},
 		{
+			name: "Empty query params and body",
 			sKey: "secret",
 			ts:   testTs,
 			qp:   "",
@@ -51,6 +55,7 @@ func TestCalculateSignature(t *testing.T) {
 			e:    true,
 		},
 		{
+			name: "Empty query params",
 			sKey: "secret",
 			ts:   testTs,
 			qp:   "",
@@ -59,6 +64,7 @@ func TestCalculateSignature(t *testing.T) {
 			e:    true,
 		},
 		{
+			name: "Empty body",
 			sKey: "secret",
 			ts:   testTs,
 			qp:   testQp,
@@ -67,7 +73,7 @@ func TestCalculateSignature(t *testing.T) {
 			e:    true,
 		},
 	}
-	for i, tt := range cases {
+	for _, tt := range cases {
 		v := NewValidator(tt.sKey, nil)
 		s, err := v.CalculateSignature(tt.ts, tt.qp, []byte(tt.b))
 		if err != nil {
@@ -76,7 +82,7 @@ func TestCalculateSignature(t *testing.T) {
 		drs, _ := base64.StdEncoding.DecodeString(tt.es)
 		e := bool(bytes.Compare(s, drs) == 0)
 		if e != tt.e {
-			t.Errorf("Unexpected signature: %s, test case: %d", s, i)
+			t.Errorf("Unexpected signature: %s, test case: %s", s, tt.name)
 		}
 	}
 }
@@ -85,150 +91,168 @@ func TestValidTimestamp(t *testing.T) {
 	now := time.Now()
 	nowts := fmt.Sprintf("%d", now.Unix())
 	var cases = []struct {
-		ts string
-		p  ValidityPeriod
-		e  bool
+		name string
+		ts   string
+		p    ValidityPeriod
+		e    bool
 	}{
 		{
-			ts: nowts,
-			p:  nil,
-			e:  true,
+			name: "Succesful",
+			ts:   nowts,
+			p:    nil,
+			e:    true,
 		},
 		{
-			ts: "",
-			p:  nil,
-			e:  false,
+			name: "Empty time stamp",
+			ts:   "",
+			p:    nil,
+			e:    false,
 		},
 		{
-			ts: "wrongTs",
-			p:  nil,
-			e:  false,
+			name: "Invalid time stamp",
+			ts:   "wrongTs",
+			p:    nil,
+			e:    false,
 		},
 		{
-			ts: nowts,
-			p:  &p,
-			e:  true,
+			name: "Succesful",
+			ts:   nowts,
+			p:    &p,
+			e:    true,
 		},
 		{
-			ts: fmt.Sprintf("%d", now.AddDate(0, 0, 1).Unix()),
-			p:  &p,
-			e:  false,
+			name: "Time stamp 24 hours in the futute",
+			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, 1).Unix()),
+			p:    &p,
+			e:    false,
 		},
 		{
-			ts: fmt.Sprintf("%d", now.AddDate(0, 0, -1).Unix()),
-			p:  &p,
-			e:  false,
+			name: "Time stamp 24 hours in the past",
+			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, -1).Unix()),
+			p:    &p,
+			e:    false,
 		},
 	}
 
-	for i, tt := range cases {
+	for _, tt := range cases {
 		v := NewValidator(testKey, tt.p)
 		r := v.ValidTimestamp(tt.ts)
 		if r != tt.e {
-			t.Errorf("Unexpected error validating ts: %s, test case: %d", tt.ts, i)
+			t.Errorf("Unexpected error validating ts: %s, test case: %s", tt.ts, tt.name)
 		}
 	}
 }
 
 func TestValidSignature(t *testing.T) {
 	var cases = []struct {
-		ts string
-		qp string
-		b  string
-		s  string
-		e  bool
+		name string
+		ts   string
+		qp   string
+		b    string
+		s    string
+		e    bool
 	}{
 		{
-			ts: testTs,
-			qp: testQp,
-			b:  testBody,
-			s:  testSignature,
-			e:  true,
+			name: "succesful",
+			ts:   testTs,
+			qp:   testQp,
+			b:    testBody,
+			s:    testSignature,
+			e:    true,
 		},
 		{
-			ts: testTs,
-			qp: "def=bar&abc=foo",
-			b:  testBody,
-			s:  testSignature,
-			e:  true,
+			name: "Unorganized query params",
+			ts:   testTs,
+			qp:   "def=bar&abc=foo",
+			b:    testBody,
+			s:    testSignature,
+			e:    true,
 		},
 		{
-			ts: testTs,
-			qp: testQp,
-			b:  testBody,
-			s:  "wrong signature",
-			e:  false,
+			name: "Wrong signature received",
+			ts:   testTs,
+			qp:   testQp,
+			b:    testBody,
+			s:    "wrong signature",
+			e:    false,
 		},
 	}
 
-	for i, tt := range cases {
+	for _, tt := range cases {
 		v := NewValidator(testKey, nil)
 		r := v.ValidSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
 		if r != tt.e {
-			t.Errorf("Unexpected error validating signature: %s, test case: %d", tt.s, i)
+			t.Errorf("Unexpected error validating signature: %s, test case: %s", tt.s, tt.name)
 		}
 	}
 }
 func TestValidate(t *testing.T) {
 	var cases = []struct {
-		k   string
-		ts  string
-		s   string
-		sh  string
-		tsh string
-		e   int
+		name string
+		k    string
+		ts   string
+		s    string
+		sh   string
+		tsh  string
+		e    int
 	}{
 		{
-			k:   testKey,
-			ts:  testTs,
-			s:   testSignature,
-			sh:  sHeader,
-			tsh: tsHeader,
-			e:   http.StatusOK,
+			name: "Succesful",
+			k:    testKey,
+			ts:   testTs,
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusOK,
 		},
 		{
-			k:   "",
-			ts:  testTs,
-			s:   testSignature,
-			sh:  sHeader,
-			tsh: tsHeader,
-			e:   http.StatusUnauthorized,
+			name: "NO Access key",
+			k:    "",
+			ts:   testTs,
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
 		},
 		{
-			k:   testKey,
-			ts:  "",
-			s:   testSignature,
-			sh:  sHeader,
-			tsh: tsHeader,
-			e:   http.StatusUnauthorized,
+			name: "Request with empty time stamp",
+			k:    testKey,
+			ts:   "",
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
 		},
 		{
-			k:   testKey,
-			ts:  testTs,
-			s:   "",
-			sh:  sHeader,
-			tsh: tsHeader,
-			e:   http.StatusUnauthorized,
+			name: "Request with empty signature",
+			k:    testKey,
+			ts:   testTs,
+			s:    "",
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
 		},
 		{
-			k:   testKey,
-			ts:  testTs,
-			s:   testSignature,
-			sh:  "wrong-header",
-			tsh: tsHeader,
-			e:   http.StatusUnauthorized,
+			name: "Request with wrong signature header",
+			k:    testKey,
+			ts:   testTs,
+			s:    testSignature,
+			sh:   "wrong-header",
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
 		},
 		{
-			k:   testKey,
-			ts:  testTs,
-			s:   testSignature,
-			sh:  sHeader,
-			tsh: "wrong-header",
-			e:   http.StatusUnauthorized,
+			name: "Request with wrong timestamp header",
+			k:    testKey,
+			ts:   testTs,
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  "wrong-header",
+			e:    http.StatusUnauthorized,
 		},
 	}
 
-	for i, tt := range cases {
+	for _, tt := range cases {
 		v := NewValidator(tt.k, nil)
 		ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
@@ -241,7 +265,7 @@ func TestValidate(t *testing.T) {
 		req.Header.Set(tt.tsh, tt.ts)
 		res, _ := client.Do(req)
 		if res.StatusCode != tt.e {
-			t.Errorf("Unexpected response code: %s, test case: %d", res.Status, i)
+			t.Errorf("Unexpected response code: %s, test case: %s", res.Status, tt.name)
 		}
 	}
 
