@@ -7,7 +7,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math"
 	"net/http"
 	"net/url"
@@ -42,19 +41,15 @@ func hMACSHA256(message, key []byte) ([]byte, error) {
 
 // Validator type represents a MessageBird signature validator
 type Validator struct {
-	SigningKey  string         // Signing Key provided by MessageBird
-	Period      ValidityPeriod // Period in hours for a message to be accepted as real, set to nil to bypass the timestamp validator
-	Log         *log.Logger
-	LogMesssage *string
+	SigningKey string         // Signing Key provided by MessageBird
+	Period     ValidityPeriod // Period in hours for a message to be accepted as real, set to nil to bypass the timestamp validator
 }
 
 // NewValidator returns a signature validator object
-func NewValidator(signingKey string, period ValidityPeriod, log *log.Logger, message *string) *Validator {
+func NewValidator(signingKey string, period ValidityPeriod) *Validator {
 	return &Validator{
-		SigningKey:  signingKey,
-		Period:      period,
-		Log:         log,
-		LogMesssage: message,
+		SigningKey: signingKey,
+		Period:     period,
 	}
 }
 
@@ -110,29 +105,36 @@ func (v *Validator) ValidSignature(ts, rqp string, b []byte, rs string) bool {
 }
 
 func (v *Validator) Error(w http.ResponseWriter, r *http.Request) {
-	if v.Log != nil {
-		v.Log.Printf("%s, sending host: %s", *v.LogMesssage, r.Host)
+
+}
+
+// ValidRequest is a method that takes care of the signature validation of
+// incoming requests
+// To use just wrap your handler with it:
+// signature.Validate(request)
+func (v *Validator) ValidRequest(r *http.Request) (bool, error) {
+	ts := r.Header.Get(tsHeader)
+	rs := r.Header.Get(sHeader)
+	if ts == "" || rs == "" {
+		return false, fmt.Errorf("Unknown host: %s", r.Host)
 	}
-	http.Error(w, "Request not allowed", http.StatusUnauthorized)
-	return
+	b, _ := ioutil.ReadAll(r.Body)
+	if v.ValidTimestamp(ts) == false || v.ValidSignature(ts, r.URL.RawQuery, b, rs) == false {
+		return false, fmt.Errorf("Unknown host: %s", r.Host)
+	}
+	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
+	return true, nil
 }
 
 // Validate is a handler wrapper that takes care of the signature validation of
 // incoming requests and rejects them if invalid or pass them on to your handler
 // otherwise.
-// To use just wrappe your handler with it:
+// To use just wrap your handler with it:
 // http.Handle("/path", signature.Validate(handleThing))
 func (v *Validator) Validate(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ts := r.Header.Get(tsHeader)
-		rs := r.Header.Get(sHeader)
-		if ts == "" || rs == "" {
-			v.Error(w, r)
-			return
-		}
-		b, _ := ioutil.ReadAll(r.Body)
-		if v.ValidTimestamp(ts) == false || v.ValidSignature(ts, r.URL.RawQuery, b, rs) == false {
-			v.Error(w, r)
+		if res, _ := v.ValidRequest(r); res == false {
+			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
 		h.ServeHTTP(w, r)

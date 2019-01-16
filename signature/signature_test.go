@@ -68,7 +68,7 @@ func TestCalculateSignature(t *testing.T) {
 		},
 	}
 	for i, tt := range cases {
-		v := NewValidator(tt.sKey, nil, nil, nil)
+		v := NewValidator(tt.sKey, nil)
 		s, err := v.CalculateSignature(tt.ts, tt.qp, []byte(tt.b))
 		if err != nil {
 			t.Errorf("Error calculating signature: %s, expected: %s", s, tt.es)
@@ -122,7 +122,7 @@ func TestValidTimestamp(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		v := NewValidator(testKey, tt.p, nil, nil)
+		v := NewValidator(testKey, tt.p)
 		r := v.ValidTimestamp(tt.ts)
 		if r != tt.e {
 			t.Errorf("Unexpected error validating ts: %s, test case: %d", tt.ts, i)
@@ -162,7 +162,7 @@ func TestValidSignature(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		v := NewValidator(testKey, nil, nil, nil)
+		v := NewValidator(testKey, nil)
 		r := v.ValidSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
 		if r != tt.e {
 			t.Errorf("Unexpected error validating signature: %s, test case: %d", tt.s, i)
@@ -229,7 +229,7 @@ func TestValidate(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		v := NewValidator(tt.k, nil, nil, nil)
+		v := NewValidator(tt.k, nil)
 		ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		})))
