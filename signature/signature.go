@@ -94,9 +94,18 @@ func (v *Validator) CalculateSignature(ts, qp string, b []byte) ([]byte, error) 
 // ValidSignature takes the timestamp, query params and body from the request,
 // calculates the expected signature and compares it to the one sent by MessageBird.
 func (v *Validator) ValidSignature(ts, rqp string, b []byte, rs string) bool {
-	uqp, _ := url.Parse("?" + rqp)
-	es, _ := v.CalculateSignature(ts, uqp.Query().Encode(), b)
-	drs, _ := base64.StdEncoding.DecodeString(rs)
+	uqp, err := url.Parse("?" + rqp)
+	if err != nil {
+		return false
+	}
+	es, err := v.CalculateSignature(ts, uqp.Query().Encode(), b)
+	if err != nil {
+		return false
+	}
+	drs, err := base64.StdEncoding.DecodeString(rs)
+	if err != nil {
+		return false
+	}
 	return hmac.Equal(drs, es)
 }
 
