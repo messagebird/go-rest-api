@@ -106,7 +106,7 @@ func (v *Validator) ValidSignature(ts, rqp string, b []byte, rs string) bool {
 
 // ValidRequest is a method that takes care of the signature validation of
 // incoming requests
-// To use just wrap your handler with it:
+// To use just pass the request:
 // signature.Validate(request)
 func (v *Validator) ValidRequest(r *http.Request) (bool, error) {
 	ts := r.Header.Get(tsHeader)
