@@ -104,10 +104,6 @@ func (v *Validator) ValidSignature(ts, rqp string, b []byte, rs string) bool {
 	return hmac.Equal(drs, es)
 }
 
-func (v *Validator) Error(w http.ResponseWriter, r *http.Request) {
-
-}
-
 // ValidRequest is a method that takes care of the signature validation of
 // incoming requests
 // To use just wrap your handler with it:
