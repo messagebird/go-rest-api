@@ -108,18 +108,18 @@ func (v *Validator) ValidSignature(ts, rqp string, b []byte, rs string) bool {
 // incoming requests
 // To use just pass the request:
 // signature.Validate(request)
-func (v *Validator) ValidRequest(r *http.Request) (bool, error) {
+func (v *Validator) ValidRequest(r *http.Request) error {
 	ts := r.Header.Get(tsHeader)
 	rs := r.Header.Get(sHeader)
 	if ts == "" || rs == "" {
-		return false, fmt.Errorf("Unknown host: %s", r.Host)
+		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	b, _ := ioutil.ReadAll(r.Body)
 	if v.ValidTimestamp(ts) == false || v.ValidSignature(ts, r.URL.RawQuery, b, rs) == false {
-		return false, fmt.Errorf("Unknown host: %s", r.Host)
+		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
-	return true, nil
+	return nil
 }
 
 // Validate is a handler wrapper that takes care of the signature validation of
@@ -129,7 +129,7 @@ func (v *Validator) ValidRequest(r *http.Request) (bool, error) {
 // http.Handle("/path", signature.Validate(handleThing))
 func (v *Validator) Validate(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if res, _ := v.ValidRequest(r); res == false {
+		if err := v.ValidRequest(r); err != nil {
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
