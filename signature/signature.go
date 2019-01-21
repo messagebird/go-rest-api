@@ -7,18 +7,19 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"math"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 )
 
-const tsHeader = "MessageBird-Request-Timestamp"
-const sHeader = "MessageBird-Signature"
+const (
+	tsHeader = "MessageBird-Request-Timestamp"
+	sHeader  = "MessageBird-Signature"
+)
 
-// ValidityPeriod is the time in hours after which a request is descarded
-type ValidityPeriod *float64
+// Window of acceptance for a request, if the time stamp is within this time, it will evaluated as valid
+var ValidityWindow = 5 * time.Second
 
 // StringToTime converts from Unicod Epoch enconded timestamps to time.Time Go objects
 func stringToTime(s string) (time.Time, error) {
@@ -42,58 +43,52 @@ func hMACSHA256(message, key []byte) ([]byte, error) {
 // Validator type represents a MessageBird signature validator
 type Validator struct {
 	SigningKey string         // Signing Key provided by MessageBird
-	Period     ValidityPeriod // Period in hours for a message to be accepted as real, set to nil to bypass the timestamp validator
-}
+	Period     *time.Duration // Period for a message to be accepted as real, set no nil to bypass the time validator
+} // Five seconds by default
 
 // NewValidator returns a signature validator object
-func NewValidator(signingKey string, period ValidityPeriod) *Validator {
+func NewValidator(signingKey string) *Validator {
 	return &Validator{
 		SigningKey: signingKey,
-		Period:     period,
+		Period:     &ValidityWindow,
 	}
 }
 
-// ValidTimestamp validates if the MessageBird-Request-Timestamp is a valid
+// validTimestamp validates if the MessageBird-Request-Timestamp is a valid
 // date and if the request is older than the validator Period.
-func (v *Validator) ValidTimestamp(ts string) bool {
+func (v *Validator) validTimestamp(ts string) bool {
 	t, err := stringToTime(ts)
 	if err != nil {
 		return false
 	}
-	if v.Period != nil {
-		now := time.Now()
-		diff := now.Sub(t)
-		if math.Abs(diff.Hours()) > *v.Period {
-			return false
-		}
+	if v.Period == nil {
+		return true
 	}
-	return true
+
+	diff := time.Now().Add(*v.Period / 2).Sub(t)
+	return diff < *v.Period && diff > 0
 }
 
-// CalculateSignature calculates the MessageBird-Signature using HMAC_SHA_256
+// calculateSignature calculates the MessageBird-Signature using HMAC_SHA_256
 // encoding and the timestamp, query params and body from the request:
 // signature = HMAC_SHA_256(
 //	TIMESTAMP + \n + QUERY_PARAMS + \n + SHA_256_SUM(BODY),
 //	signing_key)
-func (v *Validator) CalculateSignature(ts, qp string, b []byte) ([]byte, error) {
+func (v *Validator) calculateSignature(ts, qp string, b []byte) ([]byte, error) {
 	var m bytes.Buffer
 	bh := sha256.Sum256(b)
 	fmt.Fprintf(&m, "%s\n%s\n%s", ts, qp, bh[:])
-	s, err := hMACSHA256(m.Bytes(), []byte(v.SigningKey))
-	if err != nil {
-		return nil, err
-	}
-	return s, nil
+	return hMACSHA256(m.Bytes(), []byte(v.SigningKey))
 }
 
-// ValidSignature takes the timestamp, query params and body from the request,
+// validSignature takes the timestamp, query params and body from the request,
 // calculates the expected signature and compares it to the one sent by MessageBird.
-func (v *Validator) ValidSignature(ts, rqp string, b []byte, rs string) bool {
+func (v *Validator) validSignature(ts, rqp string, b []byte, rs string) bool {
 	uqp, err := url.Parse("?" + rqp)
 	if err != nil {
 		return false
 	}
-	es, err := v.CalculateSignature(ts, uqp.Query().Encode(), b)
+	es, err := v.calculateSignature(ts, uqp.Query().Encode(), b)
 	if err != nil {
 		return false
 	}
@@ -115,7 +110,7 @@ func (v *Validator) ValidRequest(r *http.Request) error {
 		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	b, _ := ioutil.ReadAll(r.Body)
-	if v.ValidTimestamp(ts) == false || v.ValidSignature(ts, r.URL.RawQuery, b, rs) == false {
+	if v.validTimestamp(ts) == false || v.validSignature(ts, r.URL.RawQuery, b, rs) == false {
 		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))

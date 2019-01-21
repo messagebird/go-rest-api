@@ -74,8 +74,9 @@ func TestCalculateSignature(t *testing.T) {
 		},
 	}
 	for _, tt := range cases {
-		v := NewValidator(tt.sKey, nil)
-		s, err := v.CalculateSignature(tt.ts, tt.qp, []byte(tt.b))
+		v := NewValidator(tt.sKey)
+		v.Period = nil
+		s, err := v.calculateSignature(tt.ts, tt.qp, []byte(tt.b))
 		if err != nil {
 			t.Errorf("Error calculating signature: %s, expected: %s", s, tt.es)
 		}
@@ -87,13 +88,13 @@ func TestCalculateSignature(t *testing.T) {
 	}
 }
 func TestValidTimestamp(t *testing.T) {
-	var p float64 = 2
+	var p time.Duration = time.Second * 2
 	now := time.Now()
 	nowts := fmt.Sprintf("%d", now.Unix())
 	var cases = []struct {
 		name string
 		ts   string
-		p    ValidityPeriod
+		p    *time.Duration
 		e    bool
 	}{
 		{
@@ -115,7 +116,7 @@ func TestValidTimestamp(t *testing.T) {
 			e:    false,
 		},
 		{
-			name: "Succesful",
+			name: "Succesful with time check",
 			ts:   nowts,
 			p:    &p,
 			e:    true,
@@ -135,8 +136,9 @@ func TestValidTimestamp(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		v := NewValidator(testKey, tt.p)
-		r := v.ValidTimestamp(tt.ts)
+		v := NewValidator(testKey)
+		v.Period = tt.p
+		r := v.validTimestamp(tt.ts)
 		if r != tt.e {
 			t.Errorf("Unexpected error validating ts: %s, test case: %s", tt.ts, tt.name)
 		}
@@ -179,8 +181,9 @@ func TestValidSignature(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		v := NewValidator(testKey, nil)
-		r := v.ValidSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
+		v := NewValidator(testKey)
+		v.Period = nil
+		r := v.validSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
 		if r != tt.e {
 			t.Errorf("Unexpected error validating signature: %s, test case: %s", tt.s, tt.name)
 		}
@@ -253,7 +256,8 @@ func TestValidate(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		v := NewValidator(tt.k, nil)
+		v := NewValidator(tt.k)
+		v.Period = nil
 		ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		})))
