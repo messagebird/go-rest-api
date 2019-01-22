@@ -1,5 +1,27 @@
 package signature
 
+/*
+Package signature implements signature verification for MessageBird webhooks.
+
+To use define a new validator using your MessageBird Signing key.  You can use the
+ValidRequest method, just pass the request as a parameter:
+
+    validator := signature.NewValidator("your signing key")
+    if err := validator.ValidRequest(r); err != nil {
+        // handle error
+    }
+
+Or use the handler as a middleware for your server:
+
+	http.Handle("/path", validator.Validate(YourHandler))
+
+It will reject the requests that contain invalid signatures.
+The validator uses a 5ms seconds window to accept requests as valid, to change
+this value, set the ValidityWindow to the disired duration.
+Take into account that the validity window works around the current time:
+	[now - ValidityWindow/2, now + ValidityWindow/2]
+*/
+
 import (
 	"bytes"
 	"crypto/hmac"
@@ -18,10 +40,10 @@ const (
 	sHeader  = "MessageBird-Signature"
 )
 
-// Window of acceptance for a request, if the time stamp is within this time, it will evaluated as valid
+// ValidityWindow defines the time window in which to validate a request.
 var ValidityWindow = 5 * time.Second
 
-// StringToTime converts from Unicod Epoch enconded timestamps to time.Time Go objects
+// StringToTime converts from Unicod Epoch enconded timestamps to time.Time Go objects.
 func stringToTime(s string) (time.Time, error) {
 	sec, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
@@ -31,7 +53,7 @@ func stringToTime(s string) (time.Time, error) {
 }
 
 // HMACSHA256 generates HMACS enconded hashes using the provided Key and SHA256
-// encoding for the message
+// encoding for the message.
 func hMACSHA256(message, key []byte) ([]byte, error) {
 	mac := hmac.New(sha256.New, []byte(key))
 	if _, err := mac.Write(message); err != nil {
@@ -40,17 +62,15 @@ func hMACSHA256(message, key []byte) ([]byte, error) {
 	return mac.Sum(nil), nil
 }
 
-// Validator type represents a MessageBird signature validator
+// Validator type represents a MessageBird signature validator.
 type Validator struct {
-	SigningKey string         // Signing Key provided by MessageBird
-	Period     *time.Duration // Period for a message to be accepted as real, set no nil to bypass the time validator
-} // Five seconds by default
+	SigningKey string // Signing Key provided by MessageBird.
+}
 
-// NewValidator returns a signature validator object
+// NewValidator returns a signature validator object.
 func NewValidator(signingKey string) *Validator {
 	return &Validator{
 		SigningKey: signingKey,
-		Period:     &ValidityWindow,
 	}
 }
 
@@ -61,12 +81,8 @@ func (v *Validator) validTimestamp(ts string) bool {
 	if err != nil {
 		return false
 	}
-	if v.Period == nil {
-		return true
-	}
-
-	diff := time.Now().Add(*v.Period / 2).Sub(t)
-	return diff < *v.Period && diff > 0
+	diff := time.Now().Add(ValidityWindow / 2).Sub(t)
+	return diff < ValidityWindow && diff > 0
 }
 
 // calculateSignature calculates the MessageBird-Signature using HMAC_SHA_256
@@ -100,7 +116,7 @@ func (v *Validator) validSignature(ts, rqp string, b []byte, rs string) bool {
 }
 
 // ValidRequest is a method that takes care of the signature validation of
-// incoming requests
+// incoming requests.
 // To use just pass the request:
 // signature.Validate(request)
 func (v *Validator) ValidRequest(r *http.Request) error {

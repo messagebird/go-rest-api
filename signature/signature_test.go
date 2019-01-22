@@ -75,7 +75,6 @@ func TestCalculateSignature(t *testing.T) {
 	}
 	for _, tt := range cases {
 		v := NewValidator(tt.sKey)
-		v.Period = nil
 		s, err := v.calculateSignature(tt.ts, tt.qp, []byte(tt.b))
 		if err != nil {
 			t.Errorf("Error calculating signature: %s, expected: %s", s, tt.es)
@@ -88,56 +87,42 @@ func TestCalculateSignature(t *testing.T) {
 	}
 }
 func TestValidTimestamp(t *testing.T) {
-	var p time.Duration = time.Second * 2
 	now := time.Now()
 	nowts := fmt.Sprintf("%d", now.Unix())
 	var cases = []struct {
 		name string
 		ts   string
-		p    *time.Duration
 		e    bool
 	}{
 		{
 			name: "Succesful",
 			ts:   nowts,
-			p:    nil,
 			e:    true,
 		},
 		{
 			name: "Empty time stamp",
 			ts:   "",
-			p:    nil,
 			e:    false,
 		},
 		{
 			name: "Invalid time stamp",
 			ts:   "wrongTs",
-			p:    nil,
 			e:    false,
-		},
-		{
-			name: "Succesful with time check",
-			ts:   nowts,
-			p:    &p,
-			e:    true,
 		},
 		{
 			name: "Time stamp 24 hours in the futute",
 			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, 1).Unix()),
-			p:    &p,
 			e:    false,
 		},
 		{
 			name: "Time stamp 24 hours in the past",
 			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, -1).Unix()),
-			p:    &p,
 			e:    false,
 		},
 	}
 
 	for _, tt := range cases {
 		v := NewValidator(testKey)
-		v.Period = tt.p
 		r := v.validTimestamp(tt.ts)
 		if r != tt.e {
 			t.Errorf("Unexpected error validating ts: %s, test case: %s", tt.ts, tt.name)
@@ -182,7 +167,7 @@ func TestValidSignature(t *testing.T) {
 
 	for _, tt := range cases {
 		v := NewValidator(testKey)
-		v.Period = nil
+		ValidityWindow = time.Hour * 100000
 		r := v.validSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
 		if r != tt.e {
 			t.Errorf("Unexpected error validating signature: %s, test case: %s", tt.s, tt.name)
@@ -257,7 +242,8 @@ func TestValidate(t *testing.T) {
 
 	for _, tt := range cases {
 		v := NewValidator(tt.k)
-		v.Period = nil
+		testTime, _ := stringToTime(testTs)
+		ValidityWindow = time.Now().Add(time.Second*1).Sub(testTime) * 2
 		ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 		})))
