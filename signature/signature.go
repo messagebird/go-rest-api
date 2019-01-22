@@ -52,16 +52,6 @@ func stringToTime(s string) (time.Time, error) {
 	return time.Unix(sec, 0), nil
 }
 
-// HMACSHA256 generates HMACS enconded hashes using the provided Key and SHA256
-// encoding for the message.
-func hMACSHA256(message, key []byte) ([]byte, error) {
-	mac := hmac.New(sha256.New, []byte(key))
-	if _, err := mac.Write(message); err != nil {
-		return nil, err
-	}
-	return mac.Sum(nil), nil
-}
-
 // Validator type represents a MessageBird signature validator.
 type Validator struct {
 	SigningKey string // Signing Key provided by MessageBird.
@@ -94,7 +84,11 @@ func (v *Validator) calculateSignature(ts, qp string, b []byte) ([]byte, error) 
 	var m bytes.Buffer
 	bh := sha256.Sum256(b)
 	fmt.Fprintf(&m, "%s\n%s\n%s", ts, qp, bh[:])
-	return hMACSHA256(m.Bytes(), []byte(v.SigningKey))
+	mac := hmac.New(sha256.New, []byte(v.SigningKey))
+	if _, err := mac.Write(m.Bytes()); err != nil {
+		return nil, err
+	}
+	return mac.Sum(nil), nil
 }
 
 // validSignature takes the timestamp, query params and body from the request,
@@ -117,8 +111,6 @@ func (v *Validator) validSignature(ts, rqp string, b []byte, rs string) bool {
 
 // ValidRequest is a method that takes care of the signature validation of
 // incoming requests.
-// To use just pass the request:
-// signature.Validate(request)
 func (v *Validator) ValidRequest(r *http.Request) error {
 	ts := r.Header.Get(tsHeader)
 	rs := r.Header.Get(sHeader)
@@ -136,8 +128,6 @@ func (v *Validator) ValidRequest(r *http.Request) error {
 // Validate is a handler wrapper that takes care of the signature validation of
 // incoming requests and rejects them if invalid or pass them on to your handler
 // otherwise.
-// To use just wrap your handler with it:
-// http.Handle("/path", signature.Validate(handleThing))
 func (v *Validator) Validate(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := v.ValidRequest(r); err != nil {
