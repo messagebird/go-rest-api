@@ -1,5 +1,3 @@
-package signature
-
 /*
 Package signature implements signature verification for MessageBird webhooks.
 
@@ -21,6 +19,7 @@ this value, set the ValidityWindow to the disired duration.
 Take into account that the validity window works around the current time:
 	[now - ValidityWindow/2, now + ValidityWindow/2]
 */
+package signature
 
 import (
 	"bytes"
@@ -43,7 +42,7 @@ const (
 // ValidityWindow defines the time window in which to validate a request.
 var ValidityWindow = 5 * time.Second
 
-// StringToTime converts from Unicod Epoch enconded timestamps to time.Time Go objects.
+// StringToTime converts from Unicode Epoch encoded timestamps to the time.Time type.
 func stringToTime(s string) (time.Time, error) {
 	sec, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
