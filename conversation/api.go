@@ -43,7 +43,7 @@ type Conversation struct {
 	Channels             []*Channel
 	Messages             *MessagesCount
 	Status               ConversationStatus
-	CreatedDatetime      *time.Time
+	CreatedDatetime      time.Time
 	UpdatedDatetime      *time.Time
 	LastReceivedDatetime *time.Time
 }
@@ -130,6 +130,7 @@ const (
 	MessageStatusReceived    MessageStatus = "received"
 	MessageStatusSent        MessageStatus = "sent"
 	MessageStatusUnsupported MessageStatus = "unsupported"
+	MessageStatusRejected    MessageStatus = "rejected"
 )
 
 // MessageType indicates what kind of content a Message has, e.g. audio or
