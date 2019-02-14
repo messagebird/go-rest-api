@@ -1,0 +1,18 @@
+{
+    "offset": 0,
+    "limit": 10,
+    "count": 1,
+    "totalCount": 1,
+    "items": [
+        {
+            "id": "whid",
+            "url": "https://example.com/webhooks",
+            "channelId": "chid",
+            "events": [
+                "message.created"
+            ],
+            "createdDatetime": "2018-08-24T14:46:39Z",
+            "updatedDatetime": null
+        }
+    ]
+}
