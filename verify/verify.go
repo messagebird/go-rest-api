@@ -67,6 +67,22 @@ func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, e
 	return verify, nil
 }
 
+// Delete deletes an existing Verify object by its ID.
+func Delete(c *messagebird.Client, id string) error {
+	return c.Request(nil, http.MethodDelete, path+"/"+id, nil)
+}
+
+// Read retrieves an existing Verify object by its ID.
+func Read(c *messagebird.Client, id string) (*Verify, error) {
+	verify := &Verify{}
+
+	if err := c.Request(verify, http.MethodGet, path+"/"+id, nil); err != nil {
+		return nil, err
+	}
+
+	return verify, nil
+}
+
 // VerifyToken performs token value check against MessageBird API.
 func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 	params := &url.Values{}

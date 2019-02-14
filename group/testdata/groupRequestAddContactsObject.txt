@@ -1,0 +1,1 @@
+ids[]=first-contact-id&ids[]=second-contact-id

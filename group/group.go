@@ -161,10 +161,9 @@ func AddContacts(c *messagebird.Client, groupID string, contactIDs []string) err
 		return err
 	}
 
-	query := addContactsQuery(contactIDs)
-	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, query)
+	data := addContactsData(contactIDs)
 
-	return c.Request(nil, http.MethodGet, formattedPath, nil)
+	return c.Request(nil, http.MethodPut, path+"/"+groupID+"/"+contactPath, data)
 }
 
 func validateAddContacts(contactIDs []string) error {
@@ -182,19 +181,12 @@ func validateAddContacts(contactIDs []string) error {
 	return nil
 }
 
-// addContactsQuery gets a query string to add contacts to a group. We're using
-// the alternative "/foo?_method=PUT&key=value" format to send the contact IDs
-// as GET params. Sending these in the request body would require a painful
-// workaround, as client.Request sends request bodies as JSON by default. See
-// also: https://developers.messagebird.com/docs/alternatives.
-//
-// It should also be noted that we're intentionally not using url.Values for
-// building the query string: the API expects `ids[]=foo&ids[]=bar` format,
-// while url.Values encodes to `ids=foo&ids=bar`.
-func addContactsQuery(contactIDs []string) string {
-	// Slice's length is one bigger than len(IDs) for the _method param.
-	params := make([]string, 0, len(contactIDs)+1)
-	params = append(params, "_method="+http.MethodPut)
+// addContactsData gets the data string for adding a contact to a group. We're
+// intentionally not using url.Values for building the string: the API expects
+// `ids[]=foo&ids[]=bar` format, while url.Values encodes to `ids=foo&ids=bar`.
+func addContactsData(contactIDs []string) string {
+	cap := len(contactIDs)
+	params := make([]string, 0, cap)
 
 	for _, contactID := range contactIDs {
 		params = append(params, "ids[]="+contactID)
