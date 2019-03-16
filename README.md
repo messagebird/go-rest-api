@@ -7,7 +7,7 @@ This repository contains the open source Go client for MessageBird's REST API. D
 Requirements
 ------------
 - [Sign up](https://www.messagebird.com/en/signup) for a free MessageBird account
-- Create a new access key in the developers sections
+- Create a new access key in the [dashboard](https://dashboard.messagebird.com/en-us/developers/access).
 - An application written in Go to make use of this API
 
 Installation
