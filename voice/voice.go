@@ -40,10 +40,6 @@ func errorReader(b []byte) error {
 }
 
 func (e ErrorResponse) Error() string {
-	if len(e.Errors) == 1 {
-		return e.Errors[0].Error()
-	}
-
 	errStrings := make([]string, len(e.Errors))
 	for i, v := range e.Errors {
 		errStrings[i] = v.Error()
