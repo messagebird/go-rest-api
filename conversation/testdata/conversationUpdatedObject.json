@@ -1,0 +1,13 @@
+{
+    "id": "convid",
+    "contactId": "contid",
+    "status": "archived",
+    "createdDatetime": "2018-08-22T15:47:34Z",
+    "updatedDatetime": "2018-08-22T15:50:38.593332415Z",
+    "lastReceivedDatetime": "2018-08-22T15:47:34Z",
+    "lastUsedChannelId": "chid",
+    "messages": {
+        "totalCount": 1,
+        "href": "https://conversations.messagebird.com/v1/conversations/convid/messages"
+    }
+}
