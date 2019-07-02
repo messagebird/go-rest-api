@@ -13,8 +13,9 @@ type WebhookCreateRequest struct {
 }
 
 type WebhookUpdateRequest struct {
-	URL    string         `json:"url"`
 	Events []WebhookEvent `json:"events"`
+	URL    string         `json:"url"`
+	Status WebhookStatus  `json:"status"`
 }
 
 // CreateWebhook registers a webhook that is invoked when something interesting

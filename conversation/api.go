@@ -189,6 +189,7 @@ type Webhook struct {
 	ChannelID       string
 	Events          []WebhookEvent
 	URL             string
+	Status          WebhookStatus
 	CreatedDatetime *time.Time
 	UpdatedDatetime *time.Time
 }
@@ -200,6 +201,17 @@ const (
 	WebhookEventConversationUpdated WebhookEvent = "conversation.updated"
 	WebhookEventMessageCreated      WebhookEvent = "message.created"
 	WebhookEventMessageUpdated      WebhookEvent = "message.updated"
+)
+
+// WebhookStatus indicates what state a Webhook is in.
+// At the moment there are only 2 statuses; enabled or disabled.
+type WebhookStatus string
+
+const (
+	// WebhookStatusEnabled indictates that the webhook is enabled
+	WebhookStatusEnabled WebhookStatus = "enabled"
+	// WebhookStatusEnabled indictates that the webhook is disabled
+	WebhookStatusDisabled WebhookStatus = "disabled"
 )
 
 // request does the exact same thing as Client.Request. It does, however,

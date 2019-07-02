@@ -1,1 +1,1 @@
-{"url":"https://example.com/mynewwebhookurl","events":["conversation.updated"]}
+{"events":["conversation.updated"],"url":"https://example.com/mynewwebhookurl","status":"disabled"}

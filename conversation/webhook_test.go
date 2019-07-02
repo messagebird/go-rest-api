@@ -94,7 +94,8 @@ func TestUpdateWebhook(t *testing.T) {
 		Events: []WebhookEvent{
 			WebhookEventConversationUpdated,
 		},
-		URL: "https://example.com/mynewwebhookurl",
+		URL:    "https://example.com/mynewwebhookurl",
+		Status: WebhookStatusDisabled,
 	}
 
 	webhook, err := UpdateWebhook(client, "whid", webhookUpdateRequest)
@@ -108,6 +109,10 @@ func TestUpdateWebhook(t *testing.T) {
 
 	if webhook.UpdatedDatetime == nil {
 		t.Fatalf("Expected the UpdatedDatetime value to be added, but was nil")
+	}
+
+	if webhook.Status != WebhookStatusDisabled {
+		t.Fatalf("Expected status to be disabled, was %s", webhook.Status)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/webhooks/whid")
