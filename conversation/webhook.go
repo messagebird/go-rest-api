@@ -12,6 +12,11 @@ type WebhookCreateRequest struct {
 	URL       string         `json:"url"`
 }
 
+type WebhookUpdateRequest struct {
+	URL    string         `json:"url"`
+	Events []WebhookEvent `json:"events"`
+}
+
 // CreateWebhook registers a webhook that is invoked when something interesting
 // happens.
 func CreateWebhook(c *messagebird.Client, req *WebhookCreateRequest) (*Webhook, error) {
@@ -45,6 +50,16 @@ func ListWebhooks(c *messagebird.Client, options *ListOptions) (*WebhookList, er
 func ReadWebhook(c *messagebird.Client, id string) (*Webhook, error) {
 	webhook := &Webhook{}
 	if err := request(c, webhook, http.MethodGet, webhooksPath+"/"+id, nil); err != nil {
+		return nil, err
+	}
+
+	return webhook, nil
+}
+
+// UpdateWebhook updates a single webhook based on its ID
+func UpdateWebhook(c *messagebird.Client, id string, req *WebhookUpdateRequest) (*Webhook, error) {
+	webhook := &Webhook{}
+	if err := request(c, webhook, http.MethodPatch, webhooksPath+"/"+id, req); err != nil {
 		return nil, err
 	}
 
