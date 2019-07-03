@@ -1,7 +1,7 @@
 {
     "id": "whid",
     "url": "https://example.com/mynewwebhookurl",
-    "channelId": "chid1",
+    "channelId": "chid",
     "events": [
         "conversation.updated"
     ],
