@@ -208,9 +208,9 @@ const (
 type WebhookStatus string
 
 const (
-	// WebhookStatusEnabled indictates that the webhook is enabled
+	// WebhookStatusEnabled indictates that the webhook is enabled.
 	WebhookStatusEnabled WebhookStatus = "enabled"
-	// WebhookStatusEnabled indictates that the webhook is disabled
+	// WebhookStatusDisabled indictates that the webhook is disabled.
 	WebhookStatusDisabled WebhookStatus = "disabled"
 )
 
