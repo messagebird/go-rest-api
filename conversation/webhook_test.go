@@ -85,3 +85,36 @@ func TestReadWebhook(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/webhooks/whid")
 }
+
+func TestUpdateWebhook(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "webhookUpdatedObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	webhookUpdateRequest := &WebhookUpdateRequest{
+		Events: []WebhookEvent{
+			WebhookEventConversationUpdated,
+		},
+		URL:    "https://example.com/mynewwebhookurl",
+		Status: WebhookStatusDisabled,
+	}
+
+	webhook, err := UpdateWebhook(client, "whid", webhookUpdateRequest)
+	if err != nil {
+		t.Fatalf("unexpected error updating Webhook: %s", err)
+	}
+
+	if webhook.URL != "https://example.com/mynewwebhookurl" {
+		t.Fatalf("Expected https://example.com/mynewwebhookurl, got %s", webhook.URL)
+	}
+
+	if webhook.UpdatedDatetime == nil {
+		t.Fatalf("Expected the UpdatedDatetime value to be added, but was nil")
+	}
+
+	if webhook.Status != WebhookStatusDisabled {
+		t.Fatalf("Expected status to be disabled, was %s", webhook.Status)
+	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/webhooks/whid")
+	mbtest.AssertTestdata(t, "webhookUpdateRequest.json", mbtest.Request.Body)
+}

@@ -70,7 +70,7 @@ Complete documentation, instructions, and examples are available at:
 
 Upgrading
 ---------
-If you're upgrading from older versions, please read the [Messagebird `go-rest-api` uprading guide](UPGRADING.md).
+If you're upgrading from older versions, please read the [Messagebird `go-rest-api` upgrading guide](UPGRADING.md).
 
 License
 -------
