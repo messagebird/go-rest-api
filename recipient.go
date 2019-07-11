@@ -4,9 +4,11 @@ import "time"
 
 // Recipient struct holds information for a single msisdn with status details.
 type Recipient struct {
-	Recipient      int64
-	Status         string
-	StatusDatetime *time.Time
+	Recipient      		int64
+	Status         		string
+	StatusDatetime 		*time.Time
+	MessagePartCount 	int
+
 }
 
 // Recipients holds a collection of Recepient structs along with send stats.
