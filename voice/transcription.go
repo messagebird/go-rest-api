@@ -103,5 +103,9 @@ func CreateTranscription(client *messagebird.Client, callID string, legID string
 	if err := client.Request(&resp, http.MethodPost, apiRoot+path, body); err != nil {
 		return nil, err
 	}
+	if len(resp.Data) == 0 {
+		return nil, fmt.Errorf("Empty response")
+	}
+
 	return &resp.Data[0], nil
 }
