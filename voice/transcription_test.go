@@ -26,3 +26,17 @@ func TestTranscriptionGetContents(t *testing.T) {
 		t.Fatalf("mismatched downloaded contents")
 	}
 }
+
+func TestCreateTranscription(t *testing.T) {
+	mbClient, ok := testClient(t)
+	if !ok {
+		t.SkipNow()
+	}
+
+	callID, legID, recordingID := "7777777", "88888888", "999999999"
+
+	_, err := CreateTranscription(mbClient, callID, legID, recordingID)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

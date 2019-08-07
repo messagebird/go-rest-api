@@ -94,7 +94,7 @@ func (trans *Transcription) Contents(client *messagebird.Client) (string, error)
 }
 
 // CreateTranscription creates a transcription request for an existing recording
-func CreateTranscription(client *messagebird.Client, callID string, legID string, recordingID string, language string) (trans *Transcription, err error) {
+func CreateTranscription(client *messagebird.Client, callID string, legID string, recordingID string) (trans *Transcription, err error) {
 	var body struct{}
 	path := fmt.Sprintf("/calls/%s/legs/%s/recordings/%s/transcriptions", callID, legID, recordingID)
 	var resp struct {
