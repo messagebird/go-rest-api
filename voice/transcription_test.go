@@ -28,10 +28,18 @@ func TestTranscriptionGetContents(t *testing.T) {
 }
 
 func TestCreateTranscription(t *testing.T) {
-	mbClient, ok := testClient(t)
-	if !ok {
-		t.SkipNow()
-	}
+	mbClient, stop := testRequest(http.StatusOK, []byte(`{
+		"data": [
+			{
+				"id": "00000000-1111-2222-3333-444444444444",
+				"recordingId": "55555555-6666-7777-8888-999999999999",
+				"error": null,
+				"createdAt": "2011-01-01T02:03:04Z",
+				"updatedAt": "2011-01-02T03:04:05Z"
+			}
+		]
+	}`))
+	defer stop()
 
 	callID, legID, recordingID := "7777777", "88888888", "999999999"
 
