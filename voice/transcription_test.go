@@ -1,9 +1,16 @@
 package voice
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
+
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
+
+func TestMain(m *testing.M) {
+	mbtest.EnableServer(m)
+}
 
 func TestTranscriptionGetContents(t *testing.T) {
 	text := "the quick brown fox jumps over the lazy dog"
@@ -28,23 +35,14 @@ func TestTranscriptionGetContents(t *testing.T) {
 }
 
 func TestCreateTranscription(t *testing.T) {
-	mbClient, stop := testRequest(http.StatusOK, []byte(`{
-		"data": [
-			{
-				"id": "00000000-1111-2222-3333-444444444444",
-				"recordingId": "55555555-6666-7777-8888-999999999999",
-				"error": null,
-				"createdAt": "2011-01-01T02:03:04Z",
-				"updatedAt": "2011-01-02T03:04:05Z"
-			}
-		]
-	}`))
-	defer stop()
+	mbtest.WillReturnTestdata(t, "transcriptObject.json", http.StatusOK)
+	client := mbtest.Client(t)
 
 	callID, legID, recordingID := "7777777", "88888888", "999999999"
-
-	_, err := CreateTranscription(mbClient, callID, legID, recordingID)
+	_, err := CreateTranscription(client, callID, legID, recordingID)
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodPost, fmt.Sprintf("/calls/%s/legs/%s/recordings/%s/transcriptions", callID, legID, recordingID))
 }
