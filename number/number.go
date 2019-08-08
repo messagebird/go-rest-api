@@ -54,6 +54,16 @@ type NumberListParams struct {
 	SearchPattern string
 }
 
+type NumberUpdateRequest struct {
+	Tags []string `json:"tags"`
+}
+
+type NumberPurchaseRequest struct {
+	Number                string `json:"number"`
+	Country               string `json:"name"`
+	BillingIntervalMonths int `json:"billingIntervalMonths"`
+}
+
 // request does the exact same thing as Client.Request. It does, however,
 // prefix the path with the Numbers API's root. This ensures the client
 // doesn't "handle" this for us: by default, it uses the REST API.
@@ -95,6 +105,36 @@ func Read(c *messagebird.Client, phoneNumber string) (*Number, error) {
 
 	number := &Number{}
 	if err := request(c, number, http.MethodGet, uri, nil); err != nil {
+		return nil, err
+	}
+
+	return number, nil
+}
+
+// Delete cancels a purchased phone number
+func Delete(c *messagebird.Client, phoneNumber string) (error) {
+	uri := fmt.Sprintf("%s/%s", pathNumbers, phoneNumber)
+	return request(c, nil, http.MethodDelete, uri, nil)
+}
+
+// Update updates a purchased phone number
+// Only updating *tags* is supported at the moment
+func Update(c *messagebird.Client, phoneNumber string, numberUpdateRequest *NumberUpdateRequest) (*Number, error) {
+	uri := fmt.Sprintf("%s/%s", pathNumbers, phoneNumber)
+
+	number := &Number{}
+	if err := request(c, number, http.MethodPatch, uri, numberUpdateRequest); err != nil {
+		return nil, err
+	}
+
+	return number, nil
+}
+
+// Create purchases a phone number
+func Create(c *messagebird.Client, numberPurchaseRequest *NumberPurchaseRequest) (*Number, error) {
+
+	number := &Number{}
+	if err := request(c, number, http.MethodPatch, pathNumbers, numberPurchaseRequest); err != nil {
 		return nil, err
 	}
 

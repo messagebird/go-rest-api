@@ -70,3 +70,30 @@ func TestRead(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/phone-numbers/31612345670")
 }
+
+func TestDelete(t *testing.T) {
+	mbtest.WillReturn([]byte(""), http.StatusNoContent)
+	client := mbtest.Client(t)
+
+	if err := Delete(client, "31612345670"); err != nil {
+		t.Fatalf("unexpected error deleting canceling Number: %s", err)
+	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodDelete, "v1/phone-numbers/31612345670")
+}
+
+func TestUpdate(t *testing.T) {
+
+	mbtest.WillReturnTestdata(t, "numberUpdatedObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	number, err := Update(client, "31612345670", &UpdateRequest{
+		Tags: ["tag1", "tag2", "tag3"],
+	})
+	if err != nil {
+		t.Fatalf("unexpected error updating Number: %s", err)
+	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodPatch, "v1/phone-numbers/31612345670")
+	mbtest.AssertTestdata(t, "numbersUpdateRequest.json", mbtest.Request.Body)
+}
