@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "number": "3197010260188",
+      "country": "NL",
+      "region": "",
+      "locality": "",
+      "features": ["sms", "voice"],
+      "type": "mobile"
+    }
+  ],
+  "limit": 20,
+  "count": 1
+}
