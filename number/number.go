@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"regexp"
 	"strconv"
 
 	messagebird "github.com/messagebird/go-rest-api"
@@ -51,20 +50,27 @@ type NumberListParams struct {
 	Features      []string
 	Type          []string
 	Status        string
-	SearchPattern string
+	SearchPattern NumberPattern
 }
+
+type NumberPattern string
+
+const (
+	NumberPatternStart    NumberPattern = "start"
+	NumberPatternEnd      NumberPattern = "end"
+	NumberPatternAnyWhere NumberPattern = "anywhere"
+)
 
 // request does the exact same thing as Client.Request. It does, however,
 // prefix the path with the Numbers API's root. This ensures the client
 // doesn't "handle" this for us: by default, it uses the REST API.
 func request(c *messagebird.Client, v interface{}, method, path string, data interface{}) error {
-	fmt.Println(path)
 	return c.Request(v, method, fmt.Sprintf("%s/%s", apiRoot, path), data)
 }
 
 // List get all purchased phone numbers
 func List(c *messagebird.Client, listParams *NumberListParams) (*NumberList, error) {
-	uri := GetPath(listParams, pathNumbers)
+	uri := getpath(listParams, pathNumbers)
 
 	numberList := &NumberList{}
 	if err := request(c, numberList, http.MethodGet, uri, nil); err != nil {
@@ -73,9 +79,9 @@ func List(c *messagebird.Client, listParams *NumberListParams) (*NumberList, err
 	return numberList, nil
 }
 
-// Search for phone numbers available for purchase
-func Search(c *messagebird.Client, cc string, listParams *NumberListParams) (*NumberSearchingList, error) {
-	uri := GetPath(listParams, pathNumbersAvailable+"/"+cc)
+// Search for phone numbers available for purchase, countryCode needs to be in Alpha-2 country code (example: NL)
+func Search(c *messagebird.Client, countryCode string, listParams *NumberListParams) (*NumberSearchingList, error) {
+	uri := getpath(listParams, pathNumbersAvailable+"/"+countryCode)
 
 	numberList := &NumberSearchingList{}
 	if err := request(c, numberList, http.MethodGet, uri, nil); err != nil {
@@ -102,7 +108,7 @@ func Read(c *messagebird.Client, phoneNumber string) (*Number, error) {
 }
 
 // GetPath get the full path for the request
-func GetPath(listParams *NumberListParams, path string) string {
+func getpath(listParams *NumberListParams, path string) string {
 	params := paramsForMessageList(listParams)
 	return fmt.Sprintf("%s?%s", path, params.Encode())
 }
@@ -116,11 +122,11 @@ func paramsForMessageList(params *NumberListParams) *url.Values {
 	}
 
 	if len(params.Features) > 0 {
-		paramsForArrays("features", "^(sms|voice|mms)$", params.Features, urlParams)
+		paramsForArrays("features", params.Features, urlParams)
 	}
 
 	if len(params.Type) > 0 {
-		paramsForArrays("type", "^(mobile|mobile|premium_rate)$", params.Type, urlParams)
+		paramsForArrays("type", params.Type, urlParams)
 	}
 
 	if params.Number != "" {
@@ -134,7 +140,7 @@ func paramsForMessageList(params *NumberListParams) *url.Values {
 	}
 
 	if params.SearchPattern != "" {
-		urlParams.Set("search_pattern", params.SearchPattern)
+		urlParams.Set("search_pattern", string(params.SearchPattern))
 	}
 
 	if params.Offset != 0 {
@@ -145,12 +151,8 @@ func paramsForMessageList(params *NumberListParams) *url.Values {
 }
 
 // paramsForArrays build query for array params
-func paramsForArrays(field string, pattern string, array []string, urlParams *url.Values) {
-	r, _ := regexp.Compile(pattern)
-
-	for i := 0; i < len(array); i++ {
-		if match := r.MatchString(array[i]); match {
-			urlParams.Add(field, array[i])
-		}
+func paramsForArrays(field string, values []string, urlParams *url.Values) {
+	for _, value := range values {
+		urlParams.Add(field, value)
 	}
 }
