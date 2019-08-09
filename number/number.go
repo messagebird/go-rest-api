@@ -60,8 +60,8 @@ type NumberUpdateRequest struct {
 
 type NumberPurchaseRequest struct {
 	Number                string `json:"number"`
-	Country               string `json:"name"`
-	BillingIntervalMonths int `json:"billingIntervalMonths"`
+	Country               string `json:"country"`
+	BillingIntervalMonths int    `json:"billingIntervalMonths"`
 }
 
 // request does the exact same thing as Client.Request. It does, however,
@@ -134,7 +134,7 @@ func Update(c *messagebird.Client, phoneNumber string, numberUpdateRequest *Numb
 func Create(c *messagebird.Client, numberPurchaseRequest *NumberPurchaseRequest) (*Number, error) {
 
 	number := &Number{}
-	if err := request(c, number, http.MethodPatch, pathNumbers, numberPurchaseRequest); err != nil {
+	if err := request(c, number, http.MethodPost, pathNumbers, numberPurchaseRequest); err != nil {
 		return nil, err
 	}
 

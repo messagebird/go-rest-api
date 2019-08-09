@@ -204,23 +204,3 @@ func TestUpdate(t *testing.T) {
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/conversations/id")
 	mbtest.AssertTestdata(t, "conversationUpdateRequest.json", mbtest.Request.Body)
 }
-
-
-func TestCreate(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "conversationUpdatedObject.json", http.StatusOK)
-	client := mbtest.Client(t)
-
-	conv, err := Update(client, "id", &UpdateRequest{
-		Status: ConversationStatusArchived,
-	})
-	if err != nil {
-		t.Fatalf("unexpected error updating Conversation: %s", err)
-	}
-
-	if conv.Status != ConversationStatusArchived {
-		t.Fatalf("got %s, expected archived", conv.Status)
-	}
-
-	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/conversations/id")
-	mbtest.AssertTestdata(t, "conversationUpdateRequest.json", mbtest.Request.Body)
-}
