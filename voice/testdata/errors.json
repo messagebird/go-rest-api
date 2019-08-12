@@ -1,0 +1,13 @@
+{
+  "data": null,
+  "errors": [
+    {
+      "code": 11,
+      "message": "some-error"
+    },
+    {
+      "code": 15,
+      "message": "other-error"
+    }
+  ]
+}

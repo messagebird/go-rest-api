@@ -32,6 +32,9 @@ const (
 
 	// httpClientTimeout is used to limit http.Client waiting time.
 	httpClientTimeout = 15 * time.Second
+
+	// voiceHost is the host name for the Voice API.
+	voiceHost = "voice.messagebird.com"
 )
 
 var (
@@ -55,6 +58,11 @@ const (
 	contentTypeFormURLEncoded contentType = "application/x-www-form-urlencoded"
 )
 
+// errorReader reads the provided byte slice into an appropriate error.
+type errorReader func([]byte) error
+
+var voiceErrorReader errorReader
+
 // New creates a new MessageBird client object.
 func New(accessKey string) *Client {
 	return &Client{
@@ -63,6 +71,12 @@ func New(accessKey string) *Client {
 			Timeout: httpClientTimeout,
 		},
 	}
+}
+
+// SetVoiceErrorReader takes an errorReader that must parse raw JSON errors
+// returned from the Voice API.
+func SetVoiceErrorReader(r errorReader) {
+	voiceErrorReader = r
 }
 
 // Request is for internal use only and unstable.
@@ -135,6 +149,10 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		return ErrUnexpectedResponse
 	default:
 		// Anything else than a 200/201/204/500 should be a JSON error.
+		if uri.Host == voiceHost && voiceErrorReader != nil {
+			return voiceErrorReader(responseBody)
+		}
+
 		var errorResponse ErrorResponse
 		if err := json.Unmarshal(responseBody, &errorResponse); err != nil {
 			return err

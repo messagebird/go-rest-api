@@ -7,7 +7,7 @@ This repository contains the open source Go client for MessageBird's REST API. D
 Requirements
 ------------
 - [Sign up](https://www.messagebird.com/en/signup) for a free MessageBird account
-- Create a new access key in the developers sections
+- Create a new access key in the [dashboard](https://dashboard.messagebird.com/en-us/developers/access).
 - An application written in Go to make use of this API
 
 Installation
@@ -26,42 +26,87 @@ Here is a quick example on how to get started. Assuming the **go get** installat
 import "github.com/messagebird/go-rest-api"
 ```
 
-Then, create an instance of **messagebird.Client**:
+Then, create an instance of **messagebird.Client**. It can be used to access the MessageBird APIs.
 
 ```go
-client := messagebird.New("test_gshuPaZoeEG6ovbc8M79w0QyM")
-```
+// Access keys can be managed through our dashboard.
+accessKey := "your-access-key"
 
-Now you can query the API for information or send data. For example, if we want to request our balance information you'd do something like this:
+// Create a client.
+client := messagebird.New(accessKey)
 
-```go
-// Request the balance information, returned as a Balance object.
+// Request the balance information, returned as a balance.Balance object.
 balance, err := balance.Read(client)
 if err != nil {
-	switch errResp := err.(type) {
-	case messagebird.ErrorResponse:
-		for _, mbError := range errResp.Errors {
-			fmt.Printf("Error: %#v\n", mbError)
-		}
-	}
-
+	// Handle error.
 	return
 }
 
-fmt.Println("  payment :", balance.Payment)
-fmt.Println("  type    :", balance.Type)
-fmt.Println("  amount  :", balance.Amount)
+// Display the results.
+fmt.Println("Payment: ", balance.Payment)
+fmt.Println("Type:", balance.Type)
+fmt.Println("Amount:", balance.Amount)
 ```
 
 This will give you something like:
-```shell
+
+```bash
 $ go run example.go
-  payment : prepaid
-  type    : credits
-  amount  : 9
+Payment: prepaid
+Type: credits
+Amount: 9
 ```
 
 Please see the other examples for a complete overview of all the available API calls.
+
+Errors
+------
+When something goes wrong, our APIs can return more than a single error. They are therefore returned by the client as "error responses" that contain a slice of errors.
+
+It is important to notice that the Voice API returns errors with a format that slightly differs from other APIs.
+For this reason, errors returned by the `voice` package are of type `voice.ErrorResponse`. It contains `voice.Error` structs. All other packages return `messagebird.ErrorResponse` structs that contain a slice of `messagebird.Error`.
+
+An example of "simple" error handling is shown in the example above. Let's look how we can gain more in-depth insight in what exactly went wrong:
+
+```go
+import "github.com/messagebird/go-rest-api"
+import "github.com/messagebird/go-rest-api/sms"
+
+// ...
+
+_, err := sms.Read(client, "some-id")
+if err != nil {
+	mbErr, ok := err.(messagebird.ErrorResponse)
+	if !ok {
+		// A non-MessageBird error occurred (no connection, perhaps?) 
+		return err
+	}
+	
+	fmt.Println("Code:", mbErr.Errors[0].Code)
+	fmt.Println("Description:", mbErr.Errors[0].Description)
+	fmt.Println("Parameter:", mbErr.Errors[0].Parameter)
+}
+```
+
+`voice.ErrorResponse` is very similar, except that it holds `voice.Error` structs - those contain only `Code` and `Message` (not description!) fields:
+
+```go
+import "github.com/messagebird/go-rest-api/voice"
+
+// ...
+
+_, err := voice.CallFlowByID(client, "some-id")
+if err != nil {
+	vErr, ok := err.(voice.ErrorResponse)
+	if !ok {
+    		// A non-MessageBird (Voice) error occurred (no connection, perhaps?) 
+    		return err
+    }
+	
+	fmt.Println("Code:", vErr.Errors[0].Code)
+	fmt.Println("Message:", vErr.Errors[0].Message)
+}
+```
 
 Documentation
 -------------
