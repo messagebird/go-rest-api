@@ -10,11 +10,18 @@ import (
 )
 
 const (
-	apiRoot              = "https://numbers.messagebird.com/v1"
-	pathNumbers          = "phone-numbers"
+	// apiRoot is the absolute URL of the Numbers API.
+	apiRoot = "https://numbers.messagebird.com/v1"
+
+	// pathNumbers is the path for the Numbers resource, relative to apiRoot.
+	// and path.
+	pathNumbers = "phone-numbers"
+
+	// pathNumbersAvailable is the path for the Search Number resource, relative to apiRoot.
 	pathNumbersAvailable = "available-phone-numbers"
 )
 
+// Number represents a specific phone number.
 type Number struct {
 	Number   string
 	Country  string
@@ -26,6 +33,7 @@ type Number struct {
 	Status   string
 }
 
+// NumberList provide a list of all purchased phone numbers.
 type NumberList struct {
 	Offset     int
 	Limit      int
@@ -34,12 +42,15 @@ type NumberList struct {
 	Items      []*Number
 }
 
+// NumberSearchingList provide a list of all phone numbers.
+// that are available for purchase.
 type NumberSearchingList struct {
 	Items []*Number
 	Limit int
 	Count int
 }
 
+// NumberListParams can be used to set query params in List().
 type NumberListParams struct {
 	Limit         int
 	Offset        int
@@ -48,7 +59,7 @@ type NumberListParams struct {
 	Region        string
 	Locality      string
 	Features      []string
-	Type          []string
+	Type          string
 	Status        string
 	SearchPattern NumberPattern
 }
@@ -62,11 +73,17 @@ type NumberPurchaseRequest struct {
 	Country               string `json:"countryCode"`
 	BillingIntervalMonths int    `json:"billingIntervalMonths"`
 }
+
 type NumberPattern string
 
 const (
-	NumberPatternStart    NumberPattern = "start"
-	NumberPatternEnd      NumberPattern = "end"
+	// NumberPatternStart force phone numbers to start with the provided fragment.
+	NumberPatternStart NumberPattern = "start"
+
+	// NumberPatternEnd phone numbers can be somewhere within the provided fragment.
+	NumberPatternEnd NumberPattern = "end"
+
+	// NumberPatternAnyWhere force phone numbers to end with the provided fragment.
 	NumberPatternAnyWhere NumberPattern = "anywhere"
 )
 
@@ -164,8 +181,8 @@ func paramsForMessageList(params *NumberListParams) *url.Values {
 		paramsForArrays("features", params.Features, urlParams)
 	}
 
-	if len(params.Type) > 0 {
-		paramsForArrays("type", params.Type, urlParams)
+	if params.Type != "" {
+		urlParams.Set("type", params.Type)
 	}
 
 	if params.Number != "" {
