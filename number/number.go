@@ -116,8 +116,8 @@ func Read(c *messagebird.Client, phoneNumber string) (*Number, error) {
 	return number, nil
 }
 
-// Delete cancels a purchased phone number
-func Delete(c *messagebird.Client, phoneNumber string) (error) {
+// Delete a purchased phone number
+func Delete(c *messagebird.Client, phoneNumber string) error {
 	uri := fmt.Sprintf("%s/%s", pathNumbers, phoneNumber)
 	return request(c, nil, http.MethodDelete, uri, nil)
 }
