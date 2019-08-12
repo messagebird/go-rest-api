@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"testing"
 	"reflect"
-	"../internal/mbtest"
-	"fmt"
-	"encoding/json"
+
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
@@ -92,15 +91,13 @@ func TestUpdate(t *testing.T) {
 	number, err := Update(client, "31612345670", &NumberUpdateRequest{
 		Tags: []string{"tag1", "tag2", "tag3"},
 	})
-	res, _ := json.Marshal(number)
 
-	fmt.Println(string(res));
 	if err != nil {
 		t.Fatalf("unexpected error updating Number: %s", err)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/phone-numbers/31612345670")
-	mbtest.AssertTestdata(t, "numberUpdateRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestdata(t, "numberUpdateRequestObject.json", mbtest.Request.Body)
 	assertNumberUpdateObject(t, number)
 }
 
@@ -111,7 +108,7 @@ func TestCreate(t *testing.T) {
 	number, err := Create(client, &NumberPurchaseRequest{
 			Number: "31971234567",
 			Country: "NL",
-			BillingIntervalMonths: 1,
+			BillingIntervalMonths: 1, 
 	})
 	if err != nil {
 		t.Fatalf("unexpected error creating Number: %s", err)
@@ -132,7 +129,7 @@ func assertNumberCreateObject(t *testing.T, number *Number) {
 	}
 }
 func assertNumberUpdateObject(t *testing.T, number *Number) {
-	if reflect.DeepEqual(number.Tags, []string{"tag1", "tag2", "tag3"}) {
-		t.Errorf("Unexpecsted number tags: %s, expected: ['tag1', 'tag2', 'tag3']", number.Tags)
+	if !reflect.DeepEqual(number.Tags, []string{"tag1", "tag2", "tag3"}) {
+		t.Errorf("Unexpected number tags: %s, expected: ['tag1', 'tag2', 'tag3']", number.Tags)
 	}
 }

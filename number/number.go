@@ -60,7 +60,7 @@ type NumberUpdateRequest struct {
 
 type NumberPurchaseRequest struct {
 	Number                string `json:"number"`
-	Country               string `json:"country"`
+	Country               string `json:"countryCode"`
 	BillingIntervalMonths int    `json:"billingIntervalMonths"`
 }
 
