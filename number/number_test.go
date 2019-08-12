@@ -16,13 +16,14 @@ func TestSearch(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "numberSearch.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	numLis, err := Search(client, "NL", &NumberListParams{Limit: 10, Features: []string{"sms", "voice"}, Type: []string{"mobile"}})
+	numLis, err := Search(client, "NL", &NumberListParams{
+		Limit:         10,
+		Features:      []string{"sms", "voice"},
+		Type:          []string{"mobile"},
+		SearchPattern: NumberPatternEnd,
+	})
 	if err != nil {
 		t.Fatalf("unexpected error searching Numbers: %s", err)
-	}
-
-	if numLis.Limit > 100 {
-		t.Fatalf("got %d, expected <= 100", numLis.Limit)
 	}
 
 	if numLis.Items[0].Country != "NL" {
@@ -31,8 +32,8 @@ func TestSearch(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/available-phone-numbers/NL")
 
-	if query := mbtest.Request.URL.RawQuery; query != "features=sms&features=voice&limit=10&type=mobile" {
-		t.Fatalf("got %s, expected features=sms&features=voice&limit=10", query)
+	if query := mbtest.Request.URL.RawQuery; query != "features=sms&features=voice&limit=10&search_pattern=end&type=mobile" {
+		t.Fatalf("got %s, expected features=sms&features=voice&limit=10&search_pattern=end&type=mobile", query)
 	}
 }
 
