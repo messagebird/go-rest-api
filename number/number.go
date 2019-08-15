@@ -64,10 +64,12 @@ type NumberListParams struct {
 	SearchPattern NumberPattern
 }
 
+// NumberUpdateRequest can be used to set tags update.
 type NumberUpdateRequest struct {
 	Tags []string `json:"tags"`
 }
 
+// NumberPurchaseRequest can be used to purchase a number.
 type NumberPurchaseRequest struct {
 	Number                string `json:"number"`
 	Country               string `json:"countryCode"`
