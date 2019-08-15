@@ -5,7 +5,7 @@ import (
 	"testing"
 	"reflect"
 
-	"github.com/messagebird/go-rest-api/internal/mbtest"
+	"../internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
@@ -78,7 +78,7 @@ func TestDelete(t *testing.T) {
 	client := mbtest.Client(t)
 
 	if err := Delete(client, "31612345670"); err != nil {
-		t.Fatalf("unexpected error deleting canceling Number: %s", err)
+		t.Errorf("unexpected error canceling Number: %s", err)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/v1/phone-numbers/31612345670")
@@ -94,43 +94,38 @@ func TestUpdate(t *testing.T) {
 	})
 
 	if err != nil {
-		t.Fatalf("unexpected error updating Number: %s", err)
+		t.Errorf("unexpected error updating Number: %s", err)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/phone-numbers/31612345670")
 	mbtest.AssertTestdata(t, "numberUpdateRequestObject.json", mbtest.Request.Body)
-	assertNumberUpdateObject(t, number)
+	
+	if !reflect.DeepEqual(number.Tags, []string{"tag1", "tag2", "tag3"}) {
+		t.Errorf("Unexpected number tags: %s, expected: ['tag1', 'tag2', 'tag3']", number.Tags)
+	}
 }
 
-func TestCreate(t *testing.T) {
+func TestPurchase(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "numberCreateObject.json", http.StatusCreated)
 	client := mbtest.Client(t)
 
-	number, err := Create(client, &NumberPurchaseRequest{
+	number, err := Purchase(client, &NumberPurchaseRequest{
 			Number: "31971234567",
 			Country: "NL",
 			BillingIntervalMonths: 1, 
 	})
 	if err != nil {
-		t.Fatalf("unexpected error creating Number: %s", err)
+		t.Errorf("unexpected error creating Number: %s", err)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/phone-numbers")
 	mbtest.AssertTestdata(t, "numberCreateRequestObject.json", mbtest.Request.Body)
-	assertNumberCreateObject(t, number)
-}
 
-func assertNumberCreateObject(t *testing.T, number *Number) {
 	if number.Number != "31971234567" {
 		t.Errorf("Unexpected number message id: %s, expected: 31971234567", number.Number)
 	}
 
 	if number.Country != "NL" {
 		t.Errorf("Unexpected number country: %s, expected: NL", number.Country)
-	}
-}
-func assertNumberUpdateObject(t *testing.T, number *Number) {
-	if !reflect.DeepEqual(number.Tags, []string{"tag1", "tag2", "tag3"}) {
-		t.Errorf("Unexpected number tags: %s, expected: ['tag1', 'tag2', 'tag3']", number.Tags)
 	}
 }

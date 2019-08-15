@@ -116,14 +116,14 @@ func Read(c *messagebird.Client, phoneNumber string) (*Number, error) {
 	return number, nil
 }
 
-// Delete cancels a purchased phone number
+// Delete cancels a purchased phone number.
 func Delete(c *messagebird.Client, phoneNumber string) (error) {
 	uri := fmt.Sprintf("%s/%s", pathNumbers, phoneNumber)
 	return request(c, nil, http.MethodDelete, uri, nil)
 }
 
-// Update updates a purchased phone number
-// Only updating *tags* is supported at the moment
+// Update updates a purchased phone number.
+// Only updating *tags* is supported at the moment.
 func Update(c *messagebird.Client, phoneNumber string, numberUpdateRequest *NumberUpdateRequest) (*Number, error) {
 	uri := fmt.Sprintf("%s/%s", pathNumbers, phoneNumber)
 
@@ -135,8 +135,8 @@ func Update(c *messagebird.Client, phoneNumber string, numberUpdateRequest *Numb
 	return number, nil
 }
 
-// Create purchases a phone number
-func Create(c *messagebird.Client, numberPurchaseRequest *NumberPurchaseRequest) (*Number, error) {
+// Purchases purchases a phone number.
+func Purchase(c *messagebird.Client, numberPurchaseRequest *NumberPurchaseRequest) (*Number, error) {
 
 	number := &Number{}
 	if err := request(c, number, http.MethodPost, pathNumbers, numberPurchaseRequest); err != nil {
