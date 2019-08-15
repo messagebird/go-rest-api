@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"../internal/mbtest"
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
