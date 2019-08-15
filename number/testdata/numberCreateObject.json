@@ -1,0 +1,15 @@
+{
+    "number": "31971234567",
+    "country": "NL",
+    "region": "Haarlem",
+    "locality": "Haarlem",
+    "features": [
+        "sms",
+        "voice"
+    ],
+    "tags": [],
+    "type": "landline_or_mobile",
+    "status": "active",
+    "createdAt": "2019-04-25T14:04:04Z",
+    "renewalAt": "2019-05-25T00:00:00Z"
+}
