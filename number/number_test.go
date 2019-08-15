@@ -2,8 +2,8 @@ package number
 
 import (
 	"net/http"
-	"testing"
 	"reflect"
+	"testing"
 
 	"../internal/mbtest"
 )
@@ -19,7 +19,7 @@ func TestSearch(t *testing.T) {
 	numLis, err := Search(client, "NL", &NumberListParams{
 		Limit:         10,
 		Features:      []string{"sms", "voice"},
-		Type:          []string{"mobile"},
+		Type:          "mobile",
 		SearchPattern: NumberPatternEnd,
 	})
 	if err != nil {
@@ -27,7 +27,7 @@ func TestSearch(t *testing.T) {
 	}
 
 	if numLis.Items[0].Country != "NL" {
-		t.Fatalf("got %s, expected NL", numLis.Items[0].Country)
+		t.Errorf("got %s, expected NL", numLis.Items[0].Country)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/available-phone-numbers/NL")
@@ -47,7 +47,7 @@ func TestList(t *testing.T) {
 	}
 
 	if numLis.Items[0].Country != "NL" {
-		t.Fatalf("got %s, expected NL", numLis.Items[0].Country)
+		t.Errorf("got %s, expected NL", numLis.Items[0].Country)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/phone-numbers")
@@ -110,9 +110,9 @@ func TestPurchase(t *testing.T) {
 	client := mbtest.Client(t)
 
 	number, err := Purchase(client, &NumberPurchaseRequest{
-			Number: "31971234567",
-			Country: "NL",
-			BillingIntervalMonths: 1, 
+		Number:                "31971234567",
+		Country:               "NL",
+		BillingIntervalMonths: 1,
 	})
 	if err != nil {
 		t.Errorf("unexpected error creating Number: %s", err)
