@@ -42,12 +42,21 @@ var (
 	ErrUnexpectedResponse = errors.New("The MessageBird API is currently unavailable")
 )
 
+// A Feature can be enabled
+type Feature int
+
+const (
+	// EnableConversationsAPIWhatsAppSandbox Enables the WhatsApp sandbox for conversations API
+	FeatureConversationsAPIWhatsAppSandbox Feature = iota
+)
+
 // Client is used to access API with a given key.
 // Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
 type Client struct {
-	AccessKey  string       // The API access key
-	HTTPClient *http.Client // The HTTP client to send requests on
-	DebugLog   *log.Logger  // Optional logger for debugging purposes
+	AccessKey  string           // The API access key
+	HTTPClient *http.Client     // The HTTP client to send requests on
+	DebugLog   *log.Logger      // Optional logger for debugging purposes
+	features   map[Feature]bool // Enabled features
 }
 
 type contentType string
@@ -70,6 +79,7 @@ func New(accessKey string) *Client {
 		HTTPClient: &http.Client{
 			Timeout: httpClientTimeout,
 		},
+		features: make(map[Feature]bool),
 	}
 }
 
@@ -77,6 +87,24 @@ func New(accessKey string) *Client {
 // returned from the Voice API.
 func SetVoiceErrorReader(r errorReader) {
 	voiceErrorReader = r
+}
+
+// EnableFeatures enables a feature
+func (c *Client) EnableFeatures(feature Feature) {
+	c.features[feature] = true
+}
+
+// DisableFeatures enables a feature
+func (c *Client) DisableFeatures(feature Feature) {
+	c.features[feature] = false
+}
+
+// IsFeatureEnabled check if a feature is enabled
+func (c *Client) IsFeatureEnabled(feature Feature) bool {
+	if enabled, ok := c.features[feature]; ok {
+		return enabled
+	}
+	return false
 }
 
 // Request is for internal use only and unstable.
