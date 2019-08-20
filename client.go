@@ -58,7 +58,7 @@ type Client struct {
 	HTTPClient    *http.Client     // The HTTP client to send requests on.
 	DebugLog      *log.Logger      // Optional logger for debugging purposes.
 	features      map[Feature]bool // Enabled features.
-	featuresMutex *sync.RWMutex    //Mutex for accessing feature map.
+	featuresMutex sync.RWMutex     //Mutex for accessing feature map.
 }
 
 type contentType string
@@ -81,8 +81,7 @@ func New(accessKey string) *Client {
 		HTTPClient: &http.Client{
 			Timeout: httpClientTimeout,
 		},
-		features:      make(map[Feature]bool),
-		featuresMutex: &sync.RWMutex{},
+		features: make(map[Feature]bool),
 	}
 }
 
