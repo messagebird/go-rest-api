@@ -58,7 +58,7 @@ type Client struct {
 	HTTPClient    *http.Client     // The HTTP client to send requests on.
 	DebugLog      *log.Logger      // Optional logger for debugging purposes.
 	features      map[Feature]bool // Enabled features.
-	featuresMutex sync.RWMutex     //Mutex for accessing feature map.
+	featuresMutex sync.RWMutex     // Mutex for accessing feature map.
 }
 
 type contentType string
