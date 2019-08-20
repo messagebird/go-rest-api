@@ -108,6 +108,14 @@ if err != nil {
 }
 ```
 
+Conversations WhatsApp Sandbox
+-------------
+To use the whatsapp sandbox you need to enable the `FeatureConversationsAPIWhatsAppSandbox` feature.
+
+```go
+	client.EnableFeatures(messagebird.FeatureConversationsAPIWhatsAppSandbox)
+```
+
 Documentation
 -------------
 Complete documentation, instructions, and examples are available at:

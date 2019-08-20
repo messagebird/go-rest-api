@@ -36,14 +36,11 @@ func client(t *testing.T, accessKey string) *messagebird.Client {
 			})
 		},
 	}
+	client := messagebird.New(accessKey)
+	client.HTTPClient.Transport = transport
+	client.DebugLog = testLogger(t)
 
-	return &messagebird.Client{
-		AccessKey: accessKey,
-		HTTPClient: &http.Client{
-			Transport: transport,
-		},
-		DebugLog: testLogger(t),
-	}
+	return client
 }
 
 // testLogger creates a new logger that writes to the test's output.
