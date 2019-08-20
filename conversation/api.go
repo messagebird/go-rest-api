@@ -16,7 +16,7 @@ const (
 	// https://conversations.messagebird.com/v1/webhooks).
 	apiRoot = "https://conversations.messagebird.com/v1"
 
-	whatsappSandboxApiRoot = "https://whatsapp-sandbox.messagebird.com/v1"
+	whatsappSandboxAPIRoot = "https://whatsapp-sandbox.messagebird.com/v1"
 
 	// path is the path for the Conversation resource, relative to apiRoot.
 	path = "conversations"
@@ -222,7 +222,7 @@ const (
 func request(c *messagebird.Client, v interface{}, method, path string, data interface{}) error {
 	var root string
 	if c.IsFeatureEnabled(messagebird.FeatureConversationsAPIWhatsAppSandbox) {
-		root = whatsappSandboxApiRoot
+		root = whatsappSandboxAPIRoot
 	} else {
 		root = apiRoot
 	}
