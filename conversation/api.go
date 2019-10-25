@@ -38,27 +38,27 @@ type ConversationList struct {
 }
 
 type Conversation struct {
-	ID                   string
-	ContactID            string
-	Contact              *Contact
-	LastUsedChannelID    string
-	Channels             []*Channel
-	Messages             *MessagesCount
-	Status               ConversationStatus
-	CreatedDatetime      time.Time
-	UpdatedDatetime      *time.Time
-	LastReceivedDatetime *time.Time
+	ID                   string             `json:"id"`
+	ContactID            string             `json:"contactId"`
+	Contact              *Contact           `json:"contact,omitempty"`
+	LastUsedChannelID    string             `json:"lastUsedChannelId,omitempty"`
+	Channels             []*Channel         `json:"channels,omitempty"`
+	Messages             *MessagesCount     `json:"messages,omitempty"`
+	Status               ConversationStatus `json:"status"`
+	CreatedDatetime      time.Time          `json:"createdDatetime"`
+	UpdatedDatetime      *time.Time         `json:"updatedDatetime"`
+	LastReceivedDatetime *time.Time         `json:"lastReceivedDatetime"`
 }
 
 type Contact struct {
-	ID            string
-	Href          string
-	MSISDN        string
-	FirstName     string
-	LastName      string
-	CustomDetails map[string]interface{}
-	CreatedAt     *time.Time
-	UpdatedAt     *time.Time
+	ID            string                 `json:"id"`
+	Href          string                 `json:"href"`
+	MSISDN        string                 `json:"msisdn"`
+	FirstName     string                 `json:"firstName"`
+	LastName      string                 `json:"lastName"`
+	CustomDetails map[string]interface{} `json:"customDetails"`
+	CreatedAt     *time.Time             `json:"createdDatetime"`
+	UpdatedAt     *time.Time             `json:"updatedDatetime"`
 }
 
 type Channel struct {
@@ -98,15 +98,15 @@ type MessageList struct {
 }
 
 type Message struct {
-	ID              string
-	ConversationID  string
-	ChannelID       string
-	Direction       MessageDirection
-	Status          MessageStatus
-	Type            MessageType
-	Content         MessageContent
-	CreatedDatetime *time.Time
-	UpdatedDatetime *time.Time
+	ID              string           `json:"id"`
+	ConversationID  string           `json:"conversationId"`
+	ChannelID       string           `json:"channelId"`
+	Direction       MessageDirection `json:"direction"`
+	Status          MessageStatus    `json:"status"`
+	Type            MessageType      `json:"type"`
+	Content         MessageContent   `json:"content"`
+	CreatedDatetime *time.Time       `json:"createdDatetime"`
+	UpdatedDatetime *time.Time       `json:"updatedDatetime"`
 }
 
 type MessageDirection string
