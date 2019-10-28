@@ -45,9 +45,9 @@ type Conversation struct {
 	Channels             []*Channel         `json:"channels,omitempty"`
 	Messages             *MessagesCount     `json:"messages,omitempty"`
 	Status               ConversationStatus `json:"status"`
-	CreatedDatetime      time.Time          `json:"createdDatetime"`
-	UpdatedDatetime      *time.Time         `json:"updatedDatetime"`
-	LastReceivedDatetime *time.Time         `json:"lastReceivedDatetime"`
+	CreatedDatetime      time.Time          `json:"createdDatetime,omitempty"`
+	UpdatedDatetime      *time.Time         `json:"updatedDatetime,omitempty"`
+	LastReceivedDatetime *time.Time         `json:"lastReceivedDatetime,omitempty"`
 }
 
 type Contact struct {
@@ -57,8 +57,8 @@ type Contact struct {
 	FirstName     string                 `json:"firstName"`
 	LastName      string                 `json:"lastName"`
 	CustomDetails map[string]interface{} `json:"customDetails"`
-	CreatedAt     *time.Time             `json:"createdDatetime"`
-	UpdatedAt     *time.Time             `json:"updatedDatetime"`
+	CreatedAt     *time.Time             `json:"createdDatetime,omitempty"`
+	UpdatedAt     *time.Time             `json:"updatedDatetime,omitempty"`
 }
 
 type Channel struct {
@@ -105,8 +105,8 @@ type Message struct {
 	Status          MessageStatus    `json:"status"`
 	Type            MessageType      `json:"type"`
 	Content         MessageContent   `json:"content"`
-	CreatedDatetime *time.Time       `json:"createdDatetime"`
-	UpdatedDatetime *time.Time       `json:"updatedDatetime"`
+	CreatedDatetime *time.Time       `json:"createdDatetime,omitempty"`
+	UpdatedDatetime *time.Time       `json:"updatedDatetime,omitempty"`
 }
 
 type MessageDirection string
