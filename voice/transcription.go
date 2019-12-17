@@ -20,9 +20,8 @@ type Transcription struct {
 	ID string
 	// The ID of the recording that the transcription belongs to.
 	RecordingID string
-	// In case that an error was occurred while executing the transcription
-	// request, it appears here.
-	Error string
+	// The status of the transcription. Possible values: created, transcribing, done, failed.
+	Status string
 	// The date-time the transcription was created/requested.
 	CreatedAt time.Time
 	// The date-time the transcription was last updated.
@@ -37,7 +36,7 @@ type Transcription struct {
 type jsonTranscription struct {
 	ID          string            `json:"id"`
 	RecordingID string            `json:"recordingID"`
-	Error       string            `json:"error"`
+	Status      string            `json:"status"`
 	CreatedAt   string            `json:"createdAt"`
 	UpdatedAt   string            `json:"updatedAt"`
 	Links       map[string]string `json:"_links"`
@@ -51,16 +50,16 @@ func (trans *Transcription) UnmarshalJSON(data []byte) error {
 	}
 	createdAt, err := time.Parse(time.RFC3339, raw.CreatedAt)
 	if err != nil {
-		return fmt.Errorf("unable to parse Recording CreatedAt: %v", err)
+		return fmt.Errorf("unable to parse Transcription CreatedAt: %v", err)
 	}
 	updatedAt, err := time.Parse(time.RFC3339, raw.UpdatedAt)
 	if err != nil {
-		return fmt.Errorf("unable to parse Recording UpdatedAt: %v", err)
+		return fmt.Errorf("unable to parse Transcription UpdatedAt: %v", err)
 	}
 	*trans = Transcription{
 		ID:          raw.ID,
 		RecordingID: raw.RecordingID,
-		Error:       raw.Error,
+		Status:      raw.Status,
 		CreatedAt:   createdAt,
 		UpdatedAt:   updatedAt,
 		links:       raw.Links,
@@ -104,7 +103,7 @@ func CreateTranscription(client *messagebird.Client, callID string, legID string
 		return nil, err
 	}
 	if len(resp.Data) == 0 {
-		return nil, fmt.Errorf("Empty response")
+		return nil, fmt.Errorf("empty response")
 	}
 
 	return &resp.Data[0], nil
