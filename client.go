@@ -46,11 +46,6 @@ var (
 // A Feature can be enabled
 type Feature int
 
-const (
-	// FeatureConversationsAPIWhatsAppSandbox Enables the WhatsApp sandbox for conversations API.
-	FeatureConversationsAPIWhatsAppSandbox Feature = iota
-)
-
 // Client is used to access API with a given key.
 // Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
 type Client struct {
