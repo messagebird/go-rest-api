@@ -13,7 +13,7 @@ func TestRecordingGetFile(t *testing.T) {
 
 	rec := &Recording{
 		ID: "1337",
-		links: map[string]string{
+		Links: map[string]string{
 			"file": "/yolo/swag.wav",
 		},
 	}

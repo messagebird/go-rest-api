@@ -52,7 +52,7 @@ type Recording struct {
 
 	// A hash with HATEOAS links related to the object. This includes the file
 	// link that has the URI for downloading the wave file of the recording.
-	links map[string]string
+	Links map[string]string
 }
 
 type jsonRecording struct {
@@ -88,7 +88,7 @@ func (rec *Recording) UnmarshalJSON(data []byte) error {
 		Duration:  time.Second * time.Duration(raw.Duration),
 		CreatedAt: createdAt,
 		UpdatedAt: updatedAt,
-		links:     raw.Links,
+		Links:     raw.Links,
 	}
 	return nil
 }
@@ -101,7 +101,7 @@ func (rec *Recording) Transcriptions(client *messagebird.Client, callID string) 
 
 // DownloadFile streams the recorded WAV file.
 func (rec *Recording) DownloadFile(client *messagebird.Client) (io.ReadCloser, error) {
-	req, err := http.NewRequest(http.MethodGet, apiRoot+rec.links["file"], nil)
+	req, err := http.NewRequest(http.MethodGet, apiRoot+rec.Links["file"], nil)
 	if err != nil {
 		return nil, err
 	}
