@@ -1,0 +1,9 @@
+{
+  "data": null,
+  "errors": [
+    {
+      "code": 13,
+      "message": "some-error"
+    }
+  ]
+}

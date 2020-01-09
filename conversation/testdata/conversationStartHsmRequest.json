@@ -1,0 +1,1 @@
+{"channelId":"chid","content":{"hsm":{"namespace":"ns","templateName":"template","language":{"policy":"deterministic","code":"en_US"},"params":[{"default":"Hello!"},{"default":"EUR12.34","currency":{"currencyCode":"EUR","amount":12340}},{"default":"Today","dateTime":"2018-08-24T11:52:12Z"}]}},"to":"31612345678","type":"hsm"}

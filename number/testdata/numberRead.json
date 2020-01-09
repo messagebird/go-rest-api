@@ -1,0 +1,13 @@
+{
+    "number": "31612345670",
+    "country": "NL",
+    "region": "Texel",
+    "locality": "Texel",
+    "features": [
+        "sms",
+        "voice"
+    ],
+    "tags": [],
+    "type": "mobile",
+    "status": "active"
+}

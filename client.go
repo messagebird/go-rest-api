@@ -20,18 +20,22 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 )
 
 const (
 	// ClientVersion is used in User-Agent request header to provide server with API level.
-	ClientVersion = "5.1.1"
+	ClientVersion = "5.4.0"
 
 	// Endpoint points you to MessageBird REST API.
 	Endpoint = "https://rest.messagebird.com"
 
 	// httpClientTimeout is used to limit http.Client waiting time.
 	httpClientTimeout = 15 * time.Second
+
+	// voiceHost is the host name for the Voice API.
+	voiceHost = "voice.messagebird.com"
 )
 
 var (
@@ -39,12 +43,22 @@ var (
 	ErrUnexpectedResponse = errors.New("The MessageBird API is currently unavailable")
 )
 
+// A Feature can be enabled
+type Feature int
+
+const (
+	// FeatureConversationsAPIWhatsAppSandbox Enables the WhatsApp sandbox for conversations API.
+	FeatureConversationsAPIWhatsAppSandbox Feature = iota
+)
+
 // Client is used to access API with a given key.
 // Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
 type Client struct {
-	AccessKey  string       // The API access key
-	HTTPClient *http.Client // The HTTP client to send requests on
-	DebugLog   *log.Logger  // Optional logger for debugging purposes
+	AccessKey     string           // The API access key.
+	HTTPClient    *http.Client     // The HTTP client to send requests on.
+	DebugLog      *log.Logger      // Optional logger for debugging purposes.
+	features      map[Feature]bool // Enabled features.
+	featuresMutex sync.RWMutex     // Mutex for accessing feature map.
 }
 
 type contentType string
@@ -55,6 +69,11 @@ const (
 	contentTypeFormURLEncoded contentType = "application/x-www-form-urlencoded"
 )
 
+// errorReader reads the provided byte slice into an appropriate error.
+type errorReader func([]byte) error
+
+var voiceErrorReader errorReader
+
 // New creates a new MessageBird client object.
 func New(accessKey string) *Client {
 	return &Client{
@@ -62,7 +81,38 @@ func New(accessKey string) *Client {
 		HTTPClient: &http.Client{
 			Timeout: httpClientTimeout,
 		},
+		features: make(map[Feature]bool),
 	}
+}
+
+// SetVoiceErrorReader takes an errorReader that must parse raw JSON errors
+// returned from the Voice API.
+func SetVoiceErrorReader(r errorReader) {
+	voiceErrorReader = r
+}
+
+// EnableFeatures enables a feature.
+func (c *Client) EnableFeatures(feature Feature) {
+	c.featuresMutex.Lock()
+	defer c.featuresMutex.Unlock()
+	c.features[feature] = true
+}
+
+// DisableFeatures disables a feature.
+func (c *Client) DisableFeatures(feature Feature) {
+	c.featuresMutex.Lock()
+	defer c.featuresMutex.Unlock()
+	c.features[feature] = false
+}
+
+// IsFeatureEnabled checks if a feature is enabled.
+func (c *Client) IsFeatureEnabled(feature Feature) bool {
+	c.featuresMutex.RLock()
+	defer c.featuresMutex.RUnlock()
+	if enabled, ok := c.features[feature]; ok {
+		return enabled
+	}
+	return false
 }
 
 // Request is for internal use only and unstable.
@@ -135,6 +185,10 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		return ErrUnexpectedResponse
 	default:
 		// Anything else than a 200/201/204/500 should be a JSON error.
+		if uri.Host == voiceHost && voiceErrorReader != nil {
+			return voiceErrorReader(responseBody)
+		}
+
 		var errorResponse ErrorResponse
 		if err := json.Unmarshal(responseBody, &errorResponse); err != nil {
 			return err

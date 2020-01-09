@@ -1,0 +1,12 @@
+{
+    "id": "whid",
+    "url": "https://example.com/webhooks",
+    "channelId": "chid",
+    "events": [
+        "conversation.created",
+        "message.updated"
+    ],
+    "status": "enabled",
+    "createdDatetime": "2018-08-24T14:24:04Z",
+    "updatedDatetime": null
+}

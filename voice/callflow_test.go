@@ -22,6 +22,14 @@ func ExampleCallFlow() {
 			&CallFlowTransferStep{
 				Destination: "31600000000",
 			},
+			&CallFlowRecordStep{
+				CallFlowStepBase:   CallFlowStepBase{},
+				MaxLength:          10,
+				Timeout:            5,
+				FinishOnKey:        "#",
+				Transcribe:         true,
+				TranscribeLanguage: "en-US",
+			},
 		},
 	}
 	_ = callflow
@@ -47,6 +55,16 @@ func TestCallFlowJSONMarshal(t *testing.T) {
 					ID: "2",
 				},
 				Length: time.Second * 10,
+			},
+			&CallFlowRecordStep{
+				CallFlowStepBase:   CallFlowStepBase{
+					ID: "3",
+				},
+				MaxLength:          10,
+				Timeout:            5,
+				FinishOnKey:        "#",
+				Transcribe:         true,
+				TranscribeLanguage: "en-US",
 			},
 		},
 		CreatedAt: refCreatedAt,
@@ -88,6 +106,17 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 				 "options": {
 					 "length": 10
 				 }
+			 },
+			 {
+				"id": "3",
+				"action": "record",
+				"options": {
+					"maxLength": 10,
+					"timeout": 5,
+					"finishOnKey": "#",
+					"transcribe": true,
+					"transcribeLanguage": "en-US"
+				}
 			 }
 		 ],
 		 "createdAt": "2018-01-29T13:46:06Z",
@@ -112,6 +141,16 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 					ID: "2",
 				},
 				Length: time.Second * 10,
+			},
+			&CallFlowRecordStep{
+				CallFlowStepBase:   CallFlowStepBase{
+					ID: "3",
+				},
+				MaxLength:          10,
+				Timeout:            5,
+				FinishOnKey:        "#",
+				Transcribe:         true,
+				TranscribeLanguage: "en-US",
 			},
 		},
 		CreatedAt: refCreatedAt,
@@ -146,6 +185,16 @@ func TestCreateCallFlow(t *testing.T) {
 			&CallFlowPauseStep{
 				Length: time.Second,
 			},
+			&CallFlowRecordStep{
+				CallFlowStepBase:   CallFlowStepBase{
+					ID: "3",
+				},
+				MaxLength:          10,
+				Timeout:            5,
+				FinishOnKey:        "#",
+				Transcribe:         true,
+				TranscribeLanguage: "en-US",
+			},
 		},
 	}
 	if err := newCf.Create(mbClient); err != nil {
@@ -154,8 +203,8 @@ func TestCreateCallFlow(t *testing.T) {
 	if newCf.Title != "the-title" {
 		t.Fatalf("Unexpected Title: %q", newCf.Title)
 	}
-	if len(newCf.Steps) != 2 {
-		t.Fatalf("Unexpected Title: %q", newCf.Title)
+	if len(newCf.Steps) != 3 {
+		t.Fatalf("Unexpected number of steps: %q", len(newCf.Steps))
 	}
 }
 

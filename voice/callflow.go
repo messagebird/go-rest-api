@@ -434,11 +434,29 @@ type CallFlowRecordStep struct {
 	// Values allowed are: "any", "#", "*", "none" (default).
 	FinishOnKey string
 
+	//If you want to have a transcription of a recording, after the recording has finished.
+	// It is used when steps[].action is record and it is optional with the default value being false.
+	Transcribe bool
+
 	// Set this to get a transcription of a recording in the specified language
 	// after the recording has finished.
 	//
 	// Allowed values: de-DE, en-AU, en-UK, en-US, es-ES, es-LA, fr-FR, it-IT, nl-NL, pt-BR.
 	TranscribeLanguage string
+
+	// (Optional) OnFinish contains the URL to get a new CallFlow from when the recording terminates and this CallFlowRecordStep ends.
+	//
+	// The URL must contain a schema e.g. http://... or https://...
+	// This attribute is used for chaining call flows. When the current step ends,
+	// a POST request containing information about the recording is sent to the URL specified.
+	// This gets a new callflow from the URL specified, but re-uses the original Call ID and Leg ID i.e. it's the same Call.
+	//
+	// To get at the recording information from the POST request body, you must call (instead of relying on req.Form):
+	// ```go
+	// body,_ := ioutil.ReadAll(req.Body)
+	// recordingInfo := string(body[:])
+	// ```
+	OnFinish string
 }
 
 type jsonCallFlowRecordStep struct {
@@ -448,7 +466,9 @@ type jsonCallFlowRecordStep struct {
 		MaxLength          int    `json:"maxLength"`
 		Timeout            int    `json:"timeout"`
 		FinishOnKey        string `json:"finishOnKey"`
+		Transcribe         bool   `json:"transcribe"`
 		TranscribeLanguage string `json:"transcribeLanguage"`
+		OnFinish           string `json:"onFinish"`
 	} `json:"options"`
 }
 
@@ -457,10 +477,12 @@ func (step *CallFlowRecordStep) MarshalJSON() ([]byte, error) {
 	data := jsonCallFlowRecordStep{}
 	data.CallFlowStepBase = step.CallFlowStepBase
 	data.Action = "record"
-	data.Options.MaxLength = int(step.MaxLength / time.Second)
-	data.Options.Timeout = int(step.Timeout / time.Second)
+	data.Options.MaxLength = int(step.MaxLength.Nanoseconds())
+	data.Options.Timeout = int(step.Timeout.Nanoseconds())
 	data.Options.FinishOnKey = step.FinishOnKey
+	data.Options.Transcribe = step.Transcribe
 	data.Options.TranscribeLanguage = step.TranscribeLanguage
+	data.Options.OnFinish = step.OnFinish
 	return json.Marshal(data)
 }
 
@@ -472,10 +494,12 @@ func (step *CallFlowRecordStep) UnmarshalJSON(data []byte) error {
 	}
 	*step = CallFlowRecordStep{
 		CallFlowStepBase:   raw.CallFlowStepBase,
-		MaxLength:          time.Duration(raw.Options.MaxLength) * time.Second,
-		Timeout:            time.Duration(raw.Options.Timeout) * time.Second,
+		MaxLength:          time.Duration(raw.Options.MaxLength),
+		Timeout:            time.Duration(raw.Options.Timeout),
 		FinishOnKey:        raw.Options.FinishOnKey,
+		Transcribe:         raw.Options.Transcribe,
 		TranscribeLanguage: raw.Options.TranscribeLanguage,
+		OnFinish:           raw.Options.OnFinish,
 	}
 	return nil
 }
