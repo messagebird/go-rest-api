@@ -1,7 +1,9 @@
 package mbtest
 
 import (
+	"crypto/tls"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -93,4 +95,19 @@ func WillReturnAccessKeyError() {
 			]
 		}
 	`), http.StatusUnauthorized)
+}
+
+// HTTPTestTransport builds http transport that allows to pass custom http handler to http server
+func HTTPTestTransport(handler http.Handler) (*http.Transport, func()) {
+	s := httptest.NewTLSServer(handler)
+
+	transport := &http.Transport{
+		DialTLS: func(network, _ string) (net.Conn, error) {
+			return tls.Dial(network, s.Listener.Addr().String(), &tls.Config{
+				InsecureSkipVerify: true,
+			})
+		},
+	}
+
+	return transport, s.Close
 }

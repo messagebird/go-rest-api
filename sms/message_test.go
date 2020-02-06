@@ -2,6 +2,7 @@ package sms
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -305,6 +306,35 @@ func TestList(t *testing.T) {
 
 	for _, message := range messageList.Items {
 		assertMessageObject(t, &message)
+	}
+}
+
+func TestListScheduled(t *testing.T) {
+	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		expectedStatusFilter := "status=scheduled"
+		if !strings.Contains(r.URL.String(), expectedStatusFilter) {
+			t.Errorf("API call should contain filter by status (%v), but is is not %v", expectedStatusFilter, r.URL.String())
+		}
+		w.Write(mbtest.Testdata(t, "messageListScheduledObject.json"))
+	})
+	transport, teardown := mbtest.HTTPTestTransport(h)
+	defer teardown()
+
+	client := mbtest.Client(t)
+	client.HTTPClient.Transport = transport
+
+	messageList, err := List(client, &ListParams{Status: "scheduled"})
+	if err != nil {
+		t.Fatalf("Didn't expect an error while requesting Messages: %s", err)
+	}
+	if messageList.Count != 1 {
+		t.Errorf("Unexpected result for the MessageList count: %d, expected: 1", messageList.Count)
+	}
+	if messageList.TotalCount != 1 {
+		t.Errorf("Unexpected result for the MessageList total count: %d, expected: 1", messageList.TotalCount)
+	}
+	if len(messageList.Items) != 1 {
+		t.Errorf("Unexpected result for the MessageList number of items in list: %d, expected: 1", len(messageList.Items))
 	}
 }
 

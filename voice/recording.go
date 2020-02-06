@@ -95,7 +95,7 @@ func (rec *Recording) UnmarshalJSON(data []byte) error {
 
 // Transcriptions returns a paginator for retrieving all Transcription objects.
 func (rec *Recording) Transcriptions(client *messagebird.Client, callID string) *Paginator {
-	path := apiRoot+rec.links["self"]+"/transcriptions"
+	path := apiRoot + rec.Links["self"] + "/transcriptions"
 	return newPaginator(client, path, reflect.TypeOf(Transcription{}))
 }
 
