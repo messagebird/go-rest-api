@@ -61,6 +61,7 @@ type ListParams struct {
 	Originator string
 	Direction  string
 	Type       string
+	Status     string
 	Limit      int
 	Offset     int
 }
@@ -189,6 +190,9 @@ func paramsForMessageList(params *ListParams) (*url.Values, error) {
 	}
 	if params.Originator != "" {
 		urlParams.Set("originator", params.Originator)
+	}
+	if params.Status != "" {
+		urlParams.Set("status", params.Status)
 	}
 	if params.Limit != 0 {
 		urlParams.Set("limit", strconv.Itoa(params.Limit))
