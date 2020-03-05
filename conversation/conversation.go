@@ -29,10 +29,13 @@ var DefaultListOptions = &ListOptions{10, 0}
 
 // List gets a collection of Conversations. Pagination can be set in options.
 func List(c *messagebird.Client, options *ListOptions) (*ConversationList, error) {
-	query := paginationQuery(options)
+	query := "?"
+	if options != nil {
+		query += paginationQuery(options)
+	}
 
 	convList := &ConversationList{}
-	if err := request(c, convList, http.MethodGet, path+"?"+query, nil); err != nil {
+	if err := request(c, convList, http.MethodGet, path+query, nil); err != nil {
 		return nil, err
 	}
 
