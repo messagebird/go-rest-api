@@ -13,27 +13,57 @@ func TestMain(m *testing.M) {
 }
 
 func TestList(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "conversationListObject.json", http.StatusOK)
-	client := mbtest.Client(t)
+	t.Run("limit_offset", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "conversationListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
 
-	convList, err := List(client, &ListOptions{10, 20})
-	if err != nil {
-		t.Fatalf("unexpected error listing Conversations: %s", err)
-	}
+		convList, err := List(client, &ListOptions{10, 20})
+		if err != nil {
+			t.Fatalf("unexpected error listing Conversations: %s", err)
+		}
 
-	if convList.Offset != 20 {
-		t.Fatalf("got %d, expected 20", convList.Offset)
-	}
+		if convList.Offset != 20 {
+			t.Fatalf("got %d, expected 20", convList.Offset)
+		}
 
-	if convList.Items[0].ID != "convid" {
-		t.Fatalf("got %s, expected convid", convList.Items[0].ID)
-	}
+		if convList.Items[0].ID != "convid" {
+			t.Fatalf("got %s, expected convid", convList.Items[0].ID)
+		}
 
-	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations")
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations")
 
-	if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=20" {
-		t.Fatalf("got %s, expected limit=10&offset=20", query)
-	}
+		if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=20" {
+			t.Fatalf("got %s, expected limit=10&offset=20", query)
+		}
+	})
+
+	t.Run("all", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "allConversationListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
+
+		convList, err := List(client, nil)
+		if err != nil {
+			t.Fatalf("unexpected error listing Conversations: %s", err)
+		}
+
+		if convList.Offset != 0 {
+			t.Fatalf("got offset=%d, expected 0", convList.Offset)
+		}
+
+		if convList.Limit != 10 {
+			t.Fatalf("got limit=%d, expected 10", convList.Limit)
+		}
+
+		if convList.Items[0].ID != "convid" {
+			t.Fatalf("got %s, expected convid", convList.Items[0].ID)
+		}
+
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations")
+
+		if query := mbtest.Request.URL.RawQuery; query != "" {
+			t.Fatalf("got %s, expected no limit and offset", query)
+		}
+	})
 }
 
 func TestRead(t *testing.T) {
