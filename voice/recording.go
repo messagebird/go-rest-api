@@ -95,7 +95,7 @@ func (rec *Recording) UnmarshalJSON(data []byte) error {
 
 // Delete deletes the Recording.
 func (rec *Recording) Delete(client *messagebird.Client) error {
-	return client.Request(nil, http.MethodDelete, apiRoot+"/calls/"+call.ID+"/legs"/+leg.ID+"/recordings"+/rec.ID, nil)
+	return client.Request(nil, http.MethodDelete, apiRoot+"/calls/"+call.ID+"/legs/"+leg.ID+"/recordings/"+rec.ID, nil)
 }
 
 
