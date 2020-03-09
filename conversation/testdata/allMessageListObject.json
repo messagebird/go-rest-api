@@ -1,0 +1,34 @@
+{
+    "count": 2,
+    "items": [
+        {
+            "id": "mesid",
+            "conversationId": "convid",
+            "channelId": "chid",
+            "status": "received",
+            "type": "text",
+            "direction": "received",
+            "content": {
+                "text": "Foo"
+            },
+            "createdDatetime": "2018-08-24T09:49:01Z",
+            "updatedDatetime": "2018-08-24T09:49:01Z"
+        },
+        {
+            "id": "mesid",
+            "conversationId": "convid",
+            "channelId": "chid",
+            "status": "received",
+            "type": "text",
+            "direction": "received",
+            "content": {
+                "text": "Foo"
+            },
+            "createdDatetime": "2018-08-24T09:49:01Z",
+            "updatedDatetime": "2018-08-24T09:49:01Z"
+        }
+    ],
+    "limit": 10,
+    "offset": 0,
+    "totalCount": 2
+}
