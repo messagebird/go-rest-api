@@ -93,6 +93,12 @@ func (rec *Recording) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Delete deletes the Recording.
+func (rec *Recording) Delete(client *messagebird.Client) error {
+	return client.Request(nil, http.MethodDelete, apiRoot+"/calls/"+call.ID+"/legs"/+leg.ID+"/recordings"+/rec.ID, nil)
+}
+
+
 // Transcriptions returns a paginator for retrieving all Transcription objects.
 func (rec *Recording) Transcriptions(client *messagebird.Client, callID string) *Paginator {
 	path := apiRoot + rec.Links["self"] + "/transcriptions"
