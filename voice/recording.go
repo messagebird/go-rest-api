@@ -80,6 +80,12 @@ func ReadRecording(c *messagebird.Client, callID, legID, id string) (*Recording,
 	return json.Data[0], nil
 }
 
+// Recordings returns a Paginator which iterates over Recordings.
+func Recordings(c *messagebird.Client, callID, legID string) *Paginator {
+	return newPaginator(c, fmt.Sprintf("%s/v1/calls/%s/legs/%s/recordings", apiRoot, callID,
+		legID), reflect.TypeOf(Recording{}))
+}
+
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (rec *Recording) UnmarshalJSON(data []byte) error {
 	recording := new(jsonRecording)
