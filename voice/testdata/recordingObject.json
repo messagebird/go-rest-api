@@ -1,0 +1,23 @@
+{
+  "_links": {
+    "self": "/calls/callid/legs/legid/recordings/recid",
+    "transcriptions": "/calls/callid/legs/legid/recordings/recid/transcriptions?page=1"
+  },
+  "data": [
+    {
+      "id": "recid",
+      "format": "wav",
+      "legId": "legid",
+      "status": "done",
+      "duration": 6,
+      "type": "call",
+      "createdAt": "2020-03-10T13:11:31Z",
+      "updatedAt": "2020-03-10T13:11:38Z",
+      "deletedAt": null,
+      "_links": {
+        "file": "/recordings/recid.wav",
+        "self": "/recordings/recid"
+      }
+    }
+  ]
+}

@@ -4,6 +4,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/messagebird/go-rest-api/internal/mbtest"
 )
 
 func TestRecordingGetFile(t *testing.T) {
@@ -30,4 +32,26 @@ func TestRecordingGetFile(t *testing.T) {
 		t.Logf("got: %q", string(wav))
 		t.Fatalf("mismatched downloaded contents")
 	}
+}
+
+func TestReadRecording(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "recordingObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	recording, err := ReadRecording(client, "callid", "legid", "recid")
+	if err != nil {
+		t.Fatalf("unexpected error read recording: %s", err)
+	}
+
+	if recording.ID != "recid" {
+		t.Fatalf("expect %s got %s", "recid", recording.ID)
+	}
+	if recording.LegID != "legid" {
+		t.Fatalf("expect %s got %s", "legid", recording.LegID)
+	}
+	if recording.Status != RecordingStatusDone {
+		t.Fatalf("expect %s got %s", RecordingStatusDone, recording.Status)
+	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/calls/callid/legs/legid/recordings/recid")
 }
