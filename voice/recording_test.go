@@ -55,3 +55,33 @@ func TestReadRecording(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/calls/callid/legs/legid/recordings/recid")
 }
+
+func TestRecordings(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "recordingPaginatorObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	paginator := Recordings(client, "callid", "legid")
+
+	data, err := paginator.NextPage()
+	if err != nil {
+		t.Fatalf("unexpected error read recording: %s", err)
+	}
+
+	recordings := data.([]Recording)
+
+	if len(recordings) != 2 {
+		t.Errorf("got %d recordings expect 1", len(recordings))
+	}
+
+	if recordings[0].ID != "recid" {
+		t.Errorf("expect %s got %s", "recid", recordings[0].ID)
+	}
+	if recordings[0].LegID != "legid" {
+		t.Errorf("expect %s got %s", "legid", recordings[0].LegID)
+	}
+	if recordings[0].Status != RecordingStatusDone {
+		t.Errorf("expect %s got %s", RecordingStatusDone, recordings[0].Status)
+	}
+
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/calls/callid/legs/legid/recordings")
+}
