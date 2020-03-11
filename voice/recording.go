@@ -66,30 +66,34 @@ type jsonRecording struct {
 	Links     map[string]string `json:"_links"`
 }
 
+// ReadRecording fetches a single Recording based on its call ID, leg ID and the recording ID.
+func ReadRecording(c *messagebird.Client, callID, legID, id string) (*Recording, error) {
+	json := new(struct {
+		Data []*Recording `json:"data"`
+	})
+
+	if err := c.Request(json, http.MethodGet, fmt.Sprintf("%s/v1/calls/%s/legs/%s/recordings/%s",
+		apiRoot, callID, legID, id), nil); err != nil {
+		return nil, err
+	}
+
+	return json.Data[0], nil
+}
+
 // UnmarshalJSON implements the json.Unmarshaler interface.
 func (rec *Recording) UnmarshalJSON(data []byte) error {
-	var raw jsonRecording
-	if err := json.Unmarshal(data, &raw); err != nil {
+	recording := new(jsonRecording)
+
+	if err := json.Unmarshal(data, recording); err != nil {
 		return err
 	}
-	createdAt, err := time.Parse(time.RFC3339, raw.CreatedAt)
+
+	r, err := parseJSON(recording)
 	if err != nil {
-		return fmt.Errorf("unable to parse Recording CreatedAt: %v", err)
+		return err
 	}
-	updatedAt, err := time.Parse(time.RFC3339, raw.UpdatedAt)
-	if err != nil {
-		return fmt.Errorf("unable to parse Recording UpdatedAt: %v", err)
-	}
-	*rec = Recording{
-		ID:        raw.ID,
-		Format:    raw.Format,
-		LegID:     raw.LegID,
-		Status:    RecordingStatus(raw.Status),
-		Duration:  time.Second * time.Duration(raw.Duration),
-		CreatedAt: createdAt,
-		UpdatedAt: updatedAt,
-		Links:     raw.Links,
-	}
+
+	*rec = *r
 	return nil
 }
 
@@ -117,4 +121,26 @@ func (rec *Recording) DownloadFile(client *messagebird.Client) (io.ReadCloser, e
 		return nil, fmt.Errorf("bad HTTP status: %d", resp.StatusCode)
 	}
 	return resp.Body, nil
+}
+
+func parseJSON(recording *jsonRecording) (*Recording, error) {
+	createdAt, err := time.Parse(time.RFC3339, recording.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse Recording CreatedAt: %v", err)
+	}
+	updatedAt, err := time.Parse(time.RFC3339, recording.UpdatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse Recording UpdatedAt: %v", err)
+	}
+
+	return &Recording{
+		ID:        recording.ID,
+		Format:    recording.Format,
+		LegID:     recording.LegID,
+		Status:    RecordingStatus(recording.Status),
+		Duration:  time.Second * time.Duration(recording.Duration),
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		Links:     recording.Links,
+	}, nil
 }
