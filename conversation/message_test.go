@@ -31,27 +31,65 @@ func TestCreateMessage(t *testing.T) {
 }
 
 func TestListMessages(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
-	client := mbtest.Client(t)
+	t.Run("limit_offset", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
 
-	messageList, err := ListMessages(client, "convid", DefaultListOptions)
-	if err != nil {
-		t.Fatalf("unexpected error listing Messages: %s", err)
-	}
+		messageList, err := ListMessages(client, "convid", &ListOptions{Limit: 20, Offset: 2})
+		if err != nil {
+			t.Fatalf("unexpected error listing Messages: %s", err)
+		}
 
-	if messageList.Limit != 10 {
-		t.Fatalf("got %d, expected 10", messageList.Limit)
-	}
+		if messageList.Offset != 2 {
+			t.Fatalf("got %d, expected 2", messageList.Offset)
+		}
 
-	if messageList.Items[0].ID != "mesid" {
-		t.Fatalf("got %s, expected mesid", messageList.Items[0].ID)
-	}
+		if messageList.Limit != 20 {
+			t.Fatalf("got %d, expected 20", messageList.Limit)
+		}
 
-	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/convid/messages")
+		if messageList.Items[0].ID != "mesid" {
+			t.Fatalf("got %s, expected mesid", messageList.Items[0].ID)
+		}
 
-	if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=0" {
-		t.Fatalf("got %s, expected limit=10&offset=0", query)
-	}
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/convid/messages")
+
+		if query := mbtest.Request.URL.RawQuery; query != "limit=20&offset=2" {
+			t.Fatalf("got %s, expected limit=10&offset=0", query)
+		}
+	})
+
+	t.Run("all", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "allMessageListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
+
+		messageList, err := ListMessages(client, "convid", nil)
+		if err != nil {
+			t.Fatalf("unexpected error listing Messages: %s", err)
+		}
+
+		if messageList.Limit != 10 {
+			t.Fatalf("got %d, expected 10", messageList.Limit)
+		}
+
+		if messageList.Offset != 0 {
+			t.Fatalf("got %d, expected 0", messageList.Offset)
+		}
+
+		if messageList.Items[0].ID != "mesid" {
+			t.Fatalf("got %s, expected mesid", messageList.Items[0].ID)
+		}
+
+		if len(messageList.Items) != 2 {
+			t.Fatalf("got %d, expected 2", len(messageList.Items))
+		}
+
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/convid/messages")
+
+		if query := mbtest.Request.URL.RawQuery; query != "" {
+			t.Fatalf("got %s, expected empty", query)
+		}
+	})
 }
 
 func TestReadMessage(t *testing.T) {

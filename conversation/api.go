@@ -231,6 +231,10 @@ func request(c *messagebird.Client, v interface{}, method, path string, data int
 
 // paginationQuery builds the query string for paginated endpoints.
 func paginationQuery(options *ListOptions) string {
+	if options == nil {
+		return ""
+	}
+
 	query := url.Values{}
 	query.Set("limit", strconv.Itoa(options.Limit))
 	query.Set("offset", strconv.Itoa(options.Offset))

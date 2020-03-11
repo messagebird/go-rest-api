@@ -43,27 +43,65 @@ func TestDeleteWebhook(t *testing.T) {
 }
 
 func TestListWebhooks(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "webhookListObject.json", http.StatusOK)
-	client := mbtest.Client(t)
+	t.Run("limit_offset", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "webhookListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
 
-	webhookList, err := ListWebhooks(client, DefaultListOptions)
-	if err != nil {
-		t.Fatalf("unexpected error listing Webhooks: %s", err)
-	}
+		webhookList, err := ListWebhooks(client, &ListOptions{Limit: 20, Offset: 2})
+		if err != nil {
+			t.Fatalf("unexpected error listing Webhooks: %s", err)
+		}
 
-	if webhookList.TotalCount != 1 {
-		t.Fatalf("got %d, expected 1", webhookList.TotalCount)
-	}
+		if webhookList.TotalCount != 1 {
+			t.Fatalf("got %d, expected 1", webhookList.TotalCount)
+		}
 
-	if webhookList.Items[0].Events[0] != WebhookEventMessageCreated {
-		t.Fatalf("got %s expected message.created", webhookList.Items[0].Events[0])
-	}
+		if webhookList.Items[0].Events[0] != WebhookEventMessageCreated {
+			t.Fatalf("got %s expected message.created", webhookList.Items[0].Events[0])
+		}
 
-	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/webhooks")
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/webhooks")
 
-	if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=0" {
-		t.Fatalf("got %s, expected limit=10&offset=0", query)
-	}
+		if query := mbtest.Request.URL.RawQuery; query != "limit=20&offset=2" {
+			t.Fatalf("got %s, expected limit=20&offset=2", query)
+		}
+	})
+
+	t.Run("all", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "allWebhookListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
+
+		webhookList, err := ListWebhooks(client, nil)
+		if err != nil {
+			t.Fatalf("unexpected error listing Webhooks: %s", err)
+		}
+
+		if webhookList.Limit != 10 {
+			t.Fatalf("got %d, expected 10", webhookList.Limit)
+		}
+
+		if webhookList.Offset != 0 {
+			t.Fatalf("got %d, expected 0", webhookList.Offset)
+		}
+
+		if webhookList.TotalCount != 2 {
+			t.Fatalf("got %d, expected 2", webhookList.TotalCount)
+		}
+
+		if webhookList.Items[0].Events[0] != WebhookEventMessageCreated {
+			t.Fatalf("got %s expected message.created", webhookList.Items[0].Events[0])
+		}
+
+		if len(webhookList.Items) != 2 {
+			t.Fatalf("got %d, expected 2", len(webhookList.Items))
+		}
+
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/webhooks")
+
+		if query := mbtest.Request.URL.RawQuery; query != "" {
+			t.Fatalf("got %s, expected empty", query)
+		}
+	})
 }
 
 func TestReadWebhook(t *testing.T) {

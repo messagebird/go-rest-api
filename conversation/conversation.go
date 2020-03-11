@@ -1,6 +1,7 @@
 package conversation
 
 import (
+	"fmt"
 	"net/http"
 
 	messagebird "github.com/messagebird/go-rest-api"
@@ -29,13 +30,10 @@ var DefaultListOptions = &ListOptions{10, 0}
 
 // List gets a collection of Conversations. Pagination can be set in options.
 func List(c *messagebird.Client, options *ListOptions) (*ConversationList, error) {
-	query := "?"
-	if options != nil {
-		query += paginationQuery(options)
-	}
+	query := paginationQuery(options)
 
 	convList := &ConversationList{}
-	if err := request(c, convList, http.MethodGet, path+query, nil); err != nil {
+	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, query), nil); err != nil {
 		return nil, err
 	}
 
