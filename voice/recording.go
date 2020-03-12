@@ -109,6 +109,11 @@ func (rec *Recording) Transcriptions(client *messagebird.Client, callID string) 
 	return newPaginator(client, path, reflect.TypeOf(Transcription{}))
 }
 
+// Delete deletes a recording.
+func Delete(client *messagebird.Client, callID, legID, recordingID string) error {
+    return client.Request(nil, http.MethodDelete, fmt.Sprintf("%s/v1/calls/%s/legs/%s/recordings/%s", apiRoot, callID, legID, recordingID), nil)
+}
+
 // DownloadFile streams the recorded WAV file.
 func (rec *Recording) DownloadFile(client *messagebird.Client) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodGet, apiRoot+rec.Links["file"], nil)
