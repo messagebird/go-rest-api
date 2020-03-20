@@ -1,7 +1,8 @@
 package messagebird
 
-const (
-	apiErrMessage = "The MessageBird API returned an error"
+import (
+	"fmt"
+	"strings"
 )
 
 // Error holds details including error code, human readable description and optional parameter that is related to the error.
@@ -23,5 +24,9 @@ type ErrorResponse struct {
 
 // Error implements error interface.
 func (r ErrorResponse) Error() string {
-	return apiErrMessage
+	var inners []string
+	for _, inner := range r.Errors {
+		inners = append(inners, inner.Error())
+	}
+	return fmt.Sprintf("API errors: %s", strings.Join(inners, ", "))
 }
