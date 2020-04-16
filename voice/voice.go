@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api"
 )
 
-const apiRoot = "https://voice.messagebird.com"
+const apiRoot = "https://voice.messagebird.com/v1"
 
 type ErrorResponse struct {
 	Errors []Error
 }
 
 type Error struct {
-	Code int
+	Code    int
 	Message string
 }
 
