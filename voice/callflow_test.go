@@ -57,7 +57,7 @@ func TestCallFlowJSONMarshal(t *testing.T) {
 				Length: time.Second * 10,
 			},
 			&CallFlowRecordStep{
-				CallFlowStepBase:   CallFlowStepBase{
+				CallFlowStepBase: CallFlowStepBase{
 					ID: "3",
 				},
 				MaxLength:          10,
@@ -143,7 +143,7 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 				Length: time.Second * 10,
 			},
 			&CallFlowRecordStep{
-				CallFlowStepBase:   CallFlowStepBase{
+				CallFlowStepBase: CallFlowStepBase{
 					ID: "3",
 				},
 				MaxLength:          10,
@@ -186,7 +186,7 @@ func TestCreateCallFlow(t *testing.T) {
 				Length: time.Second,
 			},
 			&CallFlowRecordStep{
-				CallFlowStepBase:   CallFlowStepBase{
+				CallFlowStepBase: CallFlowStepBase{
 					ID: "3",
 				},
 				MaxLength:          10,

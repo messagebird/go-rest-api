@@ -117,7 +117,7 @@ func (v *Validator) ValidRequest(r *http.Request) error {
 		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	b, _ := ioutil.ReadAll(r.Body)
-	if v.validTimestamp(ts) == false || v.validSignature(ts, r.URL.RawQuery, b, rs) == false {
+	if !v.validTimestamp(ts) || !v.validSignature(ts, r.URL.RawQuery, b, rs) {
 		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))

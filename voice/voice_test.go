@@ -61,11 +61,11 @@ func TestErrorResponseError(t *testing.T) {
 	err := ErrorResponse{
 		[]Error{
 			{
-				Code: 1,
+				Code:    1,
 				Message: "foo",
 			},
 			{
-				Code: 2,
+				Code:    2,
 				Message: "bar",
 			},
 		},

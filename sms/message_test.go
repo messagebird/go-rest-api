@@ -315,7 +315,9 @@ func TestListScheduled(t *testing.T) {
 		if !strings.Contains(r.URL.String(), expectedStatusFilter) {
 			t.Errorf("API call should contain filter by status (%v), but is is not %v", expectedStatusFilter, r.URL.String())
 		}
-		w.Write(mbtest.Testdata(t, "messageListScheduledObject.json"))
+		if _, err := w.Write(mbtest.Testdata(t, "messageListScheduledObject.json")); err != nil {
+			t.Fatalf("unexpected error responding to list scheduled request")
+		}
 	})
 	transport, teardown := mbtest.HTTPTestTransport(h)
 	defer teardown()
