@@ -44,5 +44,5 @@ func TestCreateTranscription(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	mbtest.AssertEndpointCalled(t, http.MethodPost, fmt.Sprintf("/calls/%s/legs/%s/recordings/%s/transcriptions", callID, legID, recordingID))
+	mbtest.AssertEndpointCalled(t, http.MethodPost, fmt.Sprintf("/v1/calls/%s/legs/%s/recordings/%s/transcriptions", callID, legID, recordingID))
 }

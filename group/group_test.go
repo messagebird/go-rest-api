@@ -101,8 +101,10 @@ func TestListPagination(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		List(client, tc.options)
-
+		_, err := List(client, tc.options)
+		if err != nil {
+			t.Fatalf("unexpected error listing groups: %s", err)
+		}
 		if query := mbtest.Request.URL.RawQuery; query != tc.expected {
 			t.Fatalf("got %s, expected %s", tc.expected, query)
 		}

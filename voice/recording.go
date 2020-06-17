@@ -72,7 +72,7 @@ func ReadRecording(c *messagebird.Client, callID, legID, id string) (*Recording,
 		Data []*Recording `json:"data"`
 	})
 
-	if err := c.Request(json, http.MethodGet, fmt.Sprintf("%s/v1/calls/%s/legs/%s/recordings/%s",
+	if err := c.Request(json, http.MethodGet, fmt.Sprintf("%s/calls/%s/legs/%s/recordings/%s",
 		apiRoot, callID, legID, id), nil); err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func ReadRecording(c *messagebird.Client, callID, legID, id string) (*Recording,
 
 // Recordings returns a Paginator which iterates over Recordings.
 func Recordings(c *messagebird.Client, callID, legID string) *Paginator {
-	return newPaginator(c, fmt.Sprintf("%s/v1/calls/%s/legs/%s/recordings", apiRoot, callID,
+	return newPaginator(c, fmt.Sprintf("%s/calls/%s/legs/%s/recordings", apiRoot, callID,
 		legID), reflect.TypeOf(Recording{}))
 }
 
@@ -111,7 +111,7 @@ func (rec *Recording) Transcriptions(client *messagebird.Client, callID string) 
 
 // Delete deletes a recording.
 func Delete(client *messagebird.Client, callID, legID, recordingID string) error {
-    return client.Request(nil, http.MethodDelete, fmt.Sprintf("%s/v1/calls/%s/legs/%s/recordings/%s", apiRoot, callID, legID, recordingID), nil)
+	return client.Request(nil, http.MethodDelete, fmt.Sprintf("%s/calls/%s/legs/%s/recordings/%s", apiRoot, callID, legID, recordingID), nil)
 }
 
 // DownloadFile streams the recorded WAV file.

@@ -80,8 +80,7 @@ func TestCalculateSignature(t *testing.T) {
 			t.Errorf("Error calculating signature: %s, expected: %s", s, tt.es)
 		}
 		drs, _ := base64.StdEncoding.DecodeString(tt.es)
-		e := bool(bytes.Compare(s, drs) == 0)
-		if e != tt.e {
+		if bytes.Equal(s, drs) != tt.e {
 			t.Errorf("Unexpected signature: %s, test case: %s", s, tt.name)
 		}
 	}

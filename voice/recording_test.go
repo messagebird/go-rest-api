@@ -36,14 +36,13 @@ func TestRecordingGetFile(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	mbtest.WillReturn([]byte(""), http.StatusNoContent)
-	client := mbtest.Client(t) 
+	client := mbtest.Client(t)
 	if err := Delete(client, "callid", "legid", "recid"); err != nil {
 		t.Errorf("unexpected error while deleting recording: %s", err)
 	}
 
 	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/v1/calls/callid/legs/legid/recordings/recid")
 }
-
 
 func TestReadRecording(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "recordingObject.json", http.StatusOK)

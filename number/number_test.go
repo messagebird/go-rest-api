@@ -99,7 +99,7 @@ func TestUpdate(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/phone-numbers/31612345670")
 	mbtest.AssertTestdata(t, "numberUpdateRequestObject.json", mbtest.Request.Body)
-	
+
 	if !reflect.DeepEqual(number.Tags, []string{"tag1", "tag2", "tag3"}) {
 		t.Errorf("Unexpected number tags: %s, expected: ['tag1', 'tag2', 'tag3']", number.Tags)
 	}
