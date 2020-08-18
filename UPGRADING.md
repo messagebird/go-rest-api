@@ -92,3 +92,12 @@ if err != nil {
 
 ### Other improvements
 Although those are all breaking changes, it's worth mentioning this new version brings a number of other improvements. An example is that the client now supports contacts and groups - enjoy!
+
+
+## `v5.5.0` -> `v6.0.0`
+### Version suffix
+To preserve import compatibility, the go command requires that modules with major version v2 or later use a module path with that major version as the final element. 
+
+So all imports of `go-rest-api` are replaced as `go-rest-api/v6`. 
+
+
