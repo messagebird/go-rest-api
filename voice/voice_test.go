@@ -3,7 +3,7 @@ package voice
 import (
 	"testing"
 
-	"github.com/messagebird/go-rest-api/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
 )
 
 func TestErrorReader(t *testing.T) {

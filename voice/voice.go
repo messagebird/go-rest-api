@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 const apiRoot = "https://voice.messagebird.com/v1"

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 const (

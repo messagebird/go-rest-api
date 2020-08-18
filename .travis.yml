@@ -1,8 +1,8 @@
 language: go
 go_import_path: github.com/messagebird/go-rest-api
 go:
-  - "1.13"
   - "1.14"
+  - "1.15"
   - stable
   - master
 matrix:

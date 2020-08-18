@@ -9,7 +9,7 @@ import (
 	"runtime"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 // RecordingStatus enumerates all valid values for the status of a recording.

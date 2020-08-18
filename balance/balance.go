@@ -3,7 +3,7 @@ package balance
 import (
 	"net/http"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 // Balance describes your balance information.

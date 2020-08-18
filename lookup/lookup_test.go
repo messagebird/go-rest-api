@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/messagebird/go-rest-api/hlr"
-	"github.com/messagebird/go-rest-api/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v6/hlr"
+	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {

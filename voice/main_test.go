@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 func testRequest(status int, body []byte) (*messagebird.Client, func()) {
