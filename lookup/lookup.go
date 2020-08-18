@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/url"
 
-	messagebird "github.com/messagebird/go-rest-api"
-	"github.com/messagebird/go-rest-api/hlr"
+	messagebird "github.com/messagebird/go-rest-api/v6"
+	"github.com/messagebird/go-rest-api/v6/hlr"
 )
 
 // Formats represents phone number in multiple formats.

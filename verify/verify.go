@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 // Verify object represents MessageBird server response.

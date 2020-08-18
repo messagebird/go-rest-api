@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 // HLR stands for Home Location Register. Contains information about the

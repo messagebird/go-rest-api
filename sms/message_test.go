@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api"
-	"github.com/messagebird/go-rest-api/internal/mbtest"
+	messagebird "github.com/messagebird/go-rest-api/v6"
+	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"testing"
 
-	messagebird "github.com/messagebird/go-rest-api"
-	"github.com/messagebird/go-rest-api/internal/mbtest"
+	messagebird "github.com/messagebird/go-rest-api/v6"
+	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
 )
 
 const Epsilon float32 = 0.001

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	messagebird "github.com/messagebird/go-rest-api"
+	messagebird "github.com/messagebird/go-rest-api/v6"
 )
 
 // ListOptions can be used to set pagination options in List().
