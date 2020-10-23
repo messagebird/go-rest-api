@@ -350,6 +350,7 @@ func TestRequestDataForMessage(t *testing.T) {
 		TypeDetails:       nil,
 		DataCoding:        "unicode",
 		ScheduledDatetime: currentTime,
+		ShortenURLs:       true,
 	}
 
 	request, err := requestDataForMessage("MSGBIRD", []string{"31612345678"}, "MyBody", messageParams)
@@ -387,5 +388,7 @@ func TestRequestDataForMessage(t *testing.T) {
 	if request.ScheduledDatetime != messageParams.ScheduledDatetime.Format(time.RFC3339) {
 		t.Errorf("Unexepcted scheduled date time: %s, expected: %s", request.ScheduledDatetime, messageParams.ScheduledDatetime.Format(time.RFC3339))
 	}
-
+	if !request.ShortenURLs {
+		t.Errorf("Unexpected shorten URL flag: %v, expected: true", request.ShortenURLs)
+	}
 }

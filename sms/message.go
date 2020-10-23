@@ -14,7 +14,7 @@ import (
 // Is only used when a binary or premium message is sent.
 type TypeDetails map[string]interface{}
 
-// Message struct represents a message at MessageBird.com
+// Message struct represents a message at messagebird.com.
 type Message struct {
 	ID                string
 	HRef              string
@@ -54,6 +54,7 @@ type Params struct {
 	DataCoding        string
 	ReportURL         string
 	ScheduledDatetime time.Time
+	ShortenURLs       bool
 }
 
 // ListParams provides additional message list options.
@@ -79,6 +80,7 @@ type messageRequest struct {
 	MClass            int         `json:"mclass,omitempty"`
 	ReportURL         string      `json:"reportUrl,omitempty"`
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
+	ShortenURLs       bool        `json:"shortenUrls"`
 }
 
 // path represents the path to the Message resource.
@@ -94,7 +96,7 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 	return message, nil
 }
 
-// Cancel sending Scheduled Sms
+// Cancel sending Scheduled Sms.
 func Delete(c *messagebird.Client, id string) (*Message, error) {
 	message := &Message{}
 	if err := c.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
@@ -172,6 +174,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 	request.TypeDetails = params.TypeDetails
 	request.DataCoding = params.DataCoding
 	request.ReportURL = params.ReportURL
+	request.ShortenURLs = params.ShortenURLs
 
 	return request, nil
 }
