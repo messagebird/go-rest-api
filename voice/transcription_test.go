@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -24,9 +25,7 @@ func TestTranscriptionGetContents(t *testing.T) {
 		},
 	}
 	contents, err := trans.Contents(mbClient)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	if contents != text {
 		t.Logf("exp: %q", text)
 		t.Logf("got: %q", contents)
@@ -40,9 +39,7 @@ func TestCreateTranscription(t *testing.T) {
 
 	callID, legID, recordingID := "7777777", "88888888", "999999999"
 	_, err := CreateTranscription(client, callID, legID, recordingID)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, fmt.Sprintf("/v1/calls/%s/legs/%s/recordings/%s/transcriptions", callID, legID, recordingID))
 }

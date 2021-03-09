@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const testTs = "1544544948"
@@ -76,13 +78,9 @@ func TestCalculateSignature(t *testing.T) {
 	for _, tt := range cases {
 		v := NewValidator(tt.sKey)
 		s, err := v.calculateSignature(tt.ts, tt.qp, []byte(tt.b))
-		if err != nil {
-			t.Errorf("Error calculating signature: %s, expected: %s", s, tt.es)
-		}
+		assert.NoError(t, err)
 		drs, _ := base64.StdEncoding.DecodeString(tt.es)
-		if bytes.Equal(s, drs) != tt.e {
-			t.Errorf("Unexpected signature: %s, test case: %s", s, tt.name)
-		}
+		assert.Equal(t, tt.e, bytes.Equal(s, drs))
 	}
 }
 func TestValidTimestamp(t *testing.T) {
@@ -123,9 +121,7 @@ func TestValidTimestamp(t *testing.T) {
 	for _, tt := range cases {
 		v := NewValidator(testKey)
 		r := v.validTimestamp(tt.ts)
-		if r != tt.e {
-			t.Errorf("Unexpected error validating ts: %s, test case: %s", tt.ts, tt.name)
-		}
+		assert.Equal(t, tt.e, r)
 	}
 }
 
@@ -168,9 +164,7 @@ func TestValidSignature(t *testing.T) {
 		v := NewValidator(testKey)
 		ValidityWindow = time.Hour * 100000
 		r := v.validSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
-		if r != tt.e {
-			t.Errorf("Unexpected error validating signature: %s, test case: %s", tt.s, tt.name)
-		}
+		assert.Equal(t, tt.e, r)
 	}
 }
 func TestValidate(t *testing.T) {
@@ -253,9 +247,7 @@ func TestValidate(t *testing.T) {
 		req.Header.Set(tt.sh, tt.s)
 		req.Header.Set(tt.tsh, tt.ts)
 		res, _ := client.Do(req)
-		if res.StatusCode != tt.e {
-			t.Errorf("Unexpected response code: %s, test case: %s", res.Status, tt.name)
-		}
+		assert.Equal(t, tt.e, res.StatusCode)
 	}
 
 }

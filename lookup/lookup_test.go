@@ -7,6 +7,7 @@ import (
 
 	"github.com/messagebird/go-rest-api/v6/hlr"
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -19,44 +20,20 @@ func TestRead(t *testing.T) {
 
 	phoneNumber := "31624971134"
 	lookup, err := Read(client, phoneNumber, &Params{CountryCode: "NL"})
-	if err != nil {
-		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "https://rest.messagebird.com/lookup/31624971134", lookup.Href)
 
-	if lookup.Href != "https://rest.messagebird.com/lookup/31624971134" {
-		t.Errorf("Unexpected lookup href: %s", lookup.Href)
-	}
+	assert.Equal(t, phoneNumber, strconv.FormatInt(lookup.PhoneNumber, 10))
+	assert.Equal(t, "+31 6 24971134", lookup.Formats.International)
 
-	if strconv.FormatInt(lookup.PhoneNumber, 10) != phoneNumber {
-		t.Errorf("Unexpected lookup phoneNumber: %d", lookup.PhoneNumber)
-	}
-
-	if lookup.Formats.International != "+31 6 24971134" {
-		t.Errorf("Unexpected International format: %s", lookup.HLR.Reference)
-	}
-
-	if lookup.HLR != nil {
-		if lookup.HLR.Reference != "referece2000" {
-			t.Errorf("Unexpected hlr reference: %s", lookup.HLR.Reference)
-		}
-	} else {
-		t.Errorf("Unexpected empty hlr")
-	}
+	assert.Equal(t, "referece2000", lookup.HLR.Reference)
 }
 
 func checkHLR(t *testing.T, hlr *hlr.HLR) {
-	if hlr.ID != "6118d3f06566fcd0cdc8962h65065907" {
-		t.Errorf("Unexpected hlr id: %s", hlr.ID)
-	}
-	if hlr.Network != 20416 {
-		t.Errorf("Unexpected hlr network: %d", hlr.Network)
-	}
-	if hlr.Reference != "referece2000" {
-		t.Errorf("Unexpected hlr reference: %s", hlr.Reference)
-	}
-	if hlr.Status != "active" {
-		t.Errorf("Unexpected hlr status: %s", hlr.Status)
-	}
+	assert.Equal(t, "6118d3f06566fcd0cdc8962h65065907", hlr.ID)
+	assert.Equal(t, 20416, hlr.Network)
+	assert.Equal(t, "referece2000", hlr.Reference)
+	assert.Equal(t, "active", hlr.Status)
 }
 
 func TestReadHLR(t *testing.T) {
@@ -64,9 +41,7 @@ func TestReadHLR(t *testing.T) {
 	client := mbtest.Client(t)
 
 	hlr, err := ReadHLR(client, "31624971134", &Params{CountryCode: "NL"})
-	if err != nil {
-		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
-	}
+	assert.NoError(t, err)
 	checkHLR(t, hlr)
 }
 
@@ -76,13 +51,8 @@ func TestRequestDataForLookupHLR(t *testing.T) {
 		Reference:   "MyReference",
 	}
 	request := requestDataForLookup(lookupParams)
-
-	if request.CountryCode != "NL" {
-		t.Errorf("Unexpected country code: %s, expected: NL", request.CountryCode)
-	}
-	if request.Reference != "MyReference" {
-		t.Errorf("Unexpected reference: %s, expected: MyReference", request.Reference)
-	}
+	assert.Equal(t, "NL", request.CountryCode)
+	assert.Equal(t, "MyReference", request.Reference)
 }
 
 func TestCreateHLR(t *testing.T) {
@@ -90,9 +60,7 @@ func TestCreateHLR(t *testing.T) {
 	client := mbtest.Client(t)
 
 	hlr, err := CreateHLR(client, "31624971134", &Params{CountryCode: "NL", Reference: "reference2000"})
-	if err != nil {
-		t.Fatalf("Didn't expect error while doing the lookup: %s", err)
-	}
+	assert.NoError(t, err)
 
 	checkHLR(t, hlr)
 }

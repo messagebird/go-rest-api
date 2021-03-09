@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPaginatorStream(t *testing.T) {
@@ -30,12 +32,10 @@ func TestPaginatorStream(t *testing.T) {
 	i := 0
 	for val := range pag.Stream() {
 		t.Logf("%d, %v", i+1, val)
-		if v, ok := val.(myStruct); !ok || v.Val != i+1 {
-			t.Fatalf("unexpected item at index %d: %#v", i, val)
-		}
+		v, ok := val.(myStruct)
+		assert.True(t, ok)
+		assert.Equal(t, i+1, v.Val)
 		i++
 	}
-	if i != 3 {
-		t.Fatalf("unexpected number of elements: %d", i)
-	}
+	assert.Equal(t, 3, i)
 }

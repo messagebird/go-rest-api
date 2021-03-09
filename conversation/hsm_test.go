@@ -1,6 +1,7 @@
 package conversation
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 	"time"
@@ -44,9 +45,7 @@ func TestLocalizableParameter(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			if !reflect.DeepEqual(tc.got, tc.expect) {
-				t.Fatalf("got %v, expected %v", tc.got, tc.expect)
-			}
+			assert.Truef(t, reflect.DeepEqual(tc.got, tc.expect), "got %v, expected %v", tc.got, tc.expect)
 		})
 	}
 }

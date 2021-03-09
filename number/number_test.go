@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -22,19 +23,13 @@ func TestSearch(t *testing.T) {
 		Type:          "mobile",
 		SearchPattern: NumberPatternEnd,
 	})
-	if err != nil {
-		t.Fatalf("unexpected error searching Numbers: %s", err)
-	}
-
-	if numLis.Items[0].Country != "NL" {
-		t.Errorf("got %s, expected NL", numLis.Items[0].Country)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "NL", numLis.Items[0].Country)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/available-phone-numbers/NL")
 
-	if query := mbtest.Request.URL.RawQuery; query != "features=sms&features=voice&limit=10&search_pattern=end&type=mobile" {
-		t.Fatalf("got %s, expected features=sms&features=voice&limit=10&search_pattern=end&type=mobile", query)
-	}
+	query := mbtest.Request.URL.RawQuery
+	assert.Equal(t, "features=sms&features=voice&limit=10&search_pattern=end&type=mobile", query)
 }
 
 func TestList(t *testing.T) {
@@ -42,19 +37,13 @@ func TestList(t *testing.T) {
 	client := mbtest.Client(t)
 
 	numLis, err := List(client, &NumberListParams{Limit: 10})
-	if err != nil {
-		t.Fatalf("unexpected error searching Numbers: %s", err)
-	}
-
-	if numLis.Items[0].Country != "NL" {
-		t.Errorf("got %s, expected NL", numLis.Items[0].Country)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "NL", numLis.Items[0].Country)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/phone-numbers")
 
-	if query := mbtest.Request.URL.RawQuery; query != "limit=10" {
-		t.Fatalf("got %s, expected limit=10", query)
-	}
+	query := mbtest.Request.URL.RawQuery
+	assert.Equal(t, "limit=10", query)
 }
 
 func TestRead(t *testing.T) {
@@ -62,13 +51,8 @@ func TestRead(t *testing.T) {
 	client := mbtest.Client(t)
 
 	num, err := Read(client, "31612345670")
-	if err != nil {
-		t.Fatalf("unexpected error searching Numbers: %s", err)
-	}
-
-	if num.Number != "31612345670" {
-		t.Fatalf("got %s, expected 31612345670", num.Number)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "31612345670", num.Number)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/phone-numbers/31612345670")
 }
@@ -77,9 +61,8 @@ func TestDelete(t *testing.T) {
 	mbtest.WillReturn([]byte(""), http.StatusNoContent)
 	client := mbtest.Client(t)
 
-	if err := Delete(client, "31612345670"); err != nil {
-		t.Errorf("unexpected error canceling Number: %s", err)
-	}
+	err := Delete(client, "31612345670")
+	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/v1/phone-numbers/31612345670")
 }
@@ -92,10 +75,7 @@ func TestUpdate(t *testing.T) {
 	number, err := Update(client, "31612345670", &NumberUpdateRequest{
 		Tags: []string{"tag1", "tag2", "tag3"},
 	})
-
-	if err != nil {
-		t.Errorf("unexpected error updating Number: %s", err)
-	}
+	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/phone-numbers/31612345670")
 	mbtest.AssertTestdata(t, "numberUpdateRequestObject.json", mbtest.Request.Body)
@@ -114,18 +94,10 @@ func TestPurchase(t *testing.T) {
 		Country:               "NL",
 		BillingIntervalMonths: 1,
 	})
-	if err != nil {
-		t.Errorf("unexpected error creating Number: %s", err)
-	}
+	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/phone-numbers")
 	mbtest.AssertTestdata(t, "numberCreateRequestObject.json", mbtest.Request.Body)
-
-	if number.Number != "31971234567" {
-		t.Errorf("Unexpected number message id: %s, expected: 31971234567", number.Number)
-	}
-
-	if number.Country != "NL" {
-		t.Errorf("Unexpected number country: %s, expected: NL", number.Country)
-	}
+	assert.Equal(t, "31971234567", number.Number)
+	assert.Equal(t, "NL", number.Country)
 }

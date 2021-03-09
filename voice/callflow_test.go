@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func ExampleCallFlow() {
@@ -72,13 +74,10 @@ func TestCallFlowJSONMarshal(t *testing.T) {
 	}
 
 	jsonData, err := json.Marshal(referenceCallflow)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	var callflow CallFlow
-	if err := json.Unmarshal(jsonData, &callflow); err != nil {
-		t.Fatal(err)
-	}
+	unmarshallErr := json.Unmarshal(jsonData, &callflow)
+	assert.NoError(t, unmarshallErr)
 	if !reflect.DeepEqual(*referenceCallflow, callflow) {
 		t.Logf("exp: %#v", *referenceCallflow)
 		t.Logf("got: %#v", callflow)
@@ -158,9 +157,8 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 	}
 
 	var callflow CallFlow
-	if err := json.Unmarshal([]byte(referenceJSON), &callflow); err != nil {
-		t.Fatal(err)
-	}
+	err := json.Unmarshal([]byte(referenceJSON), &callflow)
+	assert.NoError(t, err)
 	if !reflect.DeepEqual(*referenceCallflow, callflow) {
 		t.Logf("exp: %#v", *referenceCallflow)
 		t.Logf("got: %#v", callflow)
@@ -197,15 +195,10 @@ func TestCreateCallFlow(t *testing.T) {
 			},
 		},
 	}
-	if err := newCf.Create(mbClient); err != nil {
-		t.Fatal(err)
-	}
-	if newCf.Title != "the-title" {
-		t.Fatalf("Unexpected Title: %q", newCf.Title)
-	}
-	if len(newCf.Steps) != 3 {
-		t.Fatalf("Unexpected number of steps: %q", len(newCf.Steps))
-	}
+	err := newCf.Create(mbClient)
+	assert.NoError(t, err)
+	assert.Equal(t, "the-title", newCf.Title)
+	assert.Len(t, newCf.Steps, 3)
 }
 
 func TestCallFlowByID(t *testing.T) {
@@ -220,17 +213,12 @@ func TestCallFlowByID(t *testing.T) {
 			&CallFlowHangupStep{},
 		},
 	}
-	if err := newCf.Create(mbClient); err != nil {
-		t.Fatal(err)
-	}
+	err := newCf.Create(mbClient)
+	assert.NoError(t, err)
 
 	fetchedCf, err := CallFlowByID(mbClient, newCf.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if fetchedCf.ID != newCf.ID {
-		t.Fatalf("mismatched fetched IDs: exp %q, got %q", newCf.ID, fetchedCf.ID)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, newCf.ID, fetchedCf.ID)
 }
 
 func TestCallFlowList(t *testing.T) {
@@ -246,19 +234,15 @@ func TestCallFlowList(t *testing.T) {
 				&CallFlowHangupStep{},
 			},
 		}
-		if err := newCf.Create(mbClient); err != nil {
-			t.Fatal(err)
-		}
+		err := newCf.Create(mbClient)
+		assert.NoError(t, err)
 	}
 
 	i := 0
 	for cf := range CallFlows(mbClient).Stream() {
-		if err, ok := cf.(error); ok {
-			t.Fatal(err)
-		}
+		_, ok := cf.(error)
+		assert.False(t, ok)
 		i++
 	}
-	if i == 0 {
-		t.Fatal("no callflows were fetched")
-	}
+	assert.NotEqual(t, 0, i)
 }

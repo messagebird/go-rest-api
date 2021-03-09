@@ -1,6 +1,7 @@
 package messagebird
 
 import (
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -15,9 +16,7 @@ func TestError(t *testing.T) {
 				},
 			},
 		}
-		if s := errRes.Error(); s != "API errors: something bad" {
-			t.Errorf("Got %q, expected API response: something bad", s)
-		}
+		assert.Error(t, errRes)
 	})
 
 	t.Run("Multiple", func(t *testing.T) {
@@ -35,8 +34,6 @@ func TestError(t *testing.T) {
 				},
 			},
 		}
-		if s := errRes.Error(); s != "API errors: something bad, something else" {
-			t.Errorf("Got %q, expected API response: something bad, something else", s)
-		}
+		assert.Error(t, errRes)
 	})
 }
