@@ -8,7 +8,7 @@ func TestError(t *testing.T) {
 	t.Run("Single", func(t *testing.T) {
 		errRes := ErrorResponse{
 			Errors: []Error{
-				Error{
+				{
 					Code:        42,
 					Description: "something bad",
 					Parameter:   "foo",
@@ -23,12 +23,12 @@ func TestError(t *testing.T) {
 	t.Run("Multiple", func(t *testing.T) {
 		errRes := ErrorResponse{
 			Errors: []Error{
-				Error{
+				{
 					Code:        42,
 					Description: "something bad",
 					Parameter:   "foo",
 				},
-				Error{
+				{
 					Code:        42,
 					Description: "something else",
 					Parameter:   "foo",
