@@ -10,7 +10,7 @@ import (
 
 func TestRecordingGetFile(t *testing.T) {
 	fileContents := []byte("this is not really a WAV file")
-	mbClient, stop := testRequest(http.StatusOK, []byte(fileContents))
+	mbClient, stop := testRequest(http.StatusOK, fileContents)
 	defer stop()
 
 	rec := &Recording{

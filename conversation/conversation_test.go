@@ -126,17 +126,17 @@ func TestStartHSM(t *testing.T) {
 					Code:   "en_US",
 				},
 				LocalizableParameters: []*HSMLocalizableParameter{
-					&HSMLocalizableParameter{
+					{
 						Default: "Hello!",
 					},
-					&HSMLocalizableParameter{
+					{
 						Default: "EUR12.34",
 						Currency: &HSMLocalizableParameterCurrency{
 							Code:   "EUR",
 							Amount: 12340,
 						},
 					},
-					&HSMLocalizableParameter{
+					{
 						Default:  "Today",
 						DateTime: mustParseRFC3339(t, "2018-08-24T11:52:12+00:00"),
 					},

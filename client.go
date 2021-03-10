@@ -210,7 +210,7 @@ func prepareRequestBody(data interface{}) ([]byte, contentType, error) {
 	default:
 		b, err := json.Marshal(data)
 		if err != nil {
-			return nil, contentType(""), err
+			return nil, "", err
 		}
 
 		return b, contentTypeJSON, nil
