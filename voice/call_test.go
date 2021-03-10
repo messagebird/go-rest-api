@@ -3,6 +3,8 @@ package voice
 import (
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInitiateCall(t *testing.T) {
@@ -27,9 +29,7 @@ func TestInitiateCall(t *testing.T) {
 		},
 	}
 	_, err := InitiateCall(client, source, destination, callflow, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 }
 
 func TestCallByID(t *testing.T) {
@@ -54,16 +54,10 @@ func TestCallByID(t *testing.T) {
 		},
 	}
 	call, err := InitiateCall(client, source, destination, callflow, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	time.Sleep(time.Second)
 	fetchedCall, err := CallByID(client, call.ID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if fetchedCall.Source != call.Source {
-		t.Fatalf("mismatched source: exp %q, got %q", call.Source, fetchedCall.Source)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, call.Source, fetchedCall.Source)
 }

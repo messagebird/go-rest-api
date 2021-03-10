@@ -6,13 +6,8 @@ import (
 
 	messagebird "github.com/messagebird/go-rest-api/v6"
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
-
-const Epsilon float32 = 0.001
-
-func cmpFloat32(a, b float32) bool {
-	return (a-b) < Epsilon && (b-a) < Epsilon
-}
 
 func TestMain(m *testing.M) {
 	mbtest.EnableServer(m)
@@ -23,21 +18,14 @@ func TestRead(t *testing.T) {
 	client := mbtest.Client(t)
 
 	balance, err := Read(client)
-	if err != nil {
-		t.Fatalf("Didn't expect error while fetching the balance: %s", err)
-	}
 
-	if balance.Payment != "prepaid" {
-		t.Errorf("Unexpected balance payment: %s", balance.Payment)
-	}
+	assert.NoError(t, err)
 
-	if balance.Type != "credits" {
-		t.Errorf("Unexpected balance type: %s", balance.Type)
-	}
+	assert.Equal(t, "prepaid", balance.Payment)
 
-	if !cmpFloat32(balance.Amount, 9.2) {
-		t.Errorf("Unexpected balance amount: %.2f", balance.Amount)
-	}
+	assert.Equal(t, "credits", balance.Type)
+
+	assert.EqualValuesf(t, 9.2, balance.Amount, "Unexpected balance amount: %.2f", balance.Amount)
 }
 
 func TestReadError(t *testing.T) {
@@ -47,19 +35,12 @@ func TestReadError(t *testing.T) {
 	_, err := Read(client)
 
 	errorResponse, ok := err.(messagebird.ErrorResponse)
-	if !ok {
-		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
-	}
 
-	if len(errorResponse.Errors) != 1 {
-		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(errorResponse.Errors))
-	}
+	assert.True(t, ok)
 
-	if errorResponse.Errors[0].Code != 2 {
-		t.Errorf("Unexpected error code: %d, expected: 2", errorResponse.Errors[0].Code)
-	}
+	assert.Len(t, errorResponse.Errors, 1)
 
-	if errorResponse.Errors[0].Parameter != "access_key" {
-		t.Errorf("Unexpected error parameter: %s, expected: access_key", errorResponse.Errors[0].Parameter)
-	}
+	assert.Equal(t, 2, errorResponse.Errors[0].Code)
+
+	assert.Equal(t, "access_key", errorResponse.Errors[0].Parameter)
 }

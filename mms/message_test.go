@@ -7,6 +7,7 @@ import (
 
 	messagebird "github.com/messagebird/go-rest-api/v6"
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -26,63 +27,26 @@ func TestCreate(t *testing.T) {
 	}
 
 	message, err := Create(client, "TestName", []string{"31612345678"}, params)
+	assert.NoError(t, err)
+	assert.Equal(t, "6d9e7100b1f9406c81a3c303c30ccf05", message.ID)
+	assert.Equal(t, "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05", message.HRef)
+	assert.Equal(t, "mt", message.Direction)
+	assert.Equal(t, "TestName", message.Originator)
+	assert.Equal(t, "Hello World", message.Body)
+	assert.Equal(t, "http://w3.org/1.gif", message.MediaUrls[0])
+	assert.Equal(t, "http://w3.org/2.gif", message.MediaUrls[1])
+	assert.Equal(t, "TestReference", message.Reference)
+	assert.Equal(t, "TestSubject", message.Subject)
+	assert.Nil(t, message.ScheduledDatetime)
+	assert.Equal(t, "2017-10-20T12:50:28Z", message.CreatedDatetime.Format(time.RFC3339))
+	assert.Equal(t, 1, message.Recipients.TotalCount)
+	assert.Equal(t, 1, message.Recipients.TotalSentCount)
+	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
+	assert.Equal(t, "sent", message.Recipients.Items[0].Status)
+	assert.Equal(t, "2017-10-20T12:50:28Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 
-	if err != nil {
-		t.Fatalf("Didn't expect error while creating a new MMS message: %s", err)
-	}
-	if message.ID != "6d9e7100b1f9406c81a3c303c30ccf05" {
-		t.Errorf("Unexpected message id: %s", message.ID)
-	}
-	if message.HRef != "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05" {
-		t.Errorf("Unexpected message href: %s", message.HRef)
-	}
-	if message.Direction != "mt" {
-		t.Errorf("Unexpected message direction: %s", message.Direction)
-	}
-	if message.Originator != "TestName" {
-		t.Errorf("Unexpected message originator: %s", message.Originator)
-	}
-	if message.Body != "Hello World" {
-		t.Errorf("Unexpected message body: %s", message.Body)
-	}
-	if message.MediaUrls[0] != "http://w3.org/1.gif" {
-		t.Errorf("Unexpected message mediaUrl: %s", message.MediaUrls[0])
-	}
-	if message.MediaUrls[1] != "http://w3.org/2.gif" {
-		t.Errorf("Unexpected message mediaUrl: %s", message.MediaUrls[1])
-	}
-	if message.Reference != "TestReference" {
-		t.Errorf("Unexpected message reference: %s", message.Reference)
-	}
-	if message.Subject != "TestSubject" {
-		t.Errorf("Unexpected message reference: %s", message.Subject)
-	}
-	if message.ScheduledDatetime != nil {
-		t.Errorf("Unexpected message scheduled datetime: %s", message.ScheduledDatetime)
-	}
-	if message.CreatedDatetime == nil || message.CreatedDatetime.Format(time.RFC3339) != "2017-10-20T12:50:28Z" {
-		t.Errorf("Unexpected message created datetime: %s", message.CreatedDatetime)
-	}
-	if message.Recipients.TotalCount != 1 {
-		t.Fatalf("Unexpected number of total count: %d", message.Recipients.TotalCount)
-	}
-	if message.Recipients.TotalSentCount != 1 {
-		t.Errorf("Unexpected number of total sent count: %d", message.Recipients.TotalSentCount)
-	}
-	if message.Recipients.Items[0].Recipient != 31612345678 {
-		t.Errorf("Unexpected message recipient: %d", message.Recipients.Items[0].Recipient)
-	}
-	if message.Recipients.Items[0].Status != "sent" {
-		t.Errorf("Unexpected message recipient status: %s", message.Recipients.Items[0].Status)
-	}
-	if message.Recipients.Items[0].StatusDatetime == nil || message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339) != "2017-10-20T12:50:28Z" {
-		t.Errorf("Unexpected datetime status for message recipient: %s", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
-	}
-
-	errorResponse, ok := err.(messagebird.ErrorResponse)
-	if ok {
-		t.Errorf("Unexpected error returned with message %#v", errorResponse)
-	}
+	_, ok := err.(messagebird.ErrorResponse)
+	assert.False(t, ok)
 }
 
 func TestCreateError(t *testing.T) {
@@ -100,21 +64,10 @@ func TestCreateError(t *testing.T) {
 	_, err := Create(client, "TestName", []string{"31612345678"}, params)
 
 	errorResponse, ok := err.(messagebird.ErrorResponse)
-	if !ok {
-		t.Fatalf("Expected ErrorResponse to be returned, instead I got %s", err)
-	}
-
-	if len(errorResponse.Errors) != 1 {
-		t.Fatalf("Unexpected number of errors: %d, expected: 1", len(errorResponse.Errors))
-	}
-
-	if errorResponse.Errors[0].Code != 2 {
-		t.Errorf("Unexpected error code: %d, expected: 2", errorResponse.Errors[0].Code)
-	}
-
-	if errorResponse.Errors[0].Parameter != "access_key" {
-		t.Errorf("Unexpected error parameter: %s, expected: access_key", errorResponse.Errors[0].Parameter)
-	}
+	assert.True(t, ok)
+	assert.Len(t, errorResponse.Errors, 1)
+	assert.Equal(t, 2, errorResponse.Errors[0].Code)
+	assert.Equal(t, "access_key", errorResponse.Errors[0].Parameter)
 }
 
 func TestCreateWithEmptyParams(t *testing.T) {
@@ -129,11 +82,5 @@ func TestCreateWithEmptyParams(t *testing.T) {
 	}
 
 	_, err := Create(client, "TestName", []string{"31612345678"}, params)
-
-	if err == nil {
-		t.Fatalf("Expected error to be returned, instead I got nil")
-	}
-	if err.Error() != "Body or MediaUrls is required" {
-		t.Errorf("Unexpected error message, I got %s", err)
-	}
+	assert.EqualError(t, err, "Body or MediaUrls is required")
 }

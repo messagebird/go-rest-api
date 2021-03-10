@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRecordingGetFile(t *testing.T) {
@@ -20,13 +21,9 @@ func TestRecordingGetFile(t *testing.T) {
 		},
 	}
 	r, err := rec.DownloadFile(mbClient)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	wav, err := ioutil.ReadAll(r)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	if string(wav) != string(fileContents) {
 		t.Logf("exp: %q", string(fileContents))
 		t.Logf("got: %q", string(wav))
@@ -37,9 +34,8 @@ func TestRecordingGetFile(t *testing.T) {
 func TestDelete(t *testing.T) {
 	mbtest.WillReturn([]byte(""), http.StatusNoContent)
 	client := mbtest.Client(t)
-	if err := Delete(client, "callid", "legid", "recid"); err != nil {
-		t.Errorf("unexpected error while deleting recording: %s", err)
-	}
+	err := Delete(client, "callid", "legid", "recid")
+	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/v1/calls/callid/legs/legid/recordings/recid")
 }
@@ -49,19 +45,10 @@ func TestReadRecording(t *testing.T) {
 	client := mbtest.Client(t)
 
 	recording, err := ReadRecording(client, "callid", "legid", "recid")
-	if err != nil {
-		t.Fatalf("unexpected error read recording: %s", err)
-	}
-
-	if recording.ID != "recid" {
-		t.Fatalf("expect %s got %s", "recid", recording.ID)
-	}
-	if recording.LegID != "legid" {
-		t.Fatalf("expect %s got %s", "legid", recording.LegID)
-	}
-	if recording.Status != RecordingStatusDone {
-		t.Fatalf("expect %s got %s", RecordingStatusDone, recording.Status)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "recid", recording.ID)
+	assert.Equal(t, "legid", recording.LegID)
+	assert.Equal(t, RecordingStatusDone, recording.Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/calls/callid/legs/legid/recordings/recid")
 }
@@ -73,25 +60,13 @@ func TestRecordings(t *testing.T) {
 	paginator := Recordings(client, "callid", "legid")
 
 	data, err := paginator.NextPage()
-	if err != nil {
-		t.Fatalf("unexpected error read recording: %s", err)
-	}
+	assert.NoError(t, err)
 
 	recordings := data.([]Recording)
-
-	if len(recordings) != 2 {
-		t.Errorf("got %d recordings expect 1", len(recordings))
-	}
-
-	if recordings[0].ID != "recid" {
-		t.Errorf("expect %s got %s", "recid", recordings[0].ID)
-	}
-	if recordings[0].LegID != "legid" {
-		t.Errorf("expect %s got %s", "legid", recordings[0].LegID)
-	}
-	if recordings[0].Status != RecordingStatusDone {
-		t.Errorf("expect %s got %s", RecordingStatusDone, recordings[0].Status)
-	}
+	assert.Len(t, recordings, 2)
+	assert.Equal(t, "recid", recordings[0].ID)
+	assert.Equal(t, "legid", recordings[0].LegID)
+	assert.Equal(t, RecordingStatusDone, recordings[0].Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/calls/callid/legs/legid/recordings")
 }

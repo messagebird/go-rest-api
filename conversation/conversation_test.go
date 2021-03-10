@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -18,23 +19,16 @@ func TestList(t *testing.T) {
 		client := mbtest.Client(t)
 
 		convList, err := List(client, &ListOptions{10, 20})
-		if err != nil {
-			t.Fatalf("unexpected error listing Conversations: %s", err)
-		}
+		assert.NoError(t, err)
 
-		if convList.Offset != 20 {
-			t.Fatalf("got %d, expected 20", convList.Offset)
-		}
+		assert.Equal(t, 20, convList.Offset)
 
-		if convList.Items[0].ID != "convid" {
-			t.Fatalf("got %s, expected convid", convList.Items[0].ID)
-		}
+		assert.Equal(t, "convid", convList.Items[0].ID)
 
 		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations")
 
-		if query := mbtest.Request.URL.RawQuery; query != "limit=10&offset=20" {
-			t.Fatalf("got %s, expected limit=10&offset=20", query)
-		}
+		query := mbtest.Request.URL.RawQuery
+		assert.Equal(t, "limit=10&offset=20", query)
 	})
 
 	t.Run("all", func(t *testing.T) {
@@ -42,27 +36,18 @@ func TestList(t *testing.T) {
 		client := mbtest.Client(t)
 
 		convList, err := List(client, nil)
-		if err != nil {
-			t.Fatalf("unexpected error listing Conversations: %s", err)
-		}
+		assert.NoError(t, err)
 
-		if convList.Offset != 0 {
-			t.Fatalf("got offset=%d, expected 0", convList.Offset)
-		}
+		assert.Equal(t, 0, convList.Offset)
 
-		if convList.Limit != 10 {
-			t.Fatalf("got limit=%d, expected 10", convList.Limit)
-		}
+		assert.Equal(t, 10, convList.Limit)
 
-		if convList.Items[0].ID != "convid" {
-			t.Fatalf("got %s, expected convid", convList.Items[0].ID)
-		}
+		assert.Equal(t, "convid", convList.Items[0].ID)
 
 		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations")
 
-		if query := mbtest.Request.URL.RawQuery; query != "" {
-			t.Fatalf("got %s, expected no limit and offset", query)
-		}
+		query := mbtest.Request.URL.RawQuery
+		assert.Equal(t, "", query)
 	})
 }
 
@@ -71,41 +56,17 @@ func TestRead(t *testing.T) {
 	client := mbtest.Client(t)
 
 	conv, err := Read(client, "convid")
-	if err != nil {
-		t.Fatalf("unexpected error reading Conversation: %s", err)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "convid", conv.ID)
+	assert.Equal(t, "contid", conv.Contact.ID)
+	assert.Equal(t, "31612345678", conv.Contact.MSISDN)
 
-	if conv.ID != "convid" {
-		t.Fatalf("got %s, expected convid", conv.ID)
-	}
-
-	if conv.Contact.ID != "contid" {
-		t.Fatalf("got %s, expected contid", conv.Contact.ID)
-	}
-
-	if conv.Contact.MSISDN != "31612345678" {
-		t.Fatalf("got %s, expected 31612345678", conv.Contact.MSISDN)
-	}
-
-	if val, ok := conv.Contact.CustomDetails["userId"]; ok {
-		if val != int64(12345678) {
-			t.Fatalf("got %v, expected 12345678", val)
-		}
-	} else {
-		t.Fatalf("got nil, expected 12345678")
-	}
-
-	if conv.Channels[0].Name != "chname" {
-		t.Fatalf("got %s, expected chname", conv.Channels[0].Name)
-	}
-
-	if conv.Messages.TotalCount != 1 {
-		t.Fatalf("got %d, expected 1", conv.Messages.TotalCount)
-	}
-
-	if conv.Status != ConversationStatusActive {
-		t.Fatalf("got %s, expected active", conv.Status)
-	}
+	val, ok := conv.Contact.CustomDetails["userId"]
+	assert.True(t, ok)
+	assert.Equal(t, int64(12345678), val)
+	assert.Equal(t, "chname", conv.Channels[0].Name)
+	assert.Equal(t, 1, conv.Messages.TotalCount)
+	assert.Equal(t, ConversationStatusActive, conv.Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/convid")
 }
@@ -145,13 +106,8 @@ func TestStartHSM(t *testing.T) {
 		},
 		Type: MessageTypeHSM,
 	})
-	if err != nil {
-		t.Fatalf("unexpected error starting Conversation: %s", err)
-	}
-
-	if conv.ID != "convid" {
-		t.Fatalf("got %s, expected convid", conv.ID)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "convid", conv.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/start")
 	mbtest.AssertTestdata(t, "conversationStartHsmRequest.json", mbtest.Request.Body)
@@ -159,9 +115,7 @@ func TestStartHSM(t *testing.T) {
 
 func mustParseRFC3339(t *testing.T, s string) *time.Time {
 	result, err := time.Parse(time.RFC3339, s)
-	if err != nil {
-		t.Fatalf("unexpected error parsing RFC3339 time: %s", err)
-	}
+	assert.NoError(t, err)
 
 	return &result
 }
@@ -180,13 +134,8 @@ func TestStartMedia(t *testing.T) {
 		},
 		Type: MessageTypeText,
 	})
-	if err != nil {
-		t.Fatalf("unexpected error starting Conversation: %s", err)
-	}
-
-	if conv.ID != "convid" {
-		t.Fatalf("got %s, expected convid", conv.ID)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "convid", conv.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/start")
 	mbtest.AssertTestdata(t, "conversationStartVideoRequest.json", mbtest.Request.Body)
@@ -204,13 +153,8 @@ func TestStartText(t *testing.T) {
 		},
 		Type: MessageTypeText,
 	})
-	if err != nil {
-		t.Fatalf("unexpected error starting Conversation: %s", err)
-	}
-
-	if conv.ID != "convid" {
-		t.Fatalf("got %s, expected convid", conv.ID)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "convid", conv.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/start")
 	mbtest.AssertTestdata(t, "conversationStartTextRequest.json", mbtest.Request.Body)
@@ -223,13 +167,8 @@ func TestUpdate(t *testing.T) {
 	conv, err := Update(client, "id", &UpdateRequest{
 		Status: ConversationStatusArchived,
 	})
-	if err != nil {
-		t.Fatalf("unexpected error updating Conversation: %s", err)
-	}
-
-	if conv.Status != ConversationStatusArchived {
-		t.Fatalf("got %s, expected archived", conv.Status)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, ConversationStatusArchived, conv.Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/conversations/id")
 	mbtest.AssertTestdata(t, "conversationUpdateRequest.json", mbtest.Request.Body)

@@ -7,6 +7,7 @@ import (
 
 	"github.com/messagebird/go-rest-api/v6"
 	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMain(m *testing.M) {
@@ -14,69 +15,25 @@ func TestMain(m *testing.M) {
 }
 
 func assertVoiceMessageObject(t *testing.T, message *VoiceMessage) {
-	if message.ID != "430c44a0354aab7ac9553f7a49907463" {
-		t.Errorf("Unexpected voice message id: %s, expected: 430c44a0354aab7ac9553f7a49907463", message.ID)
-	}
+	assert.Equal(t, "430c44a0354aab7ac9553f7a49907463", message.ID)
+	assert.Equal(t, "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463", message.HRef)
+	assert.Equal(t, "MessageBird", message.Originator)
 
-	if message.HRef != "https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463" {
-		t.Errorf("Unexpected voice message href: %s, expected: https://rest.messagebird.com/voicemessages/430c44a0354aab7ac9553f7a49907463", message.HRef)
-	}
+	assert.Equal(t, "Hello World", message.Body)
+	assert.Equal(t, "", message.Reference)
+	assert.Equal(t, "en-gb", message.Language)
+	assert.Equal(t, "female", message.Voice)
+	assert.Equal(t, 1, message.Repeat)
+	assert.Equal(t, "continue", message.IfMachine)
+	assert.Nil(t, message.ScheduledDatetime)
 
-	if message.Originator != "MessageBird" {
-		t.Errorf("Unexpected voice message originator: %s, expected: MessageBird", message.Originator)
-	}
+	assert.Equal(t, "2015-01-05T16:11:24Z", message.CreatedDatetime.Format(time.RFC3339))
+	assert.Equal(t, 1, message.Recipients.TotalCount)
+	assert.Equal(t, 1, message.Recipients.TotalSentCount)
+	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
+	assert.Equal(t, "calling", message.Recipients.Items[0].Status)
 
-	if message.Body != "Hello World" {
-		t.Errorf("Unexpected voice message body: %s, expected: Hello World", message.Body)
-	}
-
-	if message.Reference != "" {
-		t.Errorf("Unexpected voice message reference: %s, expected: \"\"", message.Reference)
-	}
-
-	if message.Language != "en-gb" {
-		t.Errorf("Unexpected voice message language: %s, expected: en-gb", message.Language)
-	}
-
-	if message.Voice != "female" {
-		t.Errorf("Unexpected voice message voice: %s, expected: female", message.Voice)
-	}
-
-	if message.Repeat != 1 {
-		t.Errorf("Unexpected voice message repeat: %d, expected: 1", message.Repeat)
-	}
-
-	if message.IfMachine != "continue" {
-		t.Errorf("Unexpected voice message ifmachine: %s, expected: continue", message.IfMachine)
-	}
-
-	if message.ScheduledDatetime != nil {
-		t.Errorf("Unexpected voice message scheduled datetime: %s, expected: nil", message.ScheduledDatetime)
-	}
-
-	if message.CreatedDatetime == nil || message.CreatedDatetime.Format(time.RFC3339) != "2015-01-05T16:11:24Z" {
-		t.Errorf("Unexpected voice message created datetime: %s, expected: 2015-01-05T16:11:24Z", message.CreatedDatetime.Format(time.RFC3339))
-	}
-
-	if message.Recipients.TotalCount != 1 {
-		t.Fatalf("Unexpected number of total count: %d, expected: 1", message.Recipients.TotalCount)
-	}
-
-	if message.Recipients.TotalSentCount != 1 {
-		t.Errorf("Unexpected number of total sent count: %d, expected: 1", message.Recipients.TotalSentCount)
-	}
-
-	if message.Recipients.Items[0].Recipient != 31612345678 {
-		t.Errorf("Unexpected voice message recipient: %d, expected: 31612345678", message.Recipients.Items[0].Recipient)
-	}
-
-	if message.Recipients.Items[0].Status != "calling" {
-		t.Errorf("Unexpected voice message recipient status: %s, expected: calling", message.Recipients.Items[0].Status)
-	}
-
-	if message.Recipients.Items[0].StatusDatetime == nil || message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339) != "2015-01-05T16:11:24Z" {
-		t.Errorf("Unexpected datetime status for voice message recipient: %s, expected: 2015-01-05T16:11:24Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
-	}
+	assert.Equal(t, "2015-01-05T16:11:24Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 
 }
 
@@ -86,10 +43,8 @@ func TestCreate(t *testing.T) {
 
 	message, err := Create(client, []string{"31612345678"}, "Hello World", nil)
 
-	errorResponse, ok := err.(messagebird.ErrorResponse)
-	if ok {
-		t.Errorf("Unexpected error returned with voiceMessage %#v", errorResponse)
-	}
+	_, ok := err.(messagebird.ErrorResponse)
+	assert.False(t, ok)
 
 	assertVoiceMessageObject(t, message)
 }
@@ -106,25 +61,11 @@ func TestCreateWithParams(t *testing.T) {
 	}
 
 	message, err := Create(client, []string{"31612345678"}, "Hello World", params)
-	if err != nil {
-		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
-	}
-
-	if message.Reference != "MyReference" {
-		t.Errorf("Unexpected voice message reference: %s, expected: MyReference", message.Reference)
-	}
-
-	if message.Voice != "male" {
-		t.Errorf("Unexpected voice message voice: %s, expected: male", message.Voice)
-	}
-
-	if message.Repeat != 5 {
-		t.Errorf("Unexpected voice message repeat: %d, expected: 5", message.Repeat)
-	}
-
-	if message.IfMachine != "hangup" {
-		t.Errorf("Unexpected voice message ifmachine: %s, expected: hangup", message.IfMachine)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "MyReference", message.Reference)
+	assert.Equal(t, "male", message.Voice)
+	assert.Equal(t, 5, message.Repeat)
+	assert.Equal(t, "hangup", message.IfMachine)
 }
 
 func TestCreateWithScheduledDatetime(t *testing.T) {
@@ -136,29 +77,12 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 	params := &Params{ScheduledDatetime: scheduledDatetime}
 
 	message, err := Create(client, []string{"31612345678"}, "Hello World", params)
-	if err != nil {
-		t.Fatalf("Didn't expect error while creating a new voice message: %s", err)
-	}
-
-	if message.ScheduledDatetime.Format(time.RFC3339) != scheduledDatetime.Format(time.RFC3339) {
-		t.Errorf("Unexpected scheduled datetime: %s, expected: %s", message.ScheduledDatetime.Format(time.RFC3339), scheduledDatetime.Format(time.RFC3339))
-	}
-
-	if message.Recipients.TotalCount != 1 {
-		t.Fatalf("Unexpected number of total count: %d, expected: 1", message.Recipients.TotalCount)
-	}
-
-	if message.Recipients.TotalSentCount != 0 {
-		t.Errorf("Unexpected number of total sent count: %d, expected: 0", message.Recipients.TotalSentCount)
-	}
-
-	if message.Recipients.Items[0].Recipient != 31612345678 {
-		t.Errorf("Unexpected voice message recipient: %d, expected: 31612345678", message.Recipients.Items[0].Recipient)
-	}
-
-	if message.Recipients.Items[0].Status != "scheduled" {
-		t.Errorf("Unexpected voice message recipient status: %s, expected: scheduled", message.Recipients.Items[0].Status)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, scheduledDatetime.Format(time.RFC3339), message.ScheduledDatetime.Format(time.RFC3339))
+	assert.Equal(t, 1, message.Recipients.TotalCount)
+	assert.Equal(t, 0, message.Recipients.TotalSentCount)
+	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
+	assert.Equal(t, "scheduled", message.Recipients.Items[0].Status)
 }
 
 func TestList(t *testing.T) {
@@ -166,22 +90,11 @@ func TestList(t *testing.T) {
 	client := mbtest.Client(t)
 
 	messageList, err := List(client)
-	if err != nil {
-		t.Fatalf("Didn't expect an error while requesting VoiceMessages: %s", err)
-	}
-
-	if messageList.Offset != 0 {
-		t.Errorf("Unexpected result for the VoiceMessages offset: %d, expected: 0", messageList.Offset)
-	}
-	if messageList.Limit != 20 {
-		t.Errorf("Unexpected result for the VoiceMessages limit: %d, expected: 20", messageList.Limit)
-	}
-	if messageList.Count != 2 {
-		t.Errorf("Unexpected result for the VoiceMessages count: %d, expected: 2", messageList.Count)
-	}
-	if messageList.TotalCount != 2 {
-		t.Errorf("Unexpected result for the VoiceMessages total count: %d, expected: 2", messageList.TotalCount)
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, 0, messageList.Offset)
+	assert.Equal(t, 20, messageList.Limit)
+	assert.Equal(t, 2, messageList.Count)
+	assert.Equal(t, 2, messageList.TotalCount)
 
 	for _, message := range messageList.Items {
 		assertVoiceMessageObject(t, &message)
@@ -201,32 +114,13 @@ func TestRequestDataForVoiceMessage(t *testing.T) {
 	}
 
 	request, err := requestDataForVoiceMessage([]string{"31612345678"}, "MyBody", voiceParams)
-	if err != nil {
-		t.Fatalf("Didn't expect error while getting request data for voice message: %s", err)
-	}
-
-	if request.Recipients[0] != "31612345678" {
-		t.Errorf("Unexpected recipient: %s, expected: 31612345678", request.Recipients[0])
-	}
-	if request.Body != "MyBody" {
-		t.Errorf("Unexpected body: %s, expected: MyBody", request.Body)
-	}
-	if request.Reference != "MyReference" {
-		t.Errorf("Unexpected reference: %s, expected: MyReference", request.Reference)
-	}
-	if request.Language != "en-gb" {
-		t.Errorf("Unexpected language: %s, expected: en-gb", request.Language)
-	}
-	if request.Voice != "male" {
-		t.Errorf("Unexpected voice: %s, expected: male", request.Voice)
-	}
-	if request.Repeat != 2 {
-		t.Errorf("Unexpected repeat: %d, expected: 2", request.Repeat)
-	}
-	if request.IfMachine != "continue" {
-		t.Errorf("Unexpected if machine: %s, expected: continue", request.IfMachine)
-	}
-	if request.ScheduledDatetime != voiceParams.ScheduledDatetime.Format(time.RFC3339) {
-		t.Errorf("Unexpected scheduled date time: %s, expected: %s", request.ScheduledDatetime, voiceParams.ScheduledDatetime.Format(time.RFC3339))
-	}
+	assert.NoError(t, err)
+	assert.Equal(t, "31612345678", request.Recipients[0])
+	assert.Equal(t, "MyBody", request.Body)
+	assert.Equal(t, "MyReference", request.Reference)
+	assert.Equal(t, "en-gb", request.Language)
+	assert.Equal(t, "male", request.Voice)
+	assert.Equal(t, 2, request.Repeat)
+	assert.Equal(t, "continue", request.IfMachine)
+	assert.Equal(t, voiceParams.ScheduledDatetime.Format(time.RFC3339), request.ScheduledDatetime)
 }
