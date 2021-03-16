@@ -1,6 +1,7 @@
 package mbtest
 
 import (
+	"context"
 	"crypto/tls"
 	"log"
 	"net"
@@ -29,7 +30,7 @@ func Client(t *testing.T) *messagebird.Client {
 
 func client(t *testing.T, accessKey string) *messagebird.Client {
 	transport := &http.Transport{
-		DialTLS: func(network, _ string) (net.Conn, error) {
+		DialTLSContext: func(_ context.Context, network, _ string) (net.Conn, error) {
 			addr := server.Listener.Addr().String()
 			return tls.Dial(network, addr, &tls.Config{
 				InsecureSkipVerify: true,

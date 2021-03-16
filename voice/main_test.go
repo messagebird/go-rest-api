@@ -1,6 +1,7 @@
 package voice
 
 import (
+	"context"
 	"crypto/tls"
 	"log"
 	"net"
@@ -20,8 +21,8 @@ func testRequest(status int, body []byte) (*messagebird.Client, func()) {
 	}))
 	addr := mbServer.Listener.Addr().String()
 	transport := &http.Transport{
-		DialTLS: func(netw, _ string) (net.Conn, error) {
-			return tls.Dial(netw, addr, &tls.Config{InsecureSkipVerify: true})
+		DialTLSContext: func(_ context.Context, network, _ string) (net.Conn, error) {
+			return tls.Dial(network, addr, &tls.Config{InsecureSkipVerify: true})
 		},
 	}
 	mbClient := messagebird.New("test_gshuPaZoeEG6ovbc8M79w0QyM")
