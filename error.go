@@ -24,9 +24,9 @@ type ErrorResponse struct {
 
 // Error implements error interface.
 func (r ErrorResponse) Error() string {
-	var inners []string
-	for _, inner := range r.Errors {
-		inners = append(inners, inner.Error())
+	inners := make([]string, len(r.Errors))
+	for i, inner := range r.Errors {
+		inners[i] = inner.Error()
 	}
 	return fmt.Sprintf("API errors: %s", strings.Join(inners, ", "))
 }
