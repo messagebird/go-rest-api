@@ -18,7 +18,12 @@ type Verify struct {
 	Messages           map[string]string
 	CreatedDatetime    *time.Time
 	ValidUntilDatetime *time.Time
-	Recipient          int
+	Recipient          string
+}
+
+type VerifyMessage struct {
+	Id     string `json:"id"`
+	Status string `json:"status"`
 }
 
 // Params handles optional verification parameters.
@@ -33,6 +38,7 @@ type Params struct {
 	Language    string
 	Timeout     int
 	TokenLength int
+	Subject     string
 }
 
 type verifyRequest struct {
@@ -47,10 +53,12 @@ type verifyRequest struct {
 	Language    string `json:"language,omitempty"`
 	Timeout     int    `json:"timeout,omitempty"`
 	TokenLength int    `json:"tokenLength,omitempty"`
+	Subject     string `json:"subject,omitempty"`
 }
 
 // path represents the path to the Verify resource.
 const path = "verify"
+const emailMessagesPath = path + "/messages/email"
 
 // Create generates a new One-Time-Password for one recipient.
 func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, error) {
@@ -98,6 +106,18 @@ func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 	return verify, nil
 }
 
+func GetVerifyEmailMessage(c *messagebird.Client, id string) (*VerifyMessage, error) {
+
+	messagePath := emailMessagesPath + "/" + id
+
+	verifyMessage := &VerifyMessage{}
+	if err := c.Request(verifyMessage, http.MethodGet, messagePath, nil); err != nil {
+		return nil, err
+	}
+
+	return verifyMessage, nil
+}
+
 func requestDataForVerify(recipient string, params *Params) (*verifyRequest, error) {
 	if recipient == "" {
 		return nil, errors.New("recipient is required")
@@ -121,6 +141,7 @@ func requestDataForVerify(recipient string, params *Params) (*verifyRequest, err
 	request.Language = params.Language
 	request.Timeout = params.Timeout
 	request.TokenLength = params.TokenLength
+	request.Subject = params.Subject
 
 	return request, nil
 }
