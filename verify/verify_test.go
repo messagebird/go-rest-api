@@ -69,14 +69,14 @@ func TestVerifyToken(t *testing.T) {
 	assertVerifyTokenObject(t, v)
 }
 
-func TestGetVerifyEmailMessage(t *testing.T) {
+func TestReadVerifyEmailMessage(t *testing.T) {
 
 	mbtest.WillReturnTestdata(t, "verifyEmailMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	v, err := GetVerifyEmailMessage(client, "8e515072e7f14b7d8c71ee13025c600d")
+	v, err := ReadVerifyEmailMessage(client, "8e515072e7f14b7d8c71ee13025c600d")
 	assert.NoError(t, err)
-	assert.Equal(t, "8e515072e7f14b7d8c71ee13025c600d", v.Id)
+	assert.Equal(t, "8e515072e7f14b7d8c71ee13025c600d", v.ID)
 	assert.Equal(t, "sent", v.Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/verify/messages/email/8e515072e7f14b7d8c71ee13025c600d")

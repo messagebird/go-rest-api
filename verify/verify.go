@@ -1,9 +1,12 @@
 package verify
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api/v6"
@@ -22,7 +25,7 @@ type Verify struct {
 }
 
 type VerifyMessage struct {
-	Id     string `json:"id"`
+	ID     string `json:"id"`
 	Status string `json:"status"`
 }
 
@@ -106,7 +109,7 @@ func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 	return verify, nil
 }
 
-func GetVerifyEmailMessage(c *messagebird.Client, id string) (*VerifyMessage, error) {
+func ReadVerifyEmailMessage(c *messagebird.Client, id string) (*VerifyMessage, error) {
 
 	messagePath := emailMessagesPath + "/" + id
 
@@ -144,4 +147,42 @@ func requestDataForVerify(recipient string, params *Params) (*verifyRequest, err
 	request.Subject = params.Subject
 
 	return request, nil
+}
+
+/**
+The type of the Verify.Recipient object changed from int to string but the api still returns a recipent numeric value whne sms type is used.
+This was the best way to ensure backward compatibility with the previous versions
+*/
+func (v *Verify) UnmarshalJSON(b []byte) error {
+	if v == nil {
+		return errors.New("cannot unmarshal to nil pointer")
+	}
+
+	// Need a type alias so we get a type the same memory layout, but without Verify's method set.
+	// Otherwise encoding/json will recursively invoke this UnmarshalJSON() implementation.
+	type Alias Verify
+	var wrapper struct {
+		Alias
+		Recipient interface{}
+	}
+	if err := json.Unmarshal(b, &wrapper); err != nil {
+		return err
+	}
+
+	switch wrapper.Recipient.(type) {
+	case float64:
+		const noExponent = 'f'
+		const precision = -1
+		const bitSize = 64
+		asFloat := wrapper.Recipient.(float64)
+
+		wrapper.Alias.Recipient = strconv.FormatFloat(asFloat, noExponent, precision, bitSize)
+	case string:
+		wrapper.Alias.Recipient = wrapper.Recipient.(string)
+	default:
+		return fmt.Errorf("recipient is unknown type %T", wrapper.Recipient)
+	}
+
+	*v = Verify(wrapper.Alias)
+	return nil
 }
