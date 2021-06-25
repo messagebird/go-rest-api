@@ -17,7 +17,7 @@ func assertVerifyObject(t *testing.T, v *Verify) {
 	assert.NotNil(t, v)
 	assert.Equal(t, "15498233759288aaf929661v21936686", v.ID)
 	assert.Equal(t, "https://rest.messagebird.com/verify/15498233759288aaf929661v21936686", v.HRef)
-	assert.Equal(t, 31612345678, v.Recipient)
+	assert.Equal(t, "31612345678", v.Recipient)
 	assert.Equal(t, "MyReference", v.Reference)
 	assert.Len(t, v.Messages, 1)
 	assert.Equal(t, "https://rest.messagebird.com/messages/c2bbd563759288aaf962910b56023756", v.Messages["href"])
@@ -69,11 +69,24 @@ func TestVerifyToken(t *testing.T) {
 	assertVerifyTokenObject(t, v)
 }
 
+func TestReadVerifyEmailMessage(t *testing.T) {
+
+	mbtest.WillReturnTestdata(t, "verifyEmailMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	v, err := ReadVerifyEmailMessage(client, "8e515072e7f14b7d8c71ee13025c600d")
+	assert.NoError(t, err)
+	assert.Equal(t, "8e515072e7f14b7d8c71ee13025c600d", v.ID)
+	assert.Equal(t, "sent", v.Status)
+
+	mbtest.AssertEndpointCalled(t, http.MethodGet, "/verify/messages/email/8e515072e7f14b7d8c71ee13025c600d")
+}
+
 func assertVerifyTokenObject(t *testing.T, v *Verify) {
 	assert.NotNil(t, v)
 	assert.Equal(t, "a3f2edb23592d68163f9694v13904556", v.ID)
 	assert.Equal(t, "https://rest.messagebird.com/verify/a3f2edb23592d68163f9694v13904556", v.HRef)
-	assert.Equal(t, 31612345678, v.Recipient)
+	assert.Equal(t, "31612345678", v.Recipient)
 	assert.Equal(t, "MyReference", v.Reference)
 	assert.Len(t, v.Messages, 1)
 	assert.Equal(t, "https://rest.messagebird.com/messages/63b168423592d681641eb07b76226648", v.Messages["href"])

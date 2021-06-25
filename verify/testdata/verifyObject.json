@@ -1,7 +1,7 @@
 {
     "id": "15498233759288aaf929661v21936686",
     "href": "https://rest.messagebird.com/verify/15498233759288aaf929661v21936686",
-    "recipient": 31612345678,
+    "recipient": "31612345678",
     "reference": "MyReference",
     "messages": {
         "href": "https://rest.messagebird.com/messages/c2bbd563759288aaf962910b56023756"

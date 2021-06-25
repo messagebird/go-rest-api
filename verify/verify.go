@@ -1,9 +1,12 @@
 package verify
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api/v6"
@@ -18,7 +21,12 @@ type Verify struct {
 	Messages           map[string]string
 	CreatedDatetime    *time.Time
 	ValidUntilDatetime *time.Time
-	Recipient          int
+	Recipient          string
+}
+
+type VerifyMessage struct {
+	ID     string `json:"id"`
+	Status string `json:"status"`
 }
 
 // Params handles optional verification parameters.
@@ -33,6 +41,7 @@ type Params struct {
 	Language    string
 	Timeout     int
 	TokenLength int
+	Subject     string
 }
 
 type verifyRequest struct {
@@ -47,10 +56,12 @@ type verifyRequest struct {
 	Language    string `json:"language,omitempty"`
 	Timeout     int    `json:"timeout,omitempty"`
 	TokenLength int    `json:"tokenLength,omitempty"`
+	Subject     string `json:"subject,omitempty"`
 }
 
 // path represents the path to the Verify resource.
 const path = "verify"
+const emailMessagesPath = path + "/messages/email"
 
 // Create generates a new One-Time-Password for one recipient.
 func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, error) {
@@ -98,6 +109,18 @@ func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 	return verify, nil
 }
 
+func ReadVerifyEmailMessage(c *messagebird.Client, id string) (*VerifyMessage, error) {
+
+	messagePath := emailMessagesPath + "/" + id
+
+	verifyMessage := &VerifyMessage{}
+	if err := c.Request(verifyMessage, http.MethodGet, messagePath, nil); err != nil {
+		return nil, err
+	}
+
+	return verifyMessage, nil
+}
+
 func requestDataForVerify(recipient string, params *Params) (*verifyRequest, error) {
 	if recipient == "" {
 		return nil, errors.New("recipient is required")
@@ -121,6 +144,45 @@ func requestDataForVerify(recipient string, params *Params) (*verifyRequest, err
 	request.Language = params.Language
 	request.Timeout = params.Timeout
 	request.TokenLength = params.TokenLength
+	request.Subject = params.Subject
 
 	return request, nil
+}
+
+/**
+The type of the Verify.Recipient object changed from int to string but the api still returns a recipent numeric value whne sms type is used.
+This was the best way to ensure backward compatibility with the previous versions
+*/
+func (v *Verify) UnmarshalJSON(b []byte) error {
+	if v == nil {
+		return errors.New("cannot unmarshal to nil pointer")
+	}
+
+	// Need a type alias so we get a type the same memory layout, but without Verify's method set.
+	// Otherwise encoding/json will recursively invoke this UnmarshalJSON() implementation.
+	type Alias Verify
+	var wrapper struct {
+		Alias
+		Recipient interface{}
+	}
+	if err := json.Unmarshal(b, &wrapper); err != nil {
+		return err
+	}
+
+	switch wrapper.Recipient.(type) {
+	case float64:
+		const noExponent = 'f'
+		const precision = -1
+		const bitSize = 64
+		asFloat := wrapper.Recipient.(float64)
+
+		wrapper.Alias.Recipient = strconv.FormatFloat(asFloat, noExponent, precision, bitSize)
+	case string:
+		wrapper.Alias.Recipient = wrapper.Recipient.(string)
+	default:
+		return fmt.Errorf("recipient is unknown type %T", wrapper.Recipient)
+	}
+
+	*v = Verify(wrapper.Alias)
+	return nil
 }
