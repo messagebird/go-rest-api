@@ -2,7 +2,7 @@ MessageBird's REST API for Go
 =============================
 This repository contains the open source Go client for MessageBird's REST API. Documentation can be found at: https://developers.messagebird.com.
 
-[![Build Status](https://travis-ci.org/messagebird/go-rest-api.svg?branch=master)](https://travis-ci.org/messagebird/go-rest-api) [![PkgGoDev](https://pkg.go.dev/badge/github.com/messagebird/go-rest-api/v6)](https://pkg.go.dev/github.com/messagebird/go-rest-api/v6)
+[![Build Status](https://travis-ci.org/messagebird/go-rest-api.svg?branch=master)](https://travis-ci.org/messagebird/go-rest-api) [![PkgGoDev](https://pkg.go.dev/badge/github.com/messagebird/go-rest-api/v7)](https://pkg.go.dev/github.com/messagebird/go-rest-api/v7)
 
 Requirements
 ------------
@@ -15,7 +15,7 @@ Installation
 The easiest way to use the MessageBird API in your Go project is to install it using *go get*:
 
 ```
-$ go get github.com/messagebird/go-rest-api/v6
+$ go get github.com/messagebird/go-rest-api/v7
 ```
 
 Examples
@@ -23,7 +23,7 @@ Examples
 Here is a quick example on how to get started. Assuming the **go get** installation worked, you can import the messagebird package like this:
 
 ```go
-import "github.com/messagebird/go-rest-api/v6"
+import "github.com/messagebird/go-rest-api/v7"
 ```
 
 Then, create an instance of **messagebird.Client**. It can be used to access the MessageBird APIs.
@@ -69,8 +69,8 @@ For this reason, errors returned by the `voice` package are of type `voice.Error
 An example of "simple" error handling is shown in the example above. Let's look how we can gain more in-depth insight in what exactly went wrong:
 
 ```go
-import "github.com/messagebird/go-rest-api/v6"
-import "github.com/messagebird/go-rest-api/v6/sms"
+import "github.com/messagebird/go-rest-api/v7"
+import "github.com/messagebird/go-rest-api/v7/sms"
 
 // ...
 
@@ -91,7 +91,7 @@ if err != nil {
 `voice.ErrorResponse` is very similar, except that it holds `voice.Error` structs - those contain only `Code` and `Message` (not description!) fields:
 
 ```go
-import "github.com/messagebird/go-rest-api/v6/voice"
+import "github.com/messagebird/go-rest-api/v7/voice"
 
 // ...
 
