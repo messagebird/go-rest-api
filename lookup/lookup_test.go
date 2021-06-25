@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/messagebird/go-rest-api/v6/hlr"
-	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v7/hlr"
+	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 

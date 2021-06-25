@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	messagebird "github.com/messagebird/go-rest-api/v6"
+	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
 type MessageCreateRequest struct {

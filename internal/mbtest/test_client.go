@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	messagebird "github.com/messagebird/go-rest-api/v6"
+	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
 // testWriter can be used to have the client write to the tests's error log.

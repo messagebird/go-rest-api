@@ -98,6 +98,8 @@ Although those are all breaking changes, it's worth mentioning this new version 
 ### Version suffix
 To preserve import compatibility, the go command requires that modules with major version v2 or later use a module path with that major version as the final element. 
 
-So all imports of `go-rest-api` are replaced as `go-rest-api/v6`. 
+So all imports of `go-rest-api` are replaced as `go-rest-api/v6`.
 
-
+## `v6.1.0` -> `v7.0.0`
+### Verify Recipient type
+As v7 introduces support for using the Verify API with email recipients, the `Verify.Recipient` field has been changed from to a string type.
