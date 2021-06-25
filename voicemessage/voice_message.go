@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v6"
+	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
 // VoiceMessage wraps data needed to transform text messages into voice messages.

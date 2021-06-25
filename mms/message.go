@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v6"
+	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
 // Message represents a MMS Message.

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v6"
+	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
 // Contact gets returned by the API.

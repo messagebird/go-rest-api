@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v6"
-	"github.com/messagebird/go-rest-api/v6/internal/mbtest"
+	messagebird "github.com/messagebird/go-rest-api/v7"
+	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 
