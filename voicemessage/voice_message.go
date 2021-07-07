@@ -119,7 +119,9 @@ func requestDataForVoiceMessage(recipients []string, body string, params *Params
 	request.Voice = params.Voice
 	request.Repeat = params.Repeat
 	request.IfMachine = params.IfMachine
-	request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
+	if !params.ScheduledDatetime.IsZero() {
+		request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
+	}
 
 	return request, nil
 }
