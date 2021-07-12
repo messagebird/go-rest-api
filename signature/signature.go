@@ -5,7 +5,7 @@ To use define a new validator using your MessageBird Signing key. You can use th
 ValidRequest method, just pass the request and base url as parameters:
 
     validator := signature.NewValidator([]byte("your signing key"))
-	baseUrl := "https://messagebird.io"
+	baseUrl := "https://yourdomain.com"
     if err := validator.ValidRequest(r, baseUrl); err != nil {
         // handle error
     }
