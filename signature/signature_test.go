@@ -1,253 +1,184 @@
 package signature
 
 import (
-	"bytes"
-	"encoding/base64"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
-const testTs = "1544544948"
-const testQp = "abc=foo&def=bar"
-const testBody = `{"a key":"some value"}`
-const testSignature = "orb0adPhRCYND1WCAvPBr+qjm4STGtyvNDIDNBZ4Ir4="
-const testKey = "other-secret"
+const testBaseUrl = "https://example.com"
 
-func TestCalculateSignature(t *testing.T) {
+var testSecret = []byte("hunter2")
+
+func TestValidate(t *testing.T) {
 	var cases = []struct {
-		name string
-		sKey string
-		ts   string
-		qp   string
-		b    string
-		es   string
-		e    bool
+		name            string
+		signature       string
+		signatureHeader string
+		signatureKey    []byte
+		receivedAt      string
+		wantCode        int
 	}{
 		{
-			name: "Succesful",
-			sKey: testKey,
-			ts:   testTs,
-			qp:   testQp,
-			b:    testBody,
-			es:   testSignature,
-			e:    true,
+			name:            "valid request",
+			signature:       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
+			signatureHeader: signatureHeader,
+			signatureKey:    testSecret,
+			receivedAt:      "2021-07-05T12:00:00+02:00",
+			wantCode:        http.StatusOK,
 		},
 		{
-			name: "Wrong signature",
-			sKey: testKey,
-			ts:   testTs,
-			qp:   testQp,
-			b:    testBody,
-			es:   "LISw4Je7n0/MkYDgVSzTJm8dW6BkytKTXMZZk1IElMs=",
-			e:    false,
+			name:            "empty signature key",
+			signature:       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
+			signatureHeader: signatureHeader,
+			signatureKey:    []byte(""),
+			receivedAt:      "2021-07-05T12:00:00+02:00",
+			wantCode:        http.StatusUnauthorized,
 		},
 		{
-			name: "Empty query params and body",
-			sKey: "secret",
-			ts:   testTs,
-			qp:   "",
-			b:    "",
-			es:   "LISw4Je7n0/MkYDgVSzTJm8dW6BkytKTXMZZk1IElMs=",
-			e:    true,
+			name:            "empty signature",
+			signature:       "",
+			signatureHeader: signatureHeader,
+			signatureKey:    testSecret,
+			receivedAt:      "2021-07-05T12:00:00+02:00",
+			wantCode:        http.StatusUnauthorized,
 		},
+
 		{
-			name: "Empty query params",
-			sKey: "secret",
-			ts:   testTs,
-			qp:   "",
-			b:    testBody,
-			es:   "p2e20OtAg39DEmz1ORHpjQ556U4o1ZaH4NWbM9Q8Qjk=",
-			e:    true,
-		},
-		{
-			name: "Empty body",
-			sKey: "secret",
-			ts:   testTs,
-			qp:   testQp,
-			b:    "",
-			es:   "Tfn+nRUBsn6lQgf6IpxBMS1j9lm7XsGjt5xh47M3jCk=",
-			e:    true,
-		},
-	}
-	for _, tt := range cases {
-		v := NewValidator(tt.sKey)
-		s, err := v.calculateSignature(tt.ts, tt.qp, []byte(tt.b))
-		assert.NoError(t, err)
-		drs, _ := base64.StdEncoding.DecodeString(tt.es)
-		assert.Equal(t, tt.e, bytes.Equal(s, drs))
-	}
-}
-func TestValidTimestamp(t *testing.T) {
-	now := time.Now()
-	nowts := fmt.Sprintf("%d", now.Unix())
-	var cases = []struct {
-		name string
-		ts   string
-		e    bool
-	}{
-		{
-			name: "Succesful",
-			ts:   nowts,
-			e:    true,
-		},
-		{
-			name: "Empty time stamp",
-			ts:   "",
-			e:    false,
-		},
-		{
-			name: "Invalid time stamp",
-			ts:   "wrongTs",
-			e:    false,
-		},
-		{
-			name: "Time stamp 24 hours in the futute",
-			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, 1).Unix()),
-			e:    false,
-		},
-		{
-			name: "Time stamp 24 hours in the past",
-			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, -1).Unix()),
-			e:    false,
+			name:            "wrong signature header",
+			signature:       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
+			signatureHeader: "Wrong-Header",
+			signatureKey:    testSecret,
+			receivedAt:      "2021-07-05T12:00:00+02:00",
+			wantCode:        http.StatusUnauthorized,
 		},
 	}
 
-	for _, tt := range cases {
-		v := NewValidator(testKey)
-		r := v.validTimestamp(tt.ts)
-		assert.Equal(t, tt.e, r)
+	for _, test := range cases {
+		t.Run(test.name, func(t *testing.T) {
+			TimeFunc = func() time.Time {
+				r, _ := time.Parse(time.RFC3339, test.receivedAt)
+				return r
+			}
+
+			v := NewValidator(test.signatureKey)
+			ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}), testBaseUrl))
+			defer ts.Close()
+
+			client := &http.Client{}
+			req, _ := http.NewRequest("GET", ts.URL, nil)
+			req.Header.Set(test.signatureHeader, test.signature)
+
+			res, _ := client.Do(req)
+
+			assert.Equal(t, test.wantCode, res.StatusCode)
+
+			TimeFunc = time.Now
+		})
 	}
 }
 
 func TestValidSignature(t *testing.T) {
 	var cases = []struct {
-		name string
-		ts   string
-		qp   string
-		b    string
-		s    string
-		e    bool
+		name           string
+		requestParams  string
+		requestPayload string
+		receivedAt     string
+		signature      string
+		wantErr        string
 	}{
 		{
-			name: "succesful",
-			ts:   testTs,
-			qp:   testQp,
-			b:    testBody,
-			s:    testSignature,
-			e:    true,
+			name:       "valid with no params/body",
+			receivedAt: "2021-07-05T12:00:00+02:00",
+			signature:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
 		},
 		{
-			name: "Unorganized query params",
-			ts:   testTs,
-			qp:   "def=bar&abc=foo",
-			b:    testBody,
-			s:    testSignature,
-			e:    true,
+			name:          "valid with params and without body",
+			requestParams: "/path?bar=1&foo=2",
+			receivedAt:    "2021-07-05T12:00:00+02:00",
+			signature:     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiJjOTQ2YWY3Ny1lMTgyLTRlYWEtYjJmZi0xYTU0NWI1ZTk5MWEiLCJ1cmxfaGFzaCI6IjQxZjA1ZjBkZGQwYTIyYWIyMDlhYzQ2ZjQ3YzQ1NzJkOWNlZmEyNTdlZDc0YjI0MDA0YmFlNzUzZWNlNmMyNjAifQ.wUeGukU50HcPIr8d-zcCpttlGnPE-W57ujVb36AbAYw",
 		},
 		{
-			name: "Wrong signature received",
-			ts:   testTs,
-			qp:   testQp,
-			b:    testBody,
-			s:    "wrong signature",
-			e:    false,
+			name:           "valid with params and body",
+			requestParams:  "/path?bar=1&foo=2",
+			requestPayload: "Hello, World!",
+			receivedAt:     "2021-07-05T12:00:00+02:00",
+			signature:      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI5M2U1NTAwNi1hMGU4LTQ1MjYtYTE5MC1mYTVmZjAwZWExMTYiLCJ1cmxfaGFzaCI6IjQxZjA1ZjBkZGQwYTIyYWIyMDlhYzQ2ZjQ3YzQ1NzJkOWNlZmEyNTdlZDc0YjI0MDA0YmFlNzUzZWNlNmMyNjAiLCJwYXlsb2FkX2hhc2giOiJkZmZkNjAyMWJiMmJkNWIwYWY2NzYyOTA4MDllYzNhNTMxOTFkZDgxYzdmNzBhNGIyODY4OGEzNjIxODI5ODZmIn0.K6HyLDRdYgQBKN2tBcu0dOSxsfb_lOLaWby3un4rxIc",
+		},
+		{
+			name:       "invalid token received before it is issued",
+			receivedAt: "2021-07-05T12:00:00+02:00",
+			signature:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ4MjgwMCwiZXhwIjoxNjI1NDgyODYwLCJqdGkiOiJmOWY4YzM4Mi0yNDQ5LTQzMTEtYjcyYi0xZGY3MTY4NzkzMWUiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ._59NNTg0j5YVXCRHgyeJAj8n6rTg1gwTh_I_coe7RDQ",
+			wantErr:    "invalid jwt: iat is in the future",
+		},
+		{
+			name:       "invalid token received after it is expired",
+			receivedAt: "2021-07-05T12:00:00+02:00",
+			signature:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3NTYwMCwiZXhwIjoxNjI1NDc1NjYwLCJqdGkiOiI1ZjAyZjUyMi02MDMwLTQ2YzgtYjVhMy0wMTI0NjQ3OGQ4YmMiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.iGUCLsYVQG4iYWe2MkRoLQBBMzq7p_bLy4u0mhC3Jfc",
+			wantErr:    "invalid jwt: exp is in the past",
+		},
+		{
+			name:          "invalid token received on different URL",
+			requestParams: "/path?bar=1&foo=2",
+			receivedAt:    "2021-07-05T12:00:00+02:00",
+			signature:     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiJhNzVjOTA5Ni1lODIzLTQ0MmItODVmMi03ZDNjOWQ5YjcyNmIiLCJ1cmxfaGFzaCI6IjlmZGExZmNkYzc0YjEwMzUzNjhlNWY2NjhmNTdjOTFlOTk0MTJmZjU5Y2YwM2E0NmNlYjk1YWVhNWU2YjU4ZmQifQ.G4lpxrDOxZs75G1vIJ6J1jVbYS19tx2yq-lkIE-oETY",
+			wantErr:       "invalid jwt: url_hash is invalid",
+		},
+
+		{
+			name:           "invalid payload not match",
+			requestPayload: "Hello, World!",
+			receivedAt:     "2021-07-05T12:00:00+02:00",
+			signature:      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiIxNDUwMTUzMi05NmYyLTQ2ODQtOTgzMi02OGYwOTUxYWUzNDIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDciLCJwYXlsb2FkX2hhc2giOiIzMjRjYzA2N2IyNTdlZGEwYmNiZDljOGQ4MTgwNzdhMDlhOTU2OGMwZDRjYTA2MDM4ZGVkOGZhZGRmODEzZmQ2In0.rQqiANogDOMafgg_B6p362PuhInAro9lMm2j_vruBA0",
+			wantErr:        "invalid jwt: payload_hash is invalid",
+		},
+
+		{
+			name:       "invalid signature key",
+			receivedAt: "2021-07-05T12:00:00+02:00",
+			signature:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiIyNDNjMjdhZS0yZjAyLTQ2YTAtODg1Mi1jNjZmMzdlYTlmNDYiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ._Uwf4HMtfAT6jvbBbh85Q9TunX0QlsXoaLGKX0I4VDg",
+			wantErr:    "invalid jwt: signature is invalid",
+		},
+
+		{
+			name:       "invalid missing payload",
+			receivedAt: "2021-07-05T12:00:00+02:00",
+			signature:  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiIxNDUwMTUzMi05NmYyLTQ2ODQtOTgzMi02OGYwOTUxYWUzNDIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDciLCJwYXlsb2FkX2hhc2giOiIzMjRjYzA2N2IyNTdlZGEwYmNiZDljOGQ4MTgwNzdhMDlhOTU2OGMwZDRjYTA2MDM4ZGVkOGZhZGRmODEzZmQ2In0.rQqiANogDOMafgg_B6p362PuhInAro9lMm2j_vruBA0",
+			wantErr:    "invalid jwt: payload_hash was set; expected no payload value",
+		},
+
+		{
+			name:           "invalid unexpected payload",
+			requestPayload: "Hello, World!",
+			receivedAt:     "2021-07-05T12:00:00+02:00",
+			signature:      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
+			wantErr:        "invalid jwt: payload_hash is invalid",
 		},
 	}
 
-	for _, tt := range cases {
-		v := NewValidator(testKey)
-		ValidityWindow = time.Hour * 100000
-		r := v.validSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
-		assert.Equal(t, tt.e, r)
-	}
-}
-func TestValidate(t *testing.T) {
-	var cases = []struct {
-		name string
-		k    string
-		ts   string
-		s    string
-		sh   string
-		tsh  string
-		e    int
-	}{
-		{
-			name: "Succesful",
-			k:    testKey,
-			ts:   testTs,
-			s:    testSignature,
-			sh:   sHeader,
-			tsh:  tsHeader,
-			e:    http.StatusOK,
-		},
-		{
-			name: "NO Access key",
-			k:    "",
-			ts:   testTs,
-			s:    testSignature,
-			sh:   sHeader,
-			tsh:  tsHeader,
-			e:    http.StatusUnauthorized,
-		},
-		{
-			name: "Request with empty time stamp",
-			k:    testKey,
-			ts:   "",
-			s:    testSignature,
-			sh:   sHeader,
-			tsh:  tsHeader,
-			e:    http.StatusUnauthorized,
-		},
-		{
-			name: "Request with empty signature",
-			k:    testKey,
-			ts:   testTs,
-			s:    "",
-			sh:   sHeader,
-			tsh:  tsHeader,
-			e:    http.StatusUnauthorized,
-		},
-		{
-			name: "Request with wrong signature header",
-			k:    testKey,
-			ts:   testTs,
-			s:    testSignature,
-			sh:   "wrong-header",
-			tsh:  tsHeader,
-			e:    http.StatusUnauthorized,
-		},
-		{
-			name: "Request with wrong timestamp header",
-			k:    testKey,
-			ts:   testTs,
-			s:    testSignature,
-			sh:   sHeader,
-			tsh:  "wrong-header",
-			e:    http.StatusUnauthorized,
-		},
-	}
+	for _, test := range cases {
+		t.Run(test.name, func(t *testing.T) {
+			TimeFunc = func() time.Time {
+				r, _ := time.Parse(time.RFC3339, test.receivedAt)
+				return r
+			}
 
-	for _, tt := range cases {
-		v := NewValidator(tt.k)
-		testTime, _ := stringToTime(testTs)
-		ValidityWindow = time.Now().Add(time.Second*1).Sub(testTime) * 2
-		ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		})))
-		defer ts.Close()
-
-		client := &http.Client{}
-		req, _ := http.NewRequest("GET", ts.URL+"?"+testQp, strings.NewReader(testBody))
-		req.Header.Set(tt.sh, tt.s)
-		req.Header.Set(tt.tsh, tt.ts)
-		res, _ := client.Do(req)
-		assert.Equal(t, tt.e, res.StatusCode)
+			v := NewValidator(testSecret)
+			reqUrl := testBaseUrl + test.requestParams
+			if test.requestParams == "" {
+				reqUrl += "/"
+			}
+			err := v.ValidSignature(test.signature, reqUrl, []byte(test.requestPayload))
+			if test.wantErr == "" {
+				assert.NoError(t, err)
+				return
+			}
+			assert.EqualError(t, err, test.wantErr)
+		})
 	}
-
 }
