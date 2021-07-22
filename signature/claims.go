@@ -42,26 +42,28 @@ func (c Claims) Valid() error {
 	}
 
 	if iat := time.Unix(c.IssuedAt, int64(c.receivedTime.Nanosecond())).Add(-maxSkew); c.receivedTime.Before(iat) {
-		errs = append(errs, "iat is in the future")
+		errs = append(errs, "claim iat is in the future")
 	}
 
 	if exp := time.Unix(c.ExpirationTime, int64(c.receivedTime.Nanosecond())).Add(maxSkew); c.receivedTime.After(exp) {
-		errs = append(errs, "exp is in the past")
+		errs = append(errs, "claim exp is in the past")
 	}
 
 	if c.JWTID == "" {
-		errs = append(errs, "jti is empty or missing")
+		errs = append(errs, "claim jti is empty or missing")
 	}
 
 	if c.correctURLHash != c.URLHash {
-		errs = append(errs, "url_hash is invalid")
+		errs = append(errs, "claim url_hash is invalid")
 	}
 
 	switch {
 	case c.correctPayloadHash == "" && c.PayloadHash != "":
-		errs = append(errs, "payload_hash was set; expected no payload value")
-	case c.correctPayloadHash != "" && c.correctPayloadHash != c.PayloadHash:
-		errs = append(errs, "payload_hash is invalid")
+		errs = append(errs, "claim payload_hash is set but actual payload is missing")
+	case c.correctPayloadHash != "" && c.PayloadHash == "":
+		errs = append(errs, "claim payload_hash is not set but payload is present")
+	case c.correctPayloadHash != c.PayloadHash:
+		errs = append(errs, "claim payload_hash is invalid")
 	}
 
 	if len(errs) == 0 {
