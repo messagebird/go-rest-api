@@ -28,7 +28,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 )
 
 const signatureHeader = "MessageBird-Signature-JWT"
