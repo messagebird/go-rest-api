@@ -20,12 +20,12 @@ type Claims struct {
 	// immediately following call to Valid() by jwt-go has *all* necessary information to
 	// determine whether JWT is valid.  These fields should not be overwritten by JSON
 	// unmarshal.
-	receivedTime       time.Time `json:"-"`
-	correctPayloadHash string    `json:"-"`
-	correctURLHash     string    `json:"-"`
+	receivedTime       time.Time
+	correctPayloadHash string
+	correctURLHash     string
 
 	Issuer         string `json:"iss"`
-	IssuedAt       int64  `json:"iat"`
+	NotBefore      int64  `json:"nbf"`
 	ExpirationTime int64  `json:"exp"`
 	JWTID          string `json:"jti"`
 	URLHash        string `json:"url_hash"`
@@ -38,11 +38,11 @@ func (c Claims) Valid() error {
 	var errs []string
 
 	if c.Issuer != "MessageBird" {
-		errs = append(errs, "wrong iss")
+		errs = append(errs, "claim iss has wrong value")
 	}
 
-	if iat := time.Unix(c.IssuedAt, int64(c.receivedTime.Nanosecond())).Add(-maxSkew); c.receivedTime.Before(iat) {
-		errs = append(errs, "claim iat is in the future")
+	if iat := time.Unix(c.NotBefore, int64(c.receivedTime.Nanosecond())).Add(-maxSkew); c.receivedTime.Before(iat) {
+		errs = append(errs, "claim nbf is in the future")
 	}
 
 	if exp := time.Unix(c.ExpirationTime, int64(c.receivedTime.Nanosecond())).Add(maxSkew); c.receivedTime.After(exp) {

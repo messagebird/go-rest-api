@@ -96,7 +96,8 @@ func TestValidSignature(t *testing.T) {
 		Payload   string `json:"payload"`
 		Timestamp string `json:"timestamp"`
 		Token     string `json:"token"`
-		Outcome   string `json:"outcome"`
+		Valid     bool   `json:"valid"`
+		Reason    string `json:"reason"`
 	}
 	if err := json.Unmarshal(testData, &tcs); err != nil {
 		assert.NoError(t, err)
@@ -109,13 +110,13 @@ func TestValidSignature(t *testing.T) {
 				return r
 			}
 
-			v := NewValidator(testSecret)
+			v := NewValidator([]byte(tc.Secret))
 			err := v.ValidSignature(tc.Token, tc.Url, []byte(tc.Payload))
-			if tc.Outcome == "valid" {
+			if tc.Valid {
 				assert.NoError(t, err)
 				return
 			}
-			assert.EqualError(t, err, tc.Outcome)
+			assert.EqualError(t, err, tc.Reason)
 		})
 	}
 }
