@@ -26,7 +26,7 @@ import (
 
 const (
 	// ClientVersion is used in User-Agent request header to provide server with API level.
-	ClientVersion = "7.0.0"
+	ClientVersion = "7.1.0"
 
 	// Endpoint points you to MessageBird REST API.
 	Endpoint = "https://rest.messagebird.com"
@@ -40,7 +40,7 @@ const (
 
 var (
 	// ErrUnexpectedResponse is used when there was an internal server error and nothing can be done at this point.
-	ErrUnexpectedResponse = errors.New("The MessageBird API is currently unavailable")
+	ErrUnexpectedResponse = errors.New("the MessageBird API is currently unavailable")
 )
 
 // A Feature can be enabled

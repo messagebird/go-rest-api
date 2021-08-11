@@ -87,9 +87,13 @@ type messageRequest struct {
 const path = "messages"
 
 // Read retrieves the information of an existing Message.
-func Read(c *messagebird.Client, id string) (*Message, error) {
+func Read(id string) (*Message, error) {
+	if err := ensureClient(); err != nil {
+		return nil, err
+	}
+
 	message := &Message{}
-	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
+	if err := smsClient.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -98,8 +102,12 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 
 // Cancel sending Scheduled Sms.
 func Delete(c *messagebird.Client, id string) (*Message, error) {
+	if err := ensureClient(); err != nil {
+		return nil, err
+	}
+
 	message := &Message{}
-	if err := c.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
+	if err := smsClient.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
@@ -107,14 +115,18 @@ func Delete(c *messagebird.Client, id string) (*Message, error) {
 }
 
 // List retrieves all messages of the user represented as a MessageList object.
-func List(c *messagebird.Client, msgListParams *ListParams) (*MessageList, error) {
+func List(msgListParams *ListParams) (*MessageList, error) {
+	if err := ensureClient(); err != nil {
+		return nil, err
+	}
+
 	messageList := &MessageList{}
 	params, err := paramsForMessageList(msgListParams)
 	if err != nil {
 		return messageList, err
 	}
 
-	if err := c.Request(messageList, http.MethodGet, path+"?"+params.Encode(), nil); err != nil {
+	if err := smsClient.Request(messageList, http.MethodGet, path+"?"+params.Encode(), nil); err != nil {
 		return nil, err
 	}
 
@@ -122,14 +134,18 @@ func List(c *messagebird.Client, msgListParams *ListParams) (*MessageList, error
 }
 
 // Create creates a new message for one or more recipients.
-func Create(c *messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
+func Create(originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
+	if err := ensureClient(); err != nil {
+		return nil, err
+	}
+
 	requestData, err := requestDataForMessage(originator, recipients, body, msgParams)
 	if err != nil {
 		return nil, err
 	}
 
 	message := &Message{}
-	if err := c.Request(message, http.MethodPost, path, requestData); err != nil {
+	if err := smsClient.Request(message, http.MethodPost, path, requestData); err != nil {
 		return nil, err
 	}
 

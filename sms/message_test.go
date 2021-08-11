@@ -12,6 +12,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
+
 	mbtest.EnableServer(m)
 }
 
@@ -44,8 +45,9 @@ func assertMessageObject(t *testing.T, message *Message) {
 func TestCreate(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
-	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", nil)
+	message, err := Create("TestName", []string{"31612345678"}, "Hello World", nil)
 	assert.NoError(t, err)
 
 	assertMessageObject(t, message)
@@ -54,8 +56,9 @@ func TestCreate(t *testing.T) {
 func TestCreateError(t *testing.T) {
 	mbtest.WillReturnAccessKeyError()
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
-	_, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", nil)
+	_, err := Create("TestName", []string{"31612345678"}, "Hello World", nil)
 
 	errorResponse, ok := err.(messagebird.ErrorResponse)
 	assert.True(t, ok)
@@ -67,6 +70,7 @@ func TestCreateError(t *testing.T) {
 func TestCreateWithParams(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "messageWithParamsObject.json", http.StatusOK)
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
 	params := &Params{
 		Type:       "sms",
@@ -76,7 +80,7 @@ func TestCreateWithParams(t *testing.T) {
 		DataCoding: "unicode",
 	}
 
-	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create("TestName", []string{"31612345678"}, "Hello World", params)
 	assert.NoError(t, err)
 	assert.Equal(t, "sms", message.Type)
 	assert.Equal(t, "TestReference", message.Reference)
@@ -88,13 +92,14 @@ func TestCreateWithParams(t *testing.T) {
 func TestCreateWithBinaryType(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "binaryMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
 	params := &Params{
 		Type:        "binary",
 		TypeDetails: TypeDetails{"udh": "050003340201"},
 	}
 
-	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create("TestName", []string{"31612345678"}, "Hello World", params)
 	assert.NoError(t, err)
 	assert.Equal(t, "binary", message.Type)
 	assert.Len(t, message.TypeDetails, 1)
@@ -104,13 +109,14 @@ func TestCreateWithBinaryType(t *testing.T) {
 func TestCreateWithPremiumType(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "premiumMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
 	params := &Params{
 		Type:        "premium",
 		TypeDetails: TypeDetails{"keyword": "RESTAPI", "shortcode": 1008, "tariff": 150},
 	}
 
-	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create("TestName", []string{"31612345678"}, "Hello World", params)
 	assert.NoError(t, err)
 	assert.Equal(t, "premium", message.Type)
 	assert.Equal(t, 3, len(message.TypeDetails))
@@ -122,10 +128,11 @@ func TestCreateWithPremiumType(t *testing.T) {
 func TestCreateWithFlashType(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "flashMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
 	params := &Params{Type: "flash"}
 
-	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create("TestName", []string{"31612345678"}, "Hello World", params)
 	assert.NoError(t, err)
 	assert.Equal(t, "flash", message.Type)
 }
@@ -133,12 +140,13 @@ func TestCreateWithFlashType(t *testing.T) {
 func TestCreateWithScheduledDatetime(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "messageObjectWithCreatedDatetime.json", http.StatusOK)
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T10:03:59+00:00")
 
 	params := &Params{ScheduledDatetime: scheduledDatetime}
 
-	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	message, err := Create("TestName", []string{"31612345678"}, "Hello World", params)
 	assert.NoError(t, err)
 	assert.Equal(t, scheduledDatetime.Format(time.RFC3339), message.ScheduledDatetime.Format(time.RFC3339))
 	assert.Equal(t, 1, message.Recipients.TotalCount)
@@ -151,8 +159,9 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 func TestList(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
 	client := mbtest.Client(t)
+	RegisterClient(client)
 
-	messageList, err := List(client, nil)
+	messageList, err := List(nil)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, messageList.Offset)
 	assert.Equal(t, 20, messageList.Limit)
@@ -177,9 +186,10 @@ func TestListScheduled(t *testing.T) {
 	defer teardown()
 
 	client := mbtest.Client(t)
+	RegisterClient(client)
 	client.HTTPClient.Transport = transport
 
-	messageList, err := List(client, &ListParams{Status: "scheduled"})
+	messageList, err := List(&ListParams{Status: "scheduled"})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, messageList.Count)
 	assert.Equal(t, 1, messageList.TotalCount)
