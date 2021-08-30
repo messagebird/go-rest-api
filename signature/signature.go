@@ -1,98 +1,129 @@
 /*
 Package signature implements signature verification for MessageBird webhooks.
 
-To use define a new validator using your MessageBird Signing key. You can use the
-ValidRequest method, just pass the request and base url as parameters:
+Deprecated: package signature is no longer supported. Use package
+signature_jwt instead.
 
-    validator := signature.NewValidator([]byte("your signing key"))
-	baseUrl := "https://yourdomain.com"
-    if err := validator.ValidRequest(r, baseUrl); err != nil {
+To use define a new validator using your MessageBird Signing key.  You can use the
+ValidRequest method, just pass the request as a parameter:
+
+    validator := signature.NewValidator("your signing key")
+    if err := validator.ValidRequest(r); err != nil {
         // handle error
     }
 
 Or use the handler as a middleware for your server:
 
-	http.Handle("/path", validator.Validate(YourHandler, baseUrl))
+	http.Handle("/path", validator.Validate(YourHandler))
 
 It will reject the requests that contain invalid signatures.
+The validator uses a 5ms seconds window to accept requests as valid, to change
+this value, set the ValidityWindow to the disired duration.
+Take into account that the validity window works around the current time:
+	[now - ValidityWindow/2, now + ValidityWindow/2]
 */
 package signature
 
 import (
 	"bytes"
+	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/hex"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
-
-	"github.com/golang-jwt/jwt"
 )
 
-const signatureHeader = "MessageBird-Signature-JWT"
+const (
+	tsHeader = "MessageBird-Request-Timestamp"
+	sHeader  = "MessageBird-Signature"
+)
 
-// TimeFunc provides the current time same as time.Now but can be overridden for testing.
-var TimeFunc = time.Now
+// ValidityWindow defines the time window in which to validate a request.
+var ValidityWindow = 5 * time.Second
 
-// allowedMethods lists the signing methods that we accept.  We only allow symmetric-key
-// algorithms as our customer signing keys are currently all simple byte strings.  HMAC is
-// also the only symkey signature method that is required by the RFC7518 Section 3.1 and
-// thus should be supported by all JWT implementations.
-var allowedMethods = []string{
-	jwt.SigningMethodHS256.Name,
-	jwt.SigningMethodHS384.Name,
-	jwt.SigningMethodHS512.Name,
+// StringToTime converts from Unicode Epoch encoded timestamps to the time.Time type.
+func stringToTime(s string) (time.Time, error) {
+	sec, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return time.Unix(sec, 0), nil
 }
 
 // Validator type represents a MessageBird signature validator.
 type Validator struct {
-	SigningKey []byte // Signing Key provided by MessageBird.
+	SigningKey string // Signing Key provided by MessageBird.
 }
 
 // NewValidator returns a signature validator object.
-func NewValidator(signingKey []byte) *Validator {
+// Deprecated: Use signature_jwt.NewValidator(string) instead.
+func NewValidator(signingKey string) *Validator {
 	return &Validator{
 		SigningKey: signingKey,
 	}
 }
 
-// ValidSignature is a method that takes care of the signature validation of
-// incoming requests.
-func (v *Validator) ValidSignature(signature, url string, payload []byte) error {
-	parser := jwt.Parser{ValidMethods: allowedMethods}
-	keyFn := func(*jwt.Token) (interface{}, error) { return v.SigningKey, nil }
-
-	claims := Claims{
-		receivedTime:   TimeFunc(),
-		correctURLHash: sha256Hash([]byte(url)),
+// validTimestamp validates if the MessageBird-Request-Timestamp is a valid
+// date and if the request is older than the validator Period.
+func (v *Validator) validTimestamp(ts string) bool {
+	t, err := stringToTime(ts)
+	if err != nil {
+		return false
 	}
-	if payload != nil && len(payload) != 0 {
-		claims.correctPayloadHash = sha256Hash(payload)
-	}
+	diff := time.Now().Add(ValidityWindow / 2).Sub(t)
+	return diff < ValidityWindow && diff > 0
+}
 
-	if _, err := parser.ParseWithClaims(signature, &claims, keyFn); err != nil {
-		return fmt.Errorf("invalid jwt: %w", err)
+// calculateSignature calculates the MessageBird-Signature using HMAC_SHA_256
+// encoding and the timestamp, query params and body from the request:
+// signature = HMAC_SHA_256(
+//	TIMESTAMP + \n + QUERY_PARAMS + \n + SHA_256_SUM(BODY),
+//	signing_key)
+func (v *Validator) calculateSignature(ts, qp string, b []byte) ([]byte, error) {
+	var m bytes.Buffer
+	bh := sha256.Sum256(b)
+	fmt.Fprintf(&m, "%s\n%s\n%s", ts, qp, bh[:])
+	mac := hmac.New(sha256.New, []byte(v.SigningKey))
+	if _, err := mac.Write(m.Bytes()); err != nil {
+		return nil, err
 	}
+	return mac.Sum(nil), nil
+}
 
-	return nil
+// validSignature takes the timestamp, query params and body from the request,
+// calculates the expected signature and compares it to the one sent by MessageBird.
+func (v *Validator) validSignature(ts, rqp string, b []byte, rs string) bool {
+	uqp, err := url.Parse("?" + rqp)
+	if err != nil {
+		return false
+	}
+	es, err := v.calculateSignature(ts, uqp.Query().Encode(), b)
+	if err != nil {
+		return false
+	}
+	drs, err := base64.StdEncoding.DecodeString(rs)
+	if err != nil {
+		return false
+	}
+	return hmac.Equal(drs, es)
 }
 
 // ValidRequest is a method that takes care of the signature validation of
 // incoming requests.
-func (v *Validator) ValidRequest(r *http.Request, baseUrl string) error {
-	base, err := url.Parse(baseUrl)
-	if err != nil {
-		return fmt.Errorf("error parsing base url: %v", err)
-	}
-	signature := r.Header.Get(signatureHeader)
-	if signature == "" {
-		return fmt.Errorf("signature not found")
+// Deprecated: Use signature_jwt.Validator.ValidateSignature(*http.Request, string) instead.
+func (v *Validator) ValidRequest(r *http.Request) error {
+	ts := r.Header.Get(tsHeader)
+	rs := r.Header.Get(sHeader)
+	if ts == "" || rs == "" {
+		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	b, _ := ioutil.ReadAll(r.Body)
-	if err := v.ValidSignature(signature, base.ResolveReference(r.URL).String(), b); err != nil {
-		return fmt.Errorf("invalid signature: %s", err.Error())
+	if !v.validTimestamp(ts) || !v.validSignature(ts, r.URL.RawQuery, b, rs) {
+		return fmt.Errorf("Unknown host: %s", r.Host)
 	}
 	r.Body = ioutil.NopCloser(bytes.NewBuffer(b))
 	return nil
@@ -101,21 +132,13 @@ func (v *Validator) ValidRequest(r *http.Request, baseUrl string) error {
 // Validate is a handler wrapper that takes care of the signature validation of
 // incoming requests and rejects them if invalid or pass them on to your handler
 // otherwise.
-func (v *Validator) Validate(h http.Handler, baseUrl string) http.Handler {
+// Deprecated: Use signature_jwt.Validator.Validate(http.Handler) instead.
+func (v *Validator) Validate(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := v.ValidRequest(r, baseUrl); err != nil {
+		if err := v.ValidRequest(r); err != nil {
 			http.Error(w, "", http.StatusUnauthorized)
 			return
 		}
 		h.ServeHTTP(w, r)
 	})
-}
-
-func sha256Hash(data []byte) string {
-	if data == nil {
-		return ""
-	}
-
-	h := sha256.Sum256(data)
-	return hex.EncodeToString(h[:])
 }

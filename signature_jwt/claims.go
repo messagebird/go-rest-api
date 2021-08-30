@@ -1,4 +1,4 @@
-package signature
+package signature_jwt
 
 import (
 	"fmt"
@@ -53,7 +53,7 @@ func (c Claims) Valid() error {
 		errs = append(errs, "claim jti is empty or missing")
 	}
 
-	if c.correctURLHash != c.URLHash {
+	if c.correctURLHash != "" && c.correctURLHash != c.URLHash {
 		errs = append(errs, "claim url_hash is invalid")
 	}
 

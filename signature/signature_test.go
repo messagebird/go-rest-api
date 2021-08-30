@@ -1,122 +1,253 @@
 package signature
 
 import (
-	"encoding/json"
+	"bytes"
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 
-const testBaseUrl = "https://example.com"
+const testTs = "1544544948"
+const testQp = "abc=foo&def=bar"
+const testBody = `{"a key":"some value"}`
+const testSignature = "orb0adPhRCYND1WCAvPBr+qjm4STGtyvNDIDNBZ4Ir4="
+const testKey = "other-secret"
 
-var testSecret = []byte("hunter2")
-
-func TestValidate(t *testing.T) {
+func TestCalculateSignature(t *testing.T) {
 	var cases = []struct {
-		name            string
-		signature       string
-		signatureHeader string
-		signatureKey    []byte
-		receivedAt      string
-		wantCode        int
+		name string
+		sKey string
+		ts   string
+		qp   string
+		b    string
+		es   string
+		e    bool
 	}{
 		{
-			name:            "valid request",
-			signature:       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
-			signatureHeader: signatureHeader,
-			signatureKey:    testSecret,
-			receivedAt:      "2021-07-05T12:00:00+02:00",
-			wantCode:        http.StatusOK,
+			name: "Succesful",
+			sKey: testKey,
+			ts:   testTs,
+			qp:   testQp,
+			b:    testBody,
+			es:   testSignature,
+			e:    true,
 		},
 		{
-			name:            "empty signature key",
-			signature:       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
-			signatureHeader: signatureHeader,
-			signatureKey:    []byte(""),
-			receivedAt:      "2021-07-05T12:00:00+02:00",
-			wantCode:        http.StatusUnauthorized,
+			name: "Wrong signature",
+			sKey: testKey,
+			ts:   testTs,
+			qp:   testQp,
+			b:    testBody,
+			es:   "LISw4Je7n0/MkYDgVSzTJm8dW6BkytKTXMZZk1IElMs=",
+			e:    false,
 		},
 		{
-			name:            "empty signature",
-			signature:       "",
-			signatureHeader: signatureHeader,
-			signatureKey:    testSecret,
-			receivedAt:      "2021-07-05T12:00:00+02:00",
-			wantCode:        http.StatusUnauthorized,
+			name: "Empty query params and body",
+			sKey: "secret",
+			ts:   testTs,
+			qp:   "",
+			b:    "",
+			es:   "LISw4Je7n0/MkYDgVSzTJm8dW6BkytKTXMZZk1IElMs=",
+			e:    true,
 		},
-
 		{
-			name:            "wrong signature header",
-			signature:       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJNZXNzYWdlQmlyZCIsImlhdCI6MTYyNTQ3OTIwMCwiZXhwIjoxNjI1NDc5MjYwLCJqdGkiOiI1OWEyNDRkYy1lOWFkLTRlMjMtOTc3OC0zNzFmYWEyMzhmNzIiLCJ1cmxfaGFzaCI6IjBmMTE1ZGIwNjJiN2MwZGQwMzBiMTY4NzhjOTlkZWE1YzM1NGI0OWRjMzdiMzhlYjg4NDYxNzljNzc4M2U5ZDcifQ.SrhlKJ-ES4Dg8BBXKtop3u92Z_k4L4VjHKsyHWpweGE",
-			signatureHeader: "Wrong-Header",
-			signatureKey:    testSecret,
-			receivedAt:      "2021-07-05T12:00:00+02:00",
-			wantCode:        http.StatusUnauthorized,
+			name: "Empty query params",
+			sKey: "secret",
+			ts:   testTs,
+			qp:   "",
+			b:    testBody,
+			es:   "p2e20OtAg39DEmz1ORHpjQ556U4o1ZaH4NWbM9Q8Qjk=",
+			e:    true,
+		},
+		{
+			name: "Empty body",
+			sKey: "secret",
+			ts:   testTs,
+			qp:   testQp,
+			b:    "",
+			es:   "Tfn+nRUBsn6lQgf6IpxBMS1j9lm7XsGjt5xh47M3jCk=",
+			e:    true,
+		},
+	}
+	for _, tt := range cases {
+		v := NewValidator(tt.sKey)
+		s, err := v.calculateSignature(tt.ts, tt.qp, []byte(tt.b))
+		assert.NoError(t, err)
+		drs, _ := base64.StdEncoding.DecodeString(tt.es)
+		assert.Equal(t, tt.e, bytes.Equal(s, drs))
+	}
+}
+func TestValidTimestamp(t *testing.T) {
+	now := time.Now()
+	nowts := fmt.Sprintf("%d", now.Unix())
+	var cases = []struct {
+		name string
+		ts   string
+		e    bool
+	}{
+		{
+			name: "Succesful",
+			ts:   nowts,
+			e:    true,
+		},
+		{
+			name: "Empty time stamp",
+			ts:   "",
+			e:    false,
+		},
+		{
+			name: "Invalid time stamp",
+			ts:   "wrongTs",
+			e:    false,
+		},
+		{
+			name: "Time stamp 24 hours in the futute",
+			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, 1).Unix()),
+			e:    false,
+		},
+		{
+			name: "Time stamp 24 hours in the past",
+			ts:   fmt.Sprintf("%d", now.AddDate(0, 0, -1).Unix()),
+			e:    false,
 		},
 	}
 
-	for _, test := range cases {
-		t.Run(test.name, func(t *testing.T) {
-			TimeFunc = func() time.Time {
-				r, _ := time.Parse(time.RFC3339, test.receivedAt)
-				return r
-			}
-
-			v := NewValidator(test.signatureKey)
-			ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-			}), testBaseUrl))
-			defer ts.Close()
-
-			client := &http.Client{}
-			req, _ := http.NewRequest("GET", ts.URL, nil)
-			req.Header.Set(test.signatureHeader, test.signature)
-
-			res, _ := client.Do(req)
-
-			assert.Equal(t, test.wantCode, res.StatusCode)
-
-			TimeFunc = time.Now
-		})
+	for _, tt := range cases {
+		v := NewValidator(testKey)
+		r := v.validTimestamp(tt.ts)
+		assert.Equal(t, tt.e, r)
 	}
 }
 
 func TestValidSignature(t *testing.T) {
-	testData := mbtest.Testdata(t, "reference.json")
-
-	var tcs []struct {
-		Name      string `json:"name"`
-		Method    string `json:"method"`
-		Secret    string `json:"secret"`
-		Url       string `json:"url"`
-		Payload   string `json:"payload"`
-		Timestamp string `json:"timestamp"`
-		Token     string `json:"token"`
-		Valid     bool   `json:"valid"`
-		Reason    string `json:"reason"`
+	var cases = []struct {
+		name string
+		ts   string
+		qp   string
+		b    string
+		s    string
+		e    bool
+	}{
+		{
+			name: "succesful",
+			ts:   testTs,
+			qp:   testQp,
+			b:    testBody,
+			s:    testSignature,
+			e:    true,
+		},
+		{
+			name: "Unorganized query params",
+			ts:   testTs,
+			qp:   "def=bar&abc=foo",
+			b:    testBody,
+			s:    testSignature,
+			e:    true,
+		},
+		{
+			name: "Wrong signature received",
+			ts:   testTs,
+			qp:   testQp,
+			b:    testBody,
+			s:    "wrong signature",
+			e:    false,
+		},
 	}
-	if err := json.Unmarshal(testData, &tcs); err != nil {
-		assert.NoError(t, err)
+
+	for _, tt := range cases {
+		v := NewValidator(testKey)
+		ValidityWindow = time.Hour * 100000
+		r := v.validSignature(tt.ts, tt.qp, []byte(tt.b), tt.s)
+		assert.Equal(t, tt.e, r)
+	}
+}
+func TestValidate(t *testing.T) {
+	var cases = []struct {
+		name string
+		k    string
+		ts   string
+		s    string
+		sh   string
+		tsh  string
+		e    int
+	}{
+		{
+			name: "Succesful",
+			k:    testKey,
+			ts:   testTs,
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusOK,
+		},
+		{
+			name: "NO Access key",
+			k:    "",
+			ts:   testTs,
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
+		},
+		{
+			name: "Request with empty time stamp",
+			k:    testKey,
+			ts:   "",
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
+		},
+		{
+			name: "Request with empty signature",
+			k:    testKey,
+			ts:   testTs,
+			s:    "",
+			sh:   sHeader,
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
+		},
+		{
+			name: "Request with wrong signature header",
+			k:    testKey,
+			ts:   testTs,
+			s:    testSignature,
+			sh:   "wrong-header",
+			tsh:  tsHeader,
+			e:    http.StatusUnauthorized,
+		},
+		{
+			name: "Request with wrong timestamp header",
+			k:    testKey,
+			ts:   testTs,
+			s:    testSignature,
+			sh:   sHeader,
+			tsh:  "wrong-header",
+			e:    http.StatusUnauthorized,
+		},
 	}
 
-	for _, tc := range tcs {
-		t.Run(tc.Name, func(t *testing.T) {
-			TimeFunc = func() time.Time {
-				r, _ := time.Parse(time.RFC3339, tc.Timestamp)
-				return r
-			}
+	for _, tt := range cases {
+		v := NewValidator(tt.k)
+		testTime, _ := stringToTime(testTs)
+		ValidityWindow = time.Now().Add(time.Second*1).Sub(testTime) * 2
+		ts := httptest.NewServer(v.Validate(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})))
+		defer ts.Close()
 
-			v := NewValidator([]byte(tc.Secret))
-			err := v.ValidSignature(tc.Token, tc.Url, []byte(tc.Payload))
-			if tc.Valid {
-				assert.NoError(t, err)
-				return
-			}
-			assert.EqualError(t, err, tc.Reason)
-		})
+		client := &http.Client{}
+		req, _ := http.NewRequest("GET", ts.URL+"?"+testQp, strings.NewReader(testBody))
+		req.Header.Set(tt.sh, tt.s)
+		req.Header.Set(tt.tsh, tt.ts)
+		res, _ := client.Do(req)
+		assert.Equal(t, tt.e, res.StatusCode)
 	}
+
 }
