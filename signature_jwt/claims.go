@@ -23,6 +23,7 @@ type Claims struct {
 	receivedTime       time.Time
 	correctPayloadHash string
 	correctURLHash     string
+	skipURLValidation  bool
 
 	Issuer         string `json:"iss"`
 	NotBefore      int64  `json:"nbf"`
@@ -53,7 +54,7 @@ func (c Claims) Valid() error {
 		errs = append(errs, "claim jti is empty or missing")
 	}
 
-	if c.correctURLHash != "" && c.correctURLHash != c.URLHash {
+	if !c.skipURLValidation && c.correctURLHash != c.URLHash {
 		errs = append(errs, "claim url_hash is invalid")
 	}
 

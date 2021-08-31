@@ -110,9 +110,10 @@ func TestValidSignature(t *testing.T) {
 			}
 
 			v := NewValidator(tc.Secret)
-			_, err := v.ValidateSignature(tc.Token, tc.Url, []byte(tc.Payload))
+			claims, err := v.ValidateSignature(tc.Token, tc.Url, []byte(tc.Payload))
 			if tc.Valid {
 				assert.NoError(t, err)
+				assert.NotEmpty(t, claims)
 				return
 			}
 			assert.EqualError(t, err, tc.Reason)
