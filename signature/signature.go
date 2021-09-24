@@ -1,6 +1,9 @@
 /*
 Package signature implements signature verification for MessageBird webhooks.
 
+Deprecated: package signature is no longer supported. Use package
+signature_jwt instead.
+
 To use define a new validator using your MessageBird Signing key.  You can use the
 ValidRequest method, just pass the request as a parameter:
 
@@ -57,6 +60,7 @@ type Validator struct {
 }
 
 // NewValidator returns a signature validator object.
+// Deprecated: Use signature_jwt.NewValidator(string) instead.
 func NewValidator(signingKey string) *Validator {
 	return &Validator{
 		SigningKey: signingKey,
@@ -110,6 +114,7 @@ func (v *Validator) validSignature(ts, rqp string, b []byte, rs string) bool {
 
 // ValidRequest is a method that takes care of the signature validation of
 // incoming requests.
+// Deprecated: Use signature_jwt.Validator.ValidateSignature(*http.Request, string) instead.
 func (v *Validator) ValidRequest(r *http.Request) error {
 	ts := r.Header.Get(tsHeader)
 	rs := r.Header.Get(sHeader)
@@ -127,6 +132,7 @@ func (v *Validator) ValidRequest(r *http.Request) error {
 // Validate is a handler wrapper that takes care of the signature validation of
 // incoming requests and rejects them if invalid or pass them on to your handler
 // otherwise.
+// Deprecated: Use signature_jwt.Validator.Validate(http.Handler) instead.
 func (v *Validator) Validate(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := v.ValidRequest(r); err != nil {
