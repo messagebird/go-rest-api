@@ -11,7 +11,6 @@ import (
 
 func ExampleCallFlow() {
 	callflow := CallFlow{
-		Title: "My CallFlow",
 		Steps: []CallFlowStep{
 			&CallFlowSayStep{
 				Payload:  "Hello",
@@ -41,8 +40,7 @@ func TestCallFlowJSONMarshal(t *testing.T) {
 	refCreatedAt, _ := time.Parse(time.RFC3339, "2018-01-29T13:46:06Z")
 	refUpdatedAt, _ := time.Parse(time.RFC3339, "2018-01-30T16:00:34Z")
 	referenceCallflow := &CallFlow{
-		ID:    "id",
-		Title: "title",
+		ID: "id",
 		Steps: []CallFlowStep{
 			&CallFlowSayStep{
 				CallFlowStepBase: CallFlowStepBase{
@@ -88,7 +86,6 @@ func TestCallFlowJSONMarshal(t *testing.T) {
 func TestCallFlowJSONUnmarshal(t *testing.T) {
 	referenceJSON := `{
 		 "id": "id",
-		 "title": "title",
 		 "steps": [
 			 {
 				 "id": "1",
@@ -124,8 +121,7 @@ func TestCallFlowJSONUnmarshal(t *testing.T) {
 	refCreatedAt, _ := time.Parse(time.RFC3339, "2018-01-29T13:46:06Z")
 	refUpdatedAt, _ := time.Parse(time.RFC3339, "2018-01-30T16:00:34Z")
 	referenceCallflow := &CallFlow{
-		ID:    "id",
-		Title: "title",
+		ID: "id",
 		Steps: []CallFlowStep{
 			&CallFlowSayStep{
 				CallFlowStepBase: CallFlowStepBase{
@@ -173,7 +169,6 @@ func TestCreateCallFlow(t *testing.T) {
 	}
 
 	newCf := &CallFlow{
-		Title: "the-title",
 		Steps: []CallFlowStep{
 			&CallFlowSayStep{
 				Payload:  "Hello",
@@ -197,7 +192,6 @@ func TestCreateCallFlow(t *testing.T) {
 	}
 	err := newCf.Create(mbClient)
 	assert.NoError(t, err)
-	assert.Equal(t, "the-title", newCf.Title)
 	assert.Len(t, newCf.Steps, 3)
 }
 
@@ -208,7 +202,6 @@ func TestCallFlowByID(t *testing.T) {
 	}
 
 	newCf := &CallFlow{
-		Title: "the-title",
 		Steps: []CallFlowStep{
 			&CallFlowHangupStep{},
 		},
@@ -227,7 +220,7 @@ func TestCallFlowList(t *testing.T) {
 		t.SkipNow()
 	}
 
-	for _, c := range []string{"foo", "bar", "baz"} {
+	for _, c := range []string{"foo", "bar", ""} {
 		newCf := &CallFlow{
 			Title: c,
 			Steps: []CallFlowStep{
