@@ -26,7 +26,7 @@ import (
 
 const (
 	// ClientVersion is used in User-Agent request header to provide server with API level.
-	ClientVersion = "7.0.0"
+	ClientVersion = "7.1.0"
 
 	// Endpoint points you to MessageBird REST API.
 	Endpoint = "https://rest.messagebird.com"
