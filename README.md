@@ -127,4 +127,4 @@ If you're upgrading from older versions, please read the [Messagebird `go-rest-a
 
 License
 -------
-The MessageBird REST Client for Go is licensed under [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause). Copyright (c) 2014, 2015, MessageBird
+The MessageBird REST Client for Go is licensed under [The BSD 2-Clause License](http://opensource.org/licenses/BSD-2-Clause). Copyright (c) 2022 MessageBird
