@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
 // A CallFlow describes the flow of operations (steps) to be executed when
@@ -33,7 +33,7 @@ type CallFlow struct {
 
 type jsonCallFlow struct {
 	ID        string         `json:"id,omitempty"`
-	Title     string         `json:"title"`
+	Title     string         `json:"title,omitempty"`
 	Steps     []CallFlowStep `json:"steps"`
 	Record    bool           `json:"record"`
 	CreatedAt string         `json:"createdAt"`
