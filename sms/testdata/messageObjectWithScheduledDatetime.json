@@ -13,7 +13,8 @@
             {
                 "recipient": 31612345678,
                 "status": "scheduled",
-                "statusDatetime": null
+                "statusDatetime": null,
+                "messagePartCount": 1
             }
         ],
         "totalCount": 1,

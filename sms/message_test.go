@@ -37,8 +37,32 @@ func assertMessageObject(t *testing.T, message *Message) {
 	assert.Equal(t, 1, message.Recipients.TotalSentCount)
 	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
 	assert.Equal(t, "sent", message.Recipients.Items[0].Status)
-
+	assert.Equal(t, 1, message.Recipients.Items[0].MessagePartCount)
 	assert.Equal(t, "2015-01-05T10:02:59Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
+}
+
+func assertExtendedMessageObject(t *testing.T, message *Message) {
+	assertMessageObject(t, message)
+
+	assert.Equal(t, "Ukraine", *message.Recipients.Items[0].RecipientCountry)
+	assert.Equal(t, 380, *message.Recipients.Items[0].RecipientCountryPrefix)
+	assert.Equal(t, "life:)", *message.Recipients.Items[0].RecipientOperator)
+	assert.Equal(t, 22, *message.Recipients.Items[0].MessageLength)
+	assert.Equal(t, "successfully delivered", *message.Recipients.Items[0].StatusReason)
+	assert.Equal(t, "25506", *message.Recipients.Items[0].Mccmnc)
+	assert.Equal(t, "255", *message.Recipients.Items[0].Mcc)
+	assert.Equal(t, "06", *message.Recipients.Items[0].Mnc)
+
+	if message.Recipients.Items[0].StatusErrorCode != nil {
+		t.Errorf("Unexpected status error code: %d, expected: null", *message.Recipients.Items[0].StatusErrorCode)
+	}
+
+	if message.Recipients.Items[0].Price == nil {
+		t.Error("Unexpected price value: null, expected: {\"amount\":22,\"currency\":\"UAH\"}")
+	}
+
+	assert.Equal(t, 22, message.Recipients.Items[0].Price.Amount)
+	assert.Equal(t, "UAH", message.Recipients.Items[0].Price.Currency)
 }
 
 func TestCreate(t *testing.T) {
@@ -146,6 +170,16 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
 	assert.Equal(t, "scheduled", message.Recipients.Items[0].Status)
 	assert.Nil(t, message.Recipients.Items[0].StatusDatetime)
+}
+
+func TestRead(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "extendedMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	message, err := Read(client, "6fe65f90454aa61536e6a88b88972670")
+	assert.NoError(t, err)
+
+	assertExtendedMessageObject(t, message)
 }
 
 func TestList(t *testing.T) {
