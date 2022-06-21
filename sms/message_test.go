@@ -30,15 +30,15 @@ func assertMessageObject(t *testing.T, message *Message) {
 	assert.Equal(t, 1, message.MClass)
 	assert.Nil(t, message.ScheduledDatetime)
 
-	if message.CreatedDatetime == nil || message.CreatedDatetime.Format(time.RFC3339) != "2015-01-05T10:02:59Z" {
-		t.Errorf("Unexpected message created datetime: %s, expected: 2015-01-05T10:02:59Z", message.CreatedDatetime)
+	if message.CreatedDatetime == nil || message.CreatedDatetime.Format(time.RFC3339) != "2022-01-05T10:02:59Z" {
+		t.Errorf("Unexpected message created datetime: %s, expected: 2022-01-05T10:02:59Z", message.CreatedDatetime)
 	}
 	assert.Equal(t, 1, message.Recipients.TotalCount)
 	assert.Equal(t, 1, message.Recipients.TotalSentCount)
 	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
 	assert.Equal(t, "sent", message.Recipients.Items[0].Status)
 	assert.Equal(t, 1, message.Recipients.Items[0].MessagePartCount)
-	assert.Equal(t, "2015-01-05T10:02:59Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
+	assert.Equal(t, "2022-01-05T10:02:59Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 }
 
 func assertExtendedMessageObject(t *testing.T, message *Message) {
@@ -158,7 +158,7 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "messageObjectWithScheduledDatetime.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T10:03:59+00:00")
+	scheduledDatetime, _ := time.Parse(time.RFC3339, "2022-01-05T10:03:59+00:00")
 
 	params := &Params{ScheduledDatetime: scheduledDatetime}
 
@@ -192,6 +192,7 @@ func TestList(t *testing.T) {
 	assert.Equal(t, 20, messageList.Limit)
 	assert.Equal(t, 2, messageList.Count)
 	assert.Equal(t, 2, messageList.TotalCount)
+	assert.Equal(t, len(messageList.Items), messageList.Count)
 
 	for _, message := range messageList.Items {
 		assertMessageObject(t, &message)
@@ -215,9 +216,9 @@ func TestListScheduled(t *testing.T) {
 
 	messageList, err := List(client, &ListParams{Status: "scheduled"})
 	assert.NoError(t, err)
-	assert.Equal(t, 1, messageList.Count)
-	assert.Equal(t, 1, messageList.TotalCount)
-	assert.Len(t, messageList.Items, 1)
+	assert.Equal(t, 2, messageList.Count)
+	assert.Equal(t, 2, messageList.TotalCount)
+	assert.Equal(t, len(messageList.Items), messageList.Count)
 }
 
 func TestRequestDataForMessage(t *testing.T) {

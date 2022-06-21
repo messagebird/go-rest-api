@@ -24,7 +24,7 @@
             "datacoding": "plain",
             "mclass": 1,
             "scheduledDatetime": null,
-            "createdDatetime": "2015-01-05T10:02:59+00:00",
+            "createdDatetime": "2022-01-05T10:02:59+00:00",
             "recipients": {
                 "totalCount": 1,
                 "totalSentCount": 1,
@@ -34,8 +34,21 @@
                     {
                         "recipient": 31612345678,
                         "status": "sent",
-                        "statusDatetime": "2015-01-05T10:02:59+00:00",
-                        "messagePartCount": 1
+                        "statusDatetime": "2022-01-05T10:02:59+00:00",
+                        "messagePartCount": 1,
+                        "recipientCountry": "Ukraine",
+                        "recipientCountryPrefix": 380,
+                        "recipientOperator": "life:)",
+                        "messageLength": 22,
+                        "statusErrorCode": null,
+                        "statusReason": "successfully delivered",
+                        "price": {
+                            "amount": 22,
+                            "currency": "UAH"
+                        },
+                        "mccmnc": "25506",
+                        "mcc": "255",
+                        "mnc": "06"
                     }
                 ]
             }
@@ -54,7 +67,7 @@
             "datacoding": "plain",
             "mclass": 1,
             "scheduledDatetime": null,
-            "createdDatetime": "2015-01-05T10:02:59+00:00",
+            "createdDatetime": "2022-01-05T10:02:59+00:00",
             "recipients": {
                 "totalCount": 1,
                 "totalSentCount": 1,
@@ -64,8 +77,21 @@
                     {
                         "recipient": 31612345678,
                         "status": "sent",
-                        "statusDatetime": "2015-01-05T10:02:59+00:00",
-                        "messagePartCount": 1
+                        "statusDatetime": "2022-01-05T10:02:59+00:00",
+                        "messagePartCount": 1,
+                        "recipientCountry": "Netherlands",
+                        "recipientCountryPrefix": 31,
+                        "recipientOperator": "KPN",
+                        "messageLength": 22,
+                        "statusErrorCode": null,
+                        "statusReason": "successfully delivered",
+                        "price": {
+                            "amount": 22,
+                            "currency": "UAH"
+                        },
+                        "mccmnc": "20408",
+                        "mcc": "255",
+                        "mnc": "06"
                     }
                 ]
             }
