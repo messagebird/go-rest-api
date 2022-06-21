@@ -96,7 +96,7 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 	return message, nil
 }
 
-// Cancel sending Scheduled Sms.
+// Delete Cancel sending Scheduled Sms.
 func Delete(c *messagebird.Client, id string) (*Message, error) {
 	message := &Message{}
 	if err := c.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
