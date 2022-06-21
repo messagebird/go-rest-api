@@ -131,7 +131,7 @@ func TestCreateWithFlashType(t *testing.T) {
 }
 
 func TestCreateWithScheduledDatetime(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "messageObjectWithCreatedDatetime.json", http.StatusOK)
+	mbtest.WillReturnTestdata(t, "messageObjectWithScheduledDatetime.json", http.StatusOK)
 	client := mbtest.Client(t)
 
 	scheduledDatetime, _ := time.Parse(time.RFC3339, "2015-01-05T10:03:59+00:00")
