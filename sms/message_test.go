@@ -194,7 +194,7 @@ func TestReadScheduled(t *testing.T) {
 }
 
 func TestReadNotFound(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "readMessageNotFound.json", http.StatusNotFound)
+	mbtest.WillReturnTestdata(t, "messageNotFound.json", http.StatusNotFound)
 	client := mbtest.Client(t)
 
 	message, err := Read(client, "6fe65f90454aa61536e6a88b88972670")
@@ -267,4 +267,22 @@ func TestRequestDataForMessage(t *testing.T) {
 	assert.Equal(t, messageParams.DataCoding, request.DataCoding)
 	assert.Equal(t, messageParams.ScheduledDatetime.Format(time.RFC3339), request.ScheduledDatetime)
 	assert.True(t, request.ShortenURLs)
+}
+
+func TestDelete(t *testing.T) {
+	mbtest.WillReturnOnlyStatus(http.StatusNoContent)
+	client := mbtest.Client(t)
+
+	deleted, err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
+	assert.True(t, deleted)
+	assert.NoError(t, err)
+}
+
+func TestDeleteNotFound(t *testing.T) {
+	mbtest.WillReturnOnlyStatus(http.StatusNotFound)
+	client := mbtest.Client(t)
+
+	deleted, err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
+	assert.False(t, deleted)
+	assert.Errorf(t, err, "API errors: message not found")
 }

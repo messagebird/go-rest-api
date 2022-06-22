@@ -97,13 +97,13 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 }
 
 // Delete Cancel sending Scheduled Sms.
-func Delete(c *messagebird.Client, id string) (*Message, error) {
-	message := &Message{}
-	if err := c.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
-		return nil, err
+// Return true if have been successfully deleted.
+func Delete(c *messagebird.Client, id string) (bool, error) {
+	if err := c.Request(&Message{}, http.MethodDelete, path+"/"+id, nil); err != nil {
+		return false, err
 	}
 
-	return message, nil
+	return true, nil
 }
 
 // List retrieves all messages of the user represented as a MessageList object.
