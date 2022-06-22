@@ -15,7 +15,7 @@ func TestMain(m *testing.M) {
 	mbtest.EnableServer(m)
 }
 
-func assertMessageObject(t *testing.T, message *Message) {
+func assertMessageObject(t *testing.T, message *Message, expectedStatus string) {
 	assert.Equal(t, "6fe65f90454aa61536e6a88b88972670", message.ID)
 	assert.Equal(t, "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670", message.HRef)
 	assert.Equal(t, "mt", message.Direction)
@@ -28,21 +28,28 @@ func assertMessageObject(t *testing.T, message *Message) {
 	assert.Len(t, message.TypeDetails, 0)
 	assert.Equal(t, "plain", message.DataCoding)
 	assert.Equal(t, 1, message.MClass)
-	assert.Nil(t, message.ScheduledDatetime)
+
+	assert.Equal(t, expectedStatus, message.Recipients.Items[0].Status)
+	if expectedStatus == "scheduled" {
+		assert.NotNil(t, message.ScheduledDatetime)
+		assert.Equal(t, 0, message.Recipients.TotalSentCount)
+		assert.Nil(t, message.Recipients.Items[0].StatusDatetime)
+	} else {
+		assert.Nil(t, message.ScheduledDatetime)
+		assert.Equal(t, 1, message.Recipients.TotalSentCount)
+		assert.Equal(t, "2022-01-05T10:02:59Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
+	}
 
 	if message.CreatedDatetime == nil || message.CreatedDatetime.Format(time.RFC3339) != "2022-01-05T10:02:59Z" {
 		t.Errorf("Unexpected message created datetime: %s, expected: 2022-01-05T10:02:59Z", message.CreatedDatetime)
 	}
 	assert.Equal(t, 1, message.Recipients.TotalCount)
-	assert.Equal(t, 1, message.Recipients.TotalSentCount)
 	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
-	assert.Equal(t, "sent", message.Recipients.Items[0].Status)
 	assert.Equal(t, 1, message.Recipients.Items[0].MessagePartCount)
-	assert.Equal(t, "2022-01-05T10:02:59Z", message.Recipients.Items[0].StatusDatetime.Format(time.RFC3339))
 }
 
 func assertExtendedMessageObject(t *testing.T, message *Message) {
-	assertMessageObject(t, message)
+	assertMessageObject(t, message, "sent")
 
 	assert.Equal(t, "Ukraine", *message.Recipients.Items[0].RecipientCountry)
 	assert.Equal(t, 380, *message.Recipients.Items[0].RecipientCountryPrefix)
@@ -53,14 +60,8 @@ func assertExtendedMessageObject(t *testing.T, message *Message) {
 	assert.Equal(t, "255", *message.Recipients.Items[0].Mcc)
 	assert.Equal(t, "06", *message.Recipients.Items[0].Mnc)
 
-	if message.Recipients.Items[0].StatusErrorCode != nil {
-		t.Errorf("Unexpected status error code: %d, expected: null", *message.Recipients.Items[0].StatusErrorCode)
-	}
-
-	if message.Recipients.Items[0].Price == nil {
-		t.Error("Unexpected price value: null, expected: {\"amount\":22,\"currency\":\"UAH\"}")
-	}
-
+	assert.Nil(t, message.Recipients.Items[0].StatusErrorCode)
+	assert.NotNil(t, message.Recipients.Items[0].Price)
 	assert.Equal(t, 22, message.Recipients.Items[0].Price.Amount)
 	assert.Equal(t, "UAH", message.Recipients.Items[0].Price.Currency)
 }
@@ -72,7 +73,7 @@ func TestCreate(t *testing.T) {
 	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", nil)
 	assert.NoError(t, err)
 
-	assertMessageObject(t, message)
+	assertMessageObject(t, message, "sent")
 }
 
 func TestCreateError(t *testing.T) {
@@ -173,13 +174,32 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 }
 
 func TestRead(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "extendedMessageObject.json", http.StatusOK)
+	mbtest.WillReturnTestdata(t, "readMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
 	message, err := Read(client, "6fe65f90454aa61536e6a88b88972670")
 	assert.NoError(t, err)
 
 	assertExtendedMessageObject(t, message)
+}
+
+func TestReadScheduled(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "readScheduledMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	message, err := Read(client, "6fe65f90454aa61536e6a88b88972670")
+	assert.NoError(t, err)
+
+	assertMessageObject(t, message, "scheduled")
+}
+
+func TestReadNotFound(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "readMessageNotFound.json", http.StatusNotFound)
+	client := mbtest.Client(t)
+
+	message, err := Read(client, "6fe65f90454aa61536e6a88b88972670")
+	assert.Nil(t, message)
+	assert.Errorf(t, err, "API errors: message not found")
 }
 
 func TestList(t *testing.T) {
@@ -195,7 +215,7 @@ func TestList(t *testing.T) {
 	assert.Equal(t, len(messageList.Items), messageList.Count)
 
 	for _, message := range messageList.Items {
-		assertMessageObject(t, &message)
+		assertMessageObject(t, &message, "sent")
 	}
 }
 
