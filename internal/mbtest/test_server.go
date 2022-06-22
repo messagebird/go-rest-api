@@ -1,6 +1,7 @@
 package mbtest
 
 import (
+	"context"
 	"crypto/tls"
 	"io/ioutil"
 	"net"
@@ -109,10 +110,11 @@ func HTTPTestTransport(handler http.Handler) (*http.Transport, func()) {
 	s := httptest.NewTLSServer(handler)
 
 	transport := &http.Transport{
-		DialTLS: func(network, _ string) (net.Conn, error) {
-			return tls.Dial(network, s.Listener.Addr().String(), &tls.Config{
+		DialTLSContext: func(ctx context.Context, network, _ string) (net.Conn, error) {
+			d := &tls.Dialer{Config: &tls.Config{
 				InsecureSkipVerify: true,
-			})
+			}}
+			return d.DialContext(ctx, network, s.Listener.Addr().String())
 		},
 	}
 
