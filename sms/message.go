@@ -71,6 +71,7 @@ type messageRequest struct {
 	Originator        string      `json:"originator"`
 	Body              string      `json:"body"`
 	Recipients        []string    `json:"recipients"`
+	GroupIds          []string    `json:"groupIds"`
 	Type              string      `json:"type,omitempty"`
 	Reference         string      `json:"reference,omitempty"`
 	Validity          int         `json:"validity,omitempty"`
@@ -78,9 +79,9 @@ type messageRequest struct {
 	TypeDetails       TypeDetails `json:"typeDetails,omitempty"`
 	DataCoding        string      `json:"datacoding,omitempty"`
 	MClass            int         `json:"mclass,omitempty"`
+	ShortenURLs       bool        `json:"shortenUrls"`
 	ReportURL         string      `json:"reportUrl,omitempty"`
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
-	ShortenURLs       bool        `json:"shortenUrls"`
 }
 
 // path represents the path to the Message resource.
