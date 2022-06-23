@@ -40,7 +40,7 @@ const (
 
 var (
 	// ErrUnexpectedResponse is used when there was an internal server error and nothing can be done at this point.
-	ErrUnexpectedResponse = errors.New("The MessageBird API is currently unavailable")
+	ErrUnexpectedResponse = errors.New("the MessageBird API is currently unavailable")
 )
 
 // A Feature can be enabled

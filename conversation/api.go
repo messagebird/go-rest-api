@@ -162,10 +162,13 @@ type MessageContent struct {
 	// HSM is a highly structured message for WhatsApp. Its definition lives in
 	// hsm.go.
 	HSM *HSM `json:"hsm,omitempty"`
+
+	Interactive *WhatsAppInteractive `json:"interactive,omitempty"`
 }
 
 type Media struct {
-	URL string `json:"url"`
+	URL     string `json:"url"`
+	Caption string `json:"caption,omitempty"`
 }
 
 type Audio Media
