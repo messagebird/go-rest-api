@@ -46,6 +46,7 @@ type MessageList struct {
 
 // Params provide additional message send options and used in URL as params.
 type Params struct {
+	GroupIds          []string
 	Type              string
 	Reference         string
 	Validity          int
@@ -169,6 +170,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 		request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
 	}
 
+	request.GroupIds = params.GroupIds
 	request.Reference = params.Reference
 	request.Validity = params.Validity
 	request.Gateway = params.Gateway

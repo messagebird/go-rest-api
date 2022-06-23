@@ -261,6 +261,7 @@ func TestRequestDataForMessage(t *testing.T) {
 	assert.Equal(t, "MyBody", request.Body)
 	assert.Equal(t, messageParams.Type, request.Type)
 	assert.Equal(t, messageParams.Reference, request.Reference)
+	assert.Equal(t, messageParams.GroupIds, request.GroupIds)
 	assert.Equal(t, messageParams.Validity, request.Validity)
 	assert.Equal(t, messageParams.Gateway, request.Gateway)
 	assert.Nil(t, request.TypeDetails)
