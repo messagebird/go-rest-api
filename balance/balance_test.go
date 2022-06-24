@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"testing"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
-	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
+	messagebird "github.com/messagebird/go-rest-api/v8"
+	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v8"
 )
 
 // A Webhook is an HTTP callback to your platform. They are sent when calls are
