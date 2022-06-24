@@ -1,9 +1,9 @@
 {
     "body": "Hello World",
     "createdDatetime": "2022-01-05T10:02:59+00:00",
-    "datacoding": "unicode",
+    "datacoding": "plain",
     "direction": "mt",
-    "gateway": 10,
+    "gateway": 239,
     "href": "https://rest.messagebird.com/messages/6fe65f90454aa61536e6a88b88972670",
     "id": "6fe65f90454aa61536e6a88b88972670",
     "mclass": 1,
@@ -14,6 +14,19 @@
                 "recipient": 31612345678,
                 "status": "sent",
                 "statusDatetime": "2022-01-05T10:02:59+00:00",
+                "recipientCountry": "Ukraine",
+                "recipientCountryPrefix": 380,
+                "recipientOperator": "life:)",
+                "messageLength": 22,
+                "statusErrorCode": null,
+                "statusReason": "successfully delivered",
+                "price": {
+                    "amount": 22,
+                    "currency": "UAH"
+                },
+                "mccmnc": "25506",
+                "mcc": "255",
+                "mnc": "06",
                 "messagePartCount": 1
             }
         ],
@@ -22,9 +35,9 @@
         "totalDeliveryFailedCount": 0,
         "totalSentCount": 1
     },
-    "reference": "TestReference",
+    "reference": null,
     "scheduledDatetime": null,
     "type": "sms",
     "typeDetails": {},
-    "validity": 13
+    "validity": null
 }

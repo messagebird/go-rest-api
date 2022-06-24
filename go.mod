@@ -1,6 +1,6 @@
-module github.com/messagebird/go-rest-api/v7
+module github.com/messagebird/go-rest-api/v8
 
-go 1.14
+go 1.16
 
 require (
 	github.com/golang-jwt/jwt v3.2.1+incompatible

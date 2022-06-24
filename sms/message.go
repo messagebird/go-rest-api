@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v8"
 )
 
 // TypeDetails is a hash with extra information.
@@ -46,6 +46,7 @@ type MessageList struct {
 
 // Params provide additional message send options and used in URL as params.
 type Params struct {
+	GroupIds          []string
 	Type              string
 	Reference         string
 	Validity          int
@@ -71,6 +72,7 @@ type messageRequest struct {
 	Originator        string      `json:"originator"`
 	Body              string      `json:"body"`
 	Recipients        []string    `json:"recipients"`
+	GroupIds          []string    `json:"groupIds"`
 	Type              string      `json:"type,omitempty"`
 	Reference         string      `json:"reference,omitempty"`
 	Validity          int         `json:"validity,omitempty"`
@@ -78,9 +80,9 @@ type messageRequest struct {
 	TypeDetails       TypeDetails `json:"typeDetails,omitempty"`
 	DataCoding        string      `json:"datacoding,omitempty"`
 	MClass            int         `json:"mclass,omitempty"`
+	ShortenURLs       bool        `json:"shortenUrls"`
 	ReportURL         string      `json:"reportUrl,omitempty"`
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
-	ShortenURLs       bool        `json:"shortenUrls"`
 }
 
 // path represents the path to the Message resource.
@@ -96,14 +98,10 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 	return message, nil
 }
 
-// Cancel sending Scheduled Sms.
-func Delete(c *messagebird.Client, id string) (*Message, error) {
-	message := &Message{}
-	if err := c.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
-		return nil, err
-	}
-
-	return message, nil
+// Delete Cancel sending Scheduled Sms.
+// Return true if have been successfully deleted.
+func Delete(c *messagebird.Client, id string) error {
+	return c.Request(&Message{}, http.MethodDelete, path+"/"+id, nil)
 }
 
 // List retrieves all messages of the user represented as a MessageList object.
@@ -168,6 +166,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 		request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
 	}
 
+	request.GroupIds = params.GroupIds
 	request.Reference = params.Reference
 	request.Validity = params.Validity
 	request.Gateway = params.Gateway

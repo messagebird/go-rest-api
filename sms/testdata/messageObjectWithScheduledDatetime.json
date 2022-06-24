@@ -1,6 +1,6 @@
 {
     "body": "Hello World",
-    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "createdDatetime": "2022-01-05T10:02:59+00:00",
     "datacoding": "plain",
     "direction": "mt",
     "gateway": 239,
@@ -13,7 +13,8 @@
             {
                 "recipient": 31612345678,
                 "status": "scheduled",
-                "statusDatetime": null
+                "statusDatetime": null,
+                "messagePartCount": 1
             }
         ],
         "totalCount": 1,
@@ -22,7 +23,7 @@
         "totalSentCount": 0
     },
     "reference": null,
-    "scheduledDatetime": "2015-01-05T10:03:59+00:00",
+    "scheduledDatetime": "2022-01-05T10:03:59+00:00",
     "type": "sms",
     "typeDetails": {},
     "validity": null

@@ -1,6 +1,7 @@
 package mbtest
 
 import (
+	"context"
 	"crypto/tls"
 	"io/ioutil"
 	"net"
@@ -72,6 +73,13 @@ func WillReturn(b []byte, s int) {
 	status = s
 }
 
+// WillReturnOnlyStatus sets the response status (s) to be returned by the
+// server for incoming requests.
+func WillReturnOnlyStatus(s int) {
+	responseBody = []byte{}
+	status = s
+}
+
 // WillReturnTestdata sets the status (s) for the test server to respond with.
 // Additionally it reads the bytes from the relativePath file and returns that
 // for requests. It fails the test if the file can not be read. The path is
@@ -102,10 +110,11 @@ func HTTPTestTransport(handler http.Handler) (*http.Transport, func()) {
 	s := httptest.NewTLSServer(handler)
 
 	transport := &http.Transport{
-		DialTLS: func(network, _ string) (net.Conn, error) {
-			return tls.Dial(network, s.Listener.Addr().String(), &tls.Config{
+		DialTLSContext: func(ctx context.Context, network, _ string) (net.Conn, error) {
+			d := &tls.Dialer{Config: &tls.Config{
 				InsecureSkipVerify: true,
-			})
+			}}
+			return d.DialContext(ctx, network, s.Listener.Addr().String())
 		},
 	}
 
