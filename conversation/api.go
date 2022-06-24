@@ -163,7 +163,18 @@ type MessageContent struct {
 	// hsm.go.
 	HSM *HSM `json:"hsm,omitempty"`
 
-	Interactive *WhatsAppInteractive `json:"interactive,omitempty"`
+	Interactive     *WhatsAppInteractive `json:"interactive,omitempty"`
+	WhatsAppSticker *WhatsAppSticker     `json:"whatsappSticker,omitempty"`
+	WhatsAppOrder   *WhatsAppOrder       `json:"whatsappOrder,omitempty"`
+	WhatsAppText    *WhatsAppText        `json:"whatsappText,omitempty"`
+
+	FacebookQuickReply      *FacebookMessage `json:"facebookQuickReply,omitempty"`
+	FacebookMediaTemplate   *FacebookMessage `json:"facebookMediaTemplate,omitempty"`
+	FacebookGenericTemplate *FacebookMessage `json:"facebookGenericTemplate,omitempty"`
+
+	Email               *Email   `json:"email,omitempty"`
+	ExternalAttachments []*Media `json:"externalAttachments,omitempty"`
+	DisableUrlPreview   bool     `json:"disableUrlPreview,omitempty"`
 }
 
 type Media struct {

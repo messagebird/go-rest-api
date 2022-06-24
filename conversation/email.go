@@ -64,5 +64,5 @@ type EmailInlineImage struct {
 	Type      string `json:"type,omitempty"`
 	URL       string `json:"URL,omitempty"`
 	Length    int    `json:"length,omitempty"`
-	ContentId int    `json:"contentId,omitempty"`
+	ContentId string `json:"contentId,omitempty"`
 }
