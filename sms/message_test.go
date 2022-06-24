@@ -274,8 +274,7 @@ func TestDelete(t *testing.T) {
 	mbtest.WillReturnOnlyStatus(http.StatusNoContent)
 	client := mbtest.Client(t)
 
-	deleted, err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
-	assert.True(t, deleted)
+	err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
 	assert.NoError(t, err)
 }
 
@@ -283,7 +282,6 @@ func TestDeleteNotFound(t *testing.T) {
 	mbtest.WillReturnOnlyStatus(http.StatusNotFound)
 	client := mbtest.Client(t)
 
-	deleted, err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
-	assert.False(t, deleted)
+	err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
 	assert.Errorf(t, err, "API errors: message not found")
 }
