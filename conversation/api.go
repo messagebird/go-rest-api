@@ -124,15 +124,27 @@ const (
 type MessageStatus string
 
 const (
-	MessageStatusDeleted     MessageStatus = "deleted"
-	MessageStatusDelivered   MessageStatus = "delivered"
-	MessageStatusFailed      MessageStatus = "failed"
-	MessageStatusPending     MessageStatus = "pending"
-	MessageStatusRead        MessageStatus = "read"
-	MessageStatusReceived    MessageStatus = "received"
-	MessageStatusSent        MessageStatus = "sent"
-	MessageStatusUnsupported MessageStatus = "unsupported"
-	MessageStatusRejected    MessageStatus = "rejected"
+	MessageStatusAccepted        MessageStatus = "accepted"
+	MessageStatusPending         MessageStatus = "pending"
+	MessageStatusSent            MessageStatus = "sent"
+	MessageStatusRejected        MessageStatus = "rejected"
+	MessageStatusFailed          MessageStatus = "failed"
+	MessageStatusRead            MessageStatus = "read"
+	MessageStatusReceived        MessageStatus = "received"
+	MessageStatusDeleted         MessageStatus = "deleted"
+	MessageStatusUnknown         MessageStatus = "unknown"
+	MessageStatusTransmitted     MessageStatus = "transmitted"
+	MessageStatusDeliveryFailed  MessageStatus = "delivery_failed"
+	MessageStatusBuffered        MessageStatus = "buffered"
+	MessageStatusExpired         MessageStatus = "expired"
+	MessageStatusClicked         MessageStatus = "clicked"
+	MessageStatusOpened          MessageStatus = "opened"
+	MessageStatusBounce          MessageStatus = "bounce"
+	MessageStatusSpamComplaint   MessageStatus = "spam_complaint"
+	MessageStatusOutOfBounded    MessageStatus = "out_of_bounded"
+	MessageStatusDelayed         MessageStatus = "delayed"
+	MessageStatusListUnsubscribe MessageStatus = "list_unsubscribe"
+	MessageStatusDispatched      MessageStatus = "dispatched"
 )
 
 // MessageType indicates what kind of content a Message has, e.g. audio or
@@ -140,13 +152,26 @@ const (
 type MessageType string
 
 const (
+	MessageTypeText     MessageType = "text"
+	MessageTypeImage    MessageType = "image"
+	MessageTypeVideo    MessageType = "video"
 	MessageTypeAudio    MessageType = "audio"
 	MessageTypeFile     MessageType = "file"
-	MessageTypeHSM      MessageType = "hsm"
-	MessageTypeImage    MessageType = "image"
 	MessageTypeLocation MessageType = "location"
-	MessageTypeText     MessageType = "text"
-	MessageTypeVideo    MessageType = "video"
+	MessageTypeEvent    MessageType = "event"
+	MessageTypeRich     MessageType = "rich"
+	MessageTypeMenu     MessageType = "menu"
+	MessageTypeButtons  MessageType = "buttons"
+	MessageTypeLink     MessageType = "link"
+
+	MessageTypeHSM             MessageType = "hsm"
+	MessageTypeWhatsAppSticker MessageType = "whatsappSticker"
+	MessageTypeInteractive     MessageType = "interactive"
+	MessageTypeWhatsappOrder   MessageType = "whatsappOrder"
+	MessageTypeWhatsappText    MessageType = "whatsappText"
+
+	MessageTypeExternalAttachment MessageType = "externalAttachment"
+	MessageTypeEmail              MessageType = "email"
 )
 
 // MessageContent holds a message's actual content. Only one field can be set
