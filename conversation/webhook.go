@@ -2,6 +2,7 @@ package conversation
 
 import (
 	"net/http"
+	"time"
 
 	messagebird "github.com/messagebird/go-rest-api/v7"
 )
@@ -17,6 +18,44 @@ type WebhookUpdateRequest struct {
 	URL    string         `json:"url,omitempty"`
 	Status WebhookStatus  `json:"status,omitempty"`
 }
+
+type WebhookList struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Items      []*Webhook
+}
+
+type Webhook struct {
+	ID              string
+	ChannelID       string
+	Events          []WebhookEvent
+	URL             string
+	Status          WebhookStatus
+	CreatedDatetime *time.Time
+	UpdatedDatetime *time.Time
+}
+
+type WebhookEvent string
+
+const (
+	WebhookEventConversationCreated WebhookEvent = "conversation.created"
+	WebhookEventConversationUpdated WebhookEvent = "conversation.updated"
+	WebhookEventMessageCreated      WebhookEvent = "message.created"
+	WebhookEventMessageUpdated      WebhookEvent = "message.updated"
+)
+
+// WebhookStatus indicates what state a Webhook is in.
+// At the moment there are only 2 statuses; enabled or disabled.
+type WebhookStatus string
+
+const (
+	// WebhookStatusEnabled indictates that the webhook is enabled.
+	WebhookStatusEnabled WebhookStatus = "enabled"
+	// WebhookStatusDisabled indictates that the webhook is disabled.
+	WebhookStatusDisabled WebhookStatus = "disabled"
+)
 
 // CreateWebhook registers a webhook that is invoked when something interesting
 // happens.
@@ -36,7 +75,7 @@ func DeleteWebhook(c *messagebird.Client, id string) error {
 }
 
 // ListWebhooks gets a collection of webhooks. Pagination can be set in options.
-func ListWebhooks(c *messagebird.Client, options *ListOptions) (*WebhookList, error) {
+func ListWebhooks(c *messagebird.Client, options *ListRequestOptions) (*WebhookList, error) {
 	query := paginationQuery(options)
 
 	webhookList := &WebhookList{}

@@ -12,8 +12,9 @@ func TestCreateMessage(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusCreated)
 	client := mbtest.Client(t)
 
-	message, err := CreateMessage(client, "convid", &MessageCreateRequest{
-		ChannelID: "chid",
+	message, err := SendMessage(client, &SendMessageRequest{
+		To:   "+31624971134",
+		From: "MessageBird",
 		Content: &MessageContent{
 			Text: "Hello world",
 		},
@@ -31,7 +32,7 @@ func TestListMessages(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		messageList, err := ListMessages(client, "convid", &ListOptions{Limit: 20, Offset: 2})
+		messageList, err := ListMessages(client, "convid", &ListRequestOptions{Limit: 20, Offset: 2})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 2, messageList.Offset)

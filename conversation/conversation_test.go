@@ -18,7 +18,7 @@ func TestList(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "conversationListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		convList, err := List(client, &ListOptions{10, 20})
+		convList, err := List(client, &ListRequestOptions{10, 20})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 20, convList.Offset)
@@ -158,6 +158,24 @@ func TestStartText(t *testing.T) {
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/start")
 	mbtest.AssertTestdata(t, "conversationStartTextRequest.json", mbtest.Request.Body)
+}
+
+func TestReply(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusCreated)
+	client := mbtest.Client(t)
+
+	message, err := Reply(client, "convid", &ReplyRequest{
+		ChannelID: "chid",
+		Content: &MessageContent{
+			Text: "Hello world",
+		},
+		Type: MessageTypeText,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "mesid", message.ID)
+
+	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/convid/messages")
+	mbtest.AssertTestdata(t, "messageCreateRequest.json", mbtest.Request.Body)
 }
 
 func TestUpdate(t *testing.T) {

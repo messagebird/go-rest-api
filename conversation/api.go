@@ -1,13 +1,10 @@
 package conversation
 
 import (
-	"encoding/json"
 	"fmt"
+	messagebird "github.com/messagebird/go-rest-api/v7"
 	"net/url"
 	"strconv"
-	"time"
-
-	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
 const (
@@ -25,235 +22,18 @@ const (
 	// and path.
 	messagesPath = "messages"
 
+	// messagesPath is the path for the Message resource, relative to apiRoot
+	// and path.
+	sendMessage = "send"
+
 	// webhooksPath is the path for the Webhook resource, relative to apiRoot.
 	webhooksPath = "webhooks"
 )
 
-type ConversationList struct {
-	Offset     int
-	Limit      int
-	Count      int
-	TotalCount int
-	Items      []*Conversation
+// ListRequestOptions can be used to set pagination options in List().
+type ListRequestOptions struct {
+	Limit, Offset int
 }
-
-type Conversation struct {
-	ID                   string
-	ContactID            string
-	Contact              *Contact
-	LastUsedChannelID    string
-	Channels             []*Channel
-	Messages             *MessagesCount
-	Status               ConversationStatus
-	CreatedDatetime      time.Time
-	UpdatedDatetime      *time.Time
-	LastReceivedDatetime *time.Time
-}
-
-type Contact struct {
-	ID            string
-	Href          string
-	MSISDN        string
-	FirstName     string
-	LastName      string
-	CustomDetails map[string]interface{}
-	CreatedAt     *time.Time
-	UpdatedAt     *time.Time
-}
-
-type Channel struct {
-	ID              string
-	Name            string
-	PlatformID      string
-	Status          string
-	CreatedDatetime *time.Time
-	UpdatedDatetime *time.Time
-}
-
-type MessagesCount struct {
-	HRef       string
-	TotalCount int
-}
-
-// ConversationStatus indicates what state a Conversation is in.
-type ConversationStatus string
-
-const (
-	// ConversationStatusActive is returned when the Conversation is active.
-	// Only one active conversation can ever exist for a given contact.
-	ConversationStatusActive ConversationStatus = "active"
-
-	// ConversationStatusArchived is returned when the Conversation is
-	// archived. When this is the case, a new Conversation is created when a
-	// message is received from a contact.
-	ConversationStatusArchived ConversationStatus = "archived"
-)
-
-type MessageList struct {
-	Offset     int
-	Limit      int
-	Count      int
-	TotalCount int
-	Items      []*Message
-}
-
-type Message struct {
-	ID              string
-	ConversationID  string
-	ChannelID       string
-	Direction       MessageDirection
-	Status          MessageStatus
-	Type            MessageType
-	Content         MessageContent
-	CreatedDatetime *time.Time
-	UpdatedDatetime *time.Time
-}
-
-type MessageDirection string
-
-const (
-	// MessageDirectionReceived indicates an inbound message received from the customer.
-	MessageDirectionReceived MessageDirection = "received"
-
-	// MessageDirectionSent indicates an outbound message sent from the API.
-	MessageDirectionSent MessageDirection = "sent"
-)
-
-// MessageStatus is a field set by the API. It indicates what the state of the
-// message is, e.g. whether it has been successfully delivered or read.
-type MessageStatus string
-
-const (
-	MessageStatusAccepted        MessageStatus = "accepted"
-	MessageStatusPending         MessageStatus = "pending"
-	MessageStatusSent            MessageStatus = "sent"
-	MessageStatusRejected        MessageStatus = "rejected"
-	MessageStatusFailed          MessageStatus = "failed"
-	MessageStatusRead            MessageStatus = "read"
-	MessageStatusReceived        MessageStatus = "received"
-	MessageStatusDeleted         MessageStatus = "deleted"
-	MessageStatusUnknown         MessageStatus = "unknown"
-	MessageStatusTransmitted     MessageStatus = "transmitted"
-	MessageStatusDeliveryFailed  MessageStatus = "delivery_failed"
-	MessageStatusBuffered        MessageStatus = "buffered"
-	MessageStatusExpired         MessageStatus = "expired"
-	MessageStatusClicked         MessageStatus = "clicked"
-	MessageStatusOpened          MessageStatus = "opened"
-	MessageStatusBounce          MessageStatus = "bounce"
-	MessageStatusSpamComplaint   MessageStatus = "spam_complaint"
-	MessageStatusOutOfBounded    MessageStatus = "out_of_bounded"
-	MessageStatusDelayed         MessageStatus = "delayed"
-	MessageStatusListUnsubscribe MessageStatus = "list_unsubscribe"
-	MessageStatusDispatched      MessageStatus = "dispatched"
-)
-
-// MessageType indicates what kind of content a Message has, e.g. audio or
-// text.
-type MessageType string
-
-const (
-	MessageTypeText     MessageType = "text"
-	MessageTypeImage    MessageType = "image"
-	MessageTypeVideo    MessageType = "video"
-	MessageTypeAudio    MessageType = "audio"
-	MessageTypeFile     MessageType = "file"
-	MessageTypeLocation MessageType = "location"
-	MessageTypeEvent    MessageType = "event"
-	MessageTypeRich     MessageType = "rich"
-	MessageTypeMenu     MessageType = "menu"
-	MessageTypeButtons  MessageType = "buttons"
-	MessageTypeLink     MessageType = "link"
-
-	MessageTypeHSM             MessageType = "hsm"
-	MessageTypeWhatsAppSticker MessageType = "whatsappSticker"
-	MessageTypeInteractive     MessageType = "interactive"
-	MessageTypeWhatsappOrder   MessageType = "whatsappOrder"
-	MessageTypeWhatsappText    MessageType = "whatsappText"
-
-	MessageTypeExternalAttachment MessageType = "externalAttachment"
-	MessageTypeEmail              MessageType = "email"
-)
-
-// MessageContent holds a message's actual content. Only one field can be set
-// per request.
-type MessageContent struct {
-	Audio    *Audio    `json:"audio,omitempty"`
-	File     *File     `json:"file,omitempty"`
-	Image    *Image    `json:"image,omitempty"`
-	Location *Location `json:"location,omitempty"`
-	Video    *Video    `json:"video,omitempty"`
-	Text     string    `json:"text,omitempty"`
-
-	// HSM is a highly structured message for WhatsApp. Its definition lives in
-	// hsm.go.
-	HSM *HSM `json:"hsm,omitempty"`
-
-	Interactive     *WhatsAppInteractive `json:"interactive,omitempty"`
-	WhatsAppSticker *WhatsAppSticker     `json:"whatsappSticker,omitempty"`
-	WhatsAppOrder   *WhatsAppOrder       `json:"whatsappOrder,omitempty"`
-	WhatsAppText    *WhatsAppText        `json:"whatsappText,omitempty"`
-
-	FacebookQuickReply      *FacebookMessage `json:"facebookQuickReply,omitempty"`
-	FacebookMediaTemplate   *FacebookMessage `json:"facebookMediaTemplate,omitempty"`
-	FacebookGenericTemplate *FacebookMessage `json:"facebookGenericTemplate,omitempty"`
-
-	Email               *Email   `json:"email,omitempty"`
-	ExternalAttachments []*Media `json:"externalAttachments,omitempty"`
-	DisableUrlPreview   bool     `json:"disableUrlPreview,omitempty"`
-}
-
-type Media struct {
-	URL     string `json:"url"`
-	Caption string `json:"caption,omitempty"`
-}
-
-type Audio Media
-type File Media
-type Image Media
-type Video Media
-
-type Location struct {
-	Latitude  float32 `json:"latitude"`
-	Longitude float32 `json:"longitude"`
-}
-
-type WebhookList struct {
-	Offset     int
-	Limit      int
-	Count      int
-	TotalCount int
-	Items      []*Webhook
-}
-
-type Webhook struct {
-	ID              string
-	ChannelID       string
-	Events          []WebhookEvent
-	URL             string
-	Status          WebhookStatus
-	CreatedDatetime *time.Time
-	UpdatedDatetime *time.Time
-}
-
-type WebhookEvent string
-
-const (
-	WebhookEventConversationCreated WebhookEvent = "conversation.created"
-	WebhookEventConversationUpdated WebhookEvent = "conversation.updated"
-	WebhookEventMessageCreated      WebhookEvent = "message.created"
-	WebhookEventMessageUpdated      WebhookEvent = "message.updated"
-)
-
-// WebhookStatus indicates what state a Webhook is in.
-// At the moment there are only 2 statuses; enabled or disabled.
-type WebhookStatus string
-
-const (
-	// WebhookStatusEnabled indictates that the webhook is enabled.
-	WebhookStatusEnabled WebhookStatus = "enabled"
-	// WebhookStatusDisabled indictates that the webhook is disabled.
-	WebhookStatusDisabled WebhookStatus = "disabled"
-)
 
 // request does the exact same thing as Client.Request. It does, however,
 // prefix the path with the Conversation API's root. This ensures the client
@@ -269,7 +49,7 @@ func request(c *messagebird.Client, v interface{}, method, path string, data int
 }
 
 // paginationQuery builds the query string for paginated endpoints.
-func paginationQuery(options *ListOptions) string {
+func paginationQuery(options *ListRequestOptions) string {
 	if options == nil {
 		return ""
 	}
@@ -279,48 +59,4 @@ func paginationQuery(options *ListOptions) string {
 	query.Set("offset", strconv.Itoa(options.Offset))
 
 	return query.Encode()
-}
-
-// UnmarshalJSON is used to unmarshal the MSISDN to a string rather than an
-// int64. The API returns integers, but this client always uses strings.
-// Exposing a json.Number doesn't seem nice.
-func (c *Contact) UnmarshalJSON(data []byte) error {
-	target := struct {
-		ID            string
-		Href          string
-		MSISDN        json.Number
-		FirstName     string
-		LastName      string
-		CustomDetails map[string]interface{}
-		CreatedAt     *time.Time
-		UpdatedAt     *time.Time
-	}{}
-
-	if err := json.Unmarshal(data, &target); err != nil {
-		return err
-	}
-
-	// In many cases, the CustomDetails will contain the user ID. As
-	// CustomDetails has interface{} values, these are unmarshalled as floats.
-	// Convert them to int64.
-	// Map key is not a typo: API returns userId and not userID.
-	if val, ok := target.CustomDetails["userId"]; ok {
-		var userID float64
-		if userID, ok = val.(float64); ok {
-			target.CustomDetails["userId"] = int64(userID)
-		}
-	}
-
-	*c = Contact{
-		target.ID,
-		target.Href,
-		target.MSISDN.String(),
-		target.FirstName,
-		target.LastName,
-		target.CustomDetails,
-		target.CreatedAt,
-		target.UpdatedAt,
-	}
-
-	return nil
 }
