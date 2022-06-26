@@ -8,15 +8,27 @@ import (
 )
 
 type WebhookCreateRequest struct {
-	ChannelID string         `json:"channelId"`
-	Events    []WebhookEvent `json:"events"`
-	URL       string         `json:"url"`
+	ChannelID string           `json:"channelId,omitempty"`
+	Events    []WebhookEvent   `json:"events"`
+	URL       string           `json:"url"`
+	Settings  *WebhookSettings `json:"settings,omitempty"`
+}
+
+type WebhookSettings struct {
+	ExpectedHttpCode string                 `json:"expected_http_code"`
+	Headers          map[string]interface{} `json:"headers"`
+	Username         string                 `json:"username"`
+	Password         string                 `json:"password"`
+	QueryParams      string                 `json:"query_params"`
+	Retry            int                    `json:"retry"`
+	Timeout          int                    `json:"timeout"`
 }
 
 type WebhookUpdateRequest struct {
-	Events []WebhookEvent `json:"events,omitempty"`
-	URL    string         `json:"url,omitempty"`
-	Status WebhookStatus  `json:"status,omitempty"`
+	Events   []WebhookEvent   `json:"events,omitempty"`
+	URL      string           `json:"url,omitempty"`
+	Status   WebhookStatus    `json:"status,omitempty"`
+	Settings *WebhookSettings `json:"settings,omitempty"`
 }
 
 type WebhookList struct {
@@ -35,22 +47,20 @@ type Webhook struct {
 	Status          WebhookStatus
 	CreatedDatetime *time.Time
 	UpdatedDatetime *time.Time
+	Settings        *WebhookSettings
 }
 
 type WebhookEvent string
-
-const (
-	WebhookEventConversationCreated WebhookEvent = "conversation.created"
-	WebhookEventConversationUpdated WebhookEvent = "conversation.updated"
-	WebhookEventMessageCreated      WebhookEvent = "message.created"
-	WebhookEventMessageUpdated      WebhookEvent = "message.updated"
-)
 
 // WebhookStatus indicates what state a Webhook is in.
 // At the moment there are only 2 statuses; enabled or disabled.
 type WebhookStatus string
 
 const (
+	WebhookEventConversationCreated WebhookEvent = "conversation.created"
+	WebhookEventConversationUpdated WebhookEvent = "conversation.updated"
+	WebhookEventMessageCreated      WebhookEvent = "message.created"
+	WebhookEventMessageUpdated      WebhookEvent = "message.updated"
 	// WebhookStatusEnabled indictates that the webhook is enabled.
 	WebhookStatusEnabled WebhookStatus = "enabled"
 	// WebhookStatusDisabled indictates that the webhook is disabled.
@@ -75,7 +85,7 @@ func DeleteWebhook(c *messagebird.Client, id string) error {
 }
 
 // ListWebhooks gets a collection of webhooks. Pagination can be set in options.
-func ListWebhooks(c *messagebird.Client, options *ListRequestOptions) (*WebhookList, error) {
+func ListWebhooks(c *messagebird.Client, options *PaginationRequest) (*WebhookList, error) {
 	query := paginationQuery(options)
 
 	webhookList := &WebhookList{}

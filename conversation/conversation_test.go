@@ -18,7 +18,7 @@ func TestList(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "conversationListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		convList, err := List(client, &ListRequestOptions{10, 20})
+		convList, err := List(client, &PaginationRequest{10, 20})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 20, convList.Offset)

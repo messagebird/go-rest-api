@@ -18,21 +18,42 @@ const (
 	// path is the path for the Conversation resource, relative to apiRoot.
 	path = "conversations"
 
+	// startConversationPath is the path for starting new conversation
+	startConversationPath = "start"
+
+	// contactPath is the path for fetching a collection of conversations by contact ID
+	contactPath = "contact"
+
 	// messagesPath is the path for the Message resource, relative to apiRoot
 	// and path.
 	messagesPath = "messages"
 
-	// messagesPath is the path for the Message resource, relative to apiRoot
-	// and path.
-	sendMessage = "send"
+	// sendMessagePath is the path for creating the Message resource relative to apiRoot
+	sendMessagePath = "send"
 
 	// webhooksPath is the path for the Webhook resource, relative to apiRoot.
 	webhooksPath = "webhooks"
 )
 
-// ListRequestOptions can be used to set pagination options in List().
-type ListRequestOptions struct {
+type GetRequest interface {
+	GetParams() string
+}
+
+// PaginationRequest can be used to set pagination options in List().
+type PaginationRequest struct {
 	Limit, Offset int
+}
+
+func (lro *PaginationRequest) GetParams() string {
+	if lro == nil {
+		return ""
+	}
+
+	query := url.Values{}
+	query.Set("limit", strconv.Itoa(lro.Limit))
+	query.Set("offset", strconv.Itoa(lro.Offset))
+
+	return query.Encode()
 }
 
 // request does the exact same thing as Client.Request. It does, however,
@@ -49,7 +70,7 @@ func request(c *messagebird.Client, v interface{}, method, path string, data int
 }
 
 // paginationQuery builds the query string for paginated endpoints.
-func paginationQuery(options *ListRequestOptions) string {
+func paginationQuery(options *PaginationRequest) string {
 	if options == nil {
 		return ""
 	}

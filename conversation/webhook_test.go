@@ -42,7 +42,7 @@ func TestListWebhooks(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "webhookListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		webhookList, err := ListWebhooks(client, &ListRequestOptions{Limit: 20, Offset: 2})
+		webhookList, err := ListWebhooks(client, &PaginationRequest{Limit: 20, Offset: 2})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, webhookList.TotalCount)

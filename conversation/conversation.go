@@ -3,6 +3,8 @@ package conversation
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api/v7"
@@ -23,13 +25,14 @@ type Conversation struct {
 	ID                   string
 	ContactID            string
 	Contact              *Contact
-	LastUsedChannelID    string
 	Channels             []*Channel
-	Messages             *MessagesCount
 	Status               ConversationStatus
 	CreatedDatetime      time.Time
 	UpdatedDatetime      *time.Time
 	LastReceivedDatetime *time.Time
+	LastUsedChannelID    string
+	lastUsedPlatformId   Platform
+	Messages             *MessagesCount
 }
 
 type Channel struct {
@@ -42,12 +45,15 @@ type Channel struct {
 }
 
 type MessagesCount struct {
-	HRef       string
-	TotalCount int
+	HRef          string
+	TotalCount    int
+	LastMessageId string
 }
 
 // ConversationStatus indicates what state a Conversation is in.
 type ConversationStatus string
+
+type Platform string
 
 type ConversationList struct {
 	Offset     int
@@ -55,6 +61,14 @@ type ConversationList struct {
 	Count      int
 	TotalCount int
 	Items      []*Conversation
+}
+
+type ConversationByContactList struct {
+	Offset     int
+	Limit      int
+	Count      int
+	TotalCount int
+	Items      []*string // array of conversation IDs
 }
 
 // StartRequest contains the request data for the Start endpoint.
@@ -85,29 +99,85 @@ type ReplyRequest struct {
 	TTL       string                 `json:"ttl,omitempty"`
 }
 
-type Fallback struct {
-	From  string `json:"from"`
-	After string `json:"after"`
-}
-
 // UpdateRequest contains the request data for the Update endpoint.
 type UpdateRequest struct {
 	Status ConversationStatus `json:"status"`
 }
 
-// DefaultListOptions provide a reasonable default for paginated endpoints.
-var DefaultListOptions = &ListRequestOptions{10, 0}
+// ListRequest retrieves all conversations sorted by the lastReceivedDatetime field
+// so that all conversations with new messages appear first.
+type ListRequest struct {
+	PaginationRequest
+	Ids    string
+	Status *ConversationStatus
+}
+
+func (lr *ListRequest) GetParams() string {
+	if lr == nil {
+		return ""
+	}
+
+	query := url.Values{}
+
+	query.Set("limit", strconv.Itoa(lr.Limit))
+	query.Set("offset", strconv.Itoa(lr.Offset))
+
+	if len(lr.Ids) > 0 {
+		query.Set("ids", lr.Ids)
+	}
+	if lr.Status != nil {
+		query.Set("status", string(*lr.Status))
+	}
+
+	return query.Encode()
+}
+
+type ListByContactRequest struct {
+	PaginationRequest
+	Id     string
+	Status *ConversationStatus
+}
+
+func (lr *ListByContactRequest) GetParams() string {
+	if lr == nil {
+		return ""
+	}
+
+	query := url.Values{}
+
+	query.Set("limit", strconv.Itoa(lr.Limit))
+	query.Set("offset", strconv.Itoa(lr.Offset))
+
+	if len(lr.Id) > 0 {
+		query.Set("id", lr.Id)
+	}
+	if lr.Status != nil {
+		query.Set("status", string(*lr.Status))
+	}
+
+	return query.Encode()
+}
 
 // List gets a collection of Conversations. Pagination can be set in options.
-func List(c *messagebird.Client, options *ListRequestOptions) (*ConversationList, error) {
-	query := paginationQuery(options)
-
+func List(c *messagebird.Client, options *ListRequest) (*ConversationList, error) {
 	convList := &ConversationList{}
-	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, query), nil); err != nil {
+	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, options.GetParams()), nil); err != nil {
 		return nil, err
 	}
 
 	return convList, nil
+}
+
+// ListByContact fetches a collection of Conversations of a specific MessageBird contact ID.
+func ListByContact(c *messagebird.Client, contactId string, options *PaginationRequest) (*ConversationByContactList, error) {
+	reqPath := fmt.Sprintf("%s/%s/%s?%s", path, contactPath, contactId, options.GetParams())
+
+	conv := &ConversationByContactList{}
+	if err := request(c, conv, http.MethodGet, reqPath, nil); err != nil {
+		return nil, err
+	}
+
+	return conv, nil
 }
 
 // Read fetches a single Conversation based on its ID.
@@ -124,7 +194,7 @@ func Read(c *messagebird.Client, id string) (*Conversation, error) {
 // conversation exists for the recipient, it is resumed.
 func Start(c *messagebird.Client, req *StartRequest) (*Conversation, error) {
 	conv := &Conversation{}
-	if err := request(c, conv, http.MethodPost, path+"/start", req); err != nil {
+	if err := request(c, conv, http.MethodPost, path+"/"+startConversationPath, req); err != nil {
 		return nil, err
 	}
 

@@ -3,6 +3,8 @@ package conversation
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api/v7"
@@ -85,7 +87,7 @@ type Message struct {
 	ChannelID       string
 	Platform        string
 	To              MessageRecipient
-	from            string
+	From            string
 	Direction       MessageDirection
 	Status          MessageStatus
 	Type            MessageType
@@ -141,6 +143,11 @@ type Location struct {
 	Longitude float32 `json:"longitude"`
 }
 
+type Fallback struct {
+	From  string `json:"from"`
+	After string `json:"after"`
+}
+
 type MessageList struct {
 	Offset     int
 	Limit      int
@@ -163,23 +170,72 @@ type SendMessageRequest struct {
 	TTL       string                 `json:"ttl,omitempty"`
 }
 
+type ListConversationMessagesRequest struct {
+	PaginationRequest
+	ExcludePlatforms string
+}
+
+func (lr *ListConversationMessagesRequest) GetParams() string {
+	if lr == nil {
+		return ""
+	}
+
+	query := url.Values{}
+
+	query.Set("limit", strconv.Itoa(lr.Limit))
+	query.Set("offset", strconv.Itoa(lr.Offset))
+	query.Set("excludePlatforms", lr.ExcludePlatforms)
+
+	return query.Encode()
+}
+
+type ListMessagesRequest struct {
+	Ids  string
+	From *time.Time
+}
+
+func (lr *ListMessagesRequest) GetParams() string {
+	if lr == nil {
+		return ""
+	}
+
+	query := url.Values{}
+
+	query.Set("ids", lr.Ids)
+	query.Set("ids", lr.From.Format(time.RFC3339))
+
+	return query.Encode()
+}
+
 // SendMessage send a message to a specific recipient in a specific platform.
 // If an active conversation already exists for the recipient, the conversation will be resumed.
 // In case there's no active conversation a new one is created.
 func SendMessage(c *messagebird.Client, options *SendMessageRequest) (*Message, error) {
 	message := &Message{}
-	if err := request(c, message, http.MethodPost, sendMessage, options); err != nil {
+	if err := request(c, message, http.MethodPost, sendMessagePath, options); err != nil {
 		return nil, err
 	}
 
 	return message, nil
 }
 
-// ListMessages gets a collection of messages from a conversation. Pagination
-// can be set in the options.
-func ListMessages(c *messagebird.Client, conversationID string, options *ListRequestOptions) (*MessageList, error) {
-	query := paginationQuery(options)
-	uri := fmt.Sprintf("%s/%s/%s?%s", path, conversationID, messagesPath, query)
+// ListConversationMessages gets a collection of messages from a conversation.
+// Pagination can be set in the options.
+func ListConversationMessages(c *messagebird.Client, conversationID string, options *ListConversationMessagesRequest) (*MessageList, error) {
+	uri := fmt.Sprintf("%s/%s/%s?%s", path, conversationID, messagesPath, options.GetParams())
+
+	messageList := &MessageList{}
+	if err := request(c, messageList, http.MethodGet, uri, nil); err != nil {
+		return nil, err
+	}
+
+	return messageList, nil
+}
+
+// ListMessages gets a collection of messages from a conversation.
+// Pagination can be set in the options.
+func ListMessages(c *messagebird.Client, options *ListMessagesRequest) (*MessageList, error) {
+	uri := fmt.Sprintf("%s/%s?%s", path, messagesPath, options.GetParams())
 
 	messageList := &MessageList{}
 	if err := request(c, messageList, http.MethodGet, uri, nil); err != nil {
