@@ -51,6 +51,13 @@ const (
 	FeatureConversationsAPIWhatsAppSandbox Feature = iota
 )
 
+type ClientInterface interface {
+	EnableFeatures(feature Feature)
+	DisableFeatures(feature Feature)
+	IsFeatureEnabled(feature Feature) bool
+	Request(v interface{}, method, path string, data interface{}) error
+}
+
 // Client is used to access API with a given key.
 // Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
 type Client struct {

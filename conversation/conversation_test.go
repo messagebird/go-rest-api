@@ -9,16 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMain(m *testing.M) {
-	mbtest.EnableServer(m)
-}
-
 func TestList(t *testing.T) {
 	t.Run("limit_offset", func(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "conversationListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		convList, err := List(client, &PaginationRequest{10, 20})
+		convList, err := List(client, &ListRequest{PaginationRequest{Limit: 10, Offset: 20}, "", nil})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 20, convList.Offset)

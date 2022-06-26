@@ -8,23 +8,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateMessage(t *testing.T) {
-	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusCreated)
+func TestSendMessage(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "messageSendResponse.json", http.StatusAccepted)
 	client := mbtest.Client(t)
 
 	message, err := SendMessage(client, &SendMessageRequest{
 		To:   "+31624971134",
 		From: "MessageBird",
+		Type: MessageTypeText,
 		Content: &MessageContent{
 			Text: "Hello world",
 		},
-		Type: MessageTypeText,
+		ReportUrl: "https://myreport.site",
+		Source:    map[string]interface{}{"name": "Valera"},
 	})
 	assert.NoError(t, err)
-	assert.Equal(t, "mesid", message.ID)
+	assert.Equal(t, "2e15efafec384e1c82e9842075e87beb", message.ID)
+	assert.Equal(t, MessageStatusAccepted, message.Status)
 
-	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/convid/messages")
-	mbtest.AssertTestdata(t, "messageCreateRequest.json", mbtest.Request.Body)
+	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/send")
 }
 
 func TestListMessages(t *testing.T) {
@@ -32,7 +34,7 @@ func TestListMessages(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		messageList, err := ListMessages(client, "convid", &PaginationRequest{Limit: 20, Offset: 2})
+		messageList, err := ListMessages(client, &ListMessagesRequest{Ids: "123,456"})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 2, messageList.Offset)
@@ -51,7 +53,7 @@ func TestListMessages(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "allMessageListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		messageList, err := ListMessages(client, "convid", nil)
+		messageList, err := ListMessages(client, nil)
 		assert.NoError(t, err)
 
 		assert.Equal(t, 10, messageList.Limit)

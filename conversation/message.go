@@ -210,7 +210,7 @@ func (lr *ListMessagesRequest) GetParams() string {
 // SendMessage send a message to a specific recipient in a specific platform.
 // If an active conversation already exists for the recipient, the conversation will be resumed.
 // In case there's no active conversation a new one is created.
-func SendMessage(c *messagebird.Client, options *SendMessageRequest) (*Message, error) {
+func SendMessage(c messagebird.ClientInterface, options *SendMessageRequest) (*Message, error) {
 	message := &Message{}
 	if err := request(c, message, http.MethodPost, sendMessagePath, options); err != nil {
 		return nil, err
@@ -221,7 +221,7 @@ func SendMessage(c *messagebird.Client, options *SendMessageRequest) (*Message, 
 
 // ListConversationMessages gets a collection of messages from a conversation.
 // Pagination can be set in the options.
-func ListConversationMessages(c *messagebird.Client, conversationID string, options *ListConversationMessagesRequest) (*MessageList, error) {
+func ListConversationMessages(c messagebird.ClientInterface, conversationID string, options *ListConversationMessagesRequest) (*MessageList, error) {
 	uri := fmt.Sprintf("%s/%s/%s?%s", path, conversationID, messagesPath, options.GetParams())
 
 	messageList := &MessageList{}
@@ -234,7 +234,7 @@ func ListConversationMessages(c *messagebird.Client, conversationID string, opti
 
 // ListMessages gets a collection of messages from a conversation.
 // Pagination can be set in the options.
-func ListMessages(c *messagebird.Client, options *ListMessagesRequest) (*MessageList, error) {
+func ListMessages(c messagebird.ClientInterface, options *ListMessagesRequest) (*MessageList, error) {
 	uri := fmt.Sprintf("%s/%s?%s", path, messagesPath, options.GetParams())
 
 	messageList := &MessageList{}
@@ -246,7 +246,7 @@ func ListMessages(c *messagebird.Client, options *ListMessagesRequest) (*Message
 }
 
 // ReadMessage gets a single message based on its ID.
-func ReadMessage(c *messagebird.Client, messageID string) (*Message, error) {
+func ReadMessage(c messagebird.ClientInterface, messageID string) (*Message, error) {
 	message := &Message{}
 	if err := request(c, message, http.MethodGet, messagesPath+"/"+messageID, nil); err != nil {
 		return nil, err
