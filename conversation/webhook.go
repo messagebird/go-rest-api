@@ -86,10 +86,8 @@ func DeleteWebhook(c *messagebird.Client, id string) error {
 
 // ListWebhooks gets a collection of webhooks. Pagination can be set in options.
 func ListWebhooks(c *messagebird.Client, options *PaginationRequest) (*WebhookList, error) {
-	query := paginationQuery(options)
-
 	webhookList := &WebhookList{}
-	if err := request(c, webhookList, http.MethodGet, webhooksPath+"?"+query, nil); err != nil {
+	if err := request(c, webhookList, http.MethodGet, webhooksPath+"?"+options.GetParams(), nil); err != nil {
 		return nil, err
 	}
 

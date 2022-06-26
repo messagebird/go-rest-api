@@ -68,16 +68,3 @@ func request(c *messagebird.Client, v interface{}, method, path string, data int
 	}
 	return c.Request(v, method, fmt.Sprintf("%s/%s", root, path), data)
 }
-
-// paginationQuery builds the query string for paginated endpoints.
-func paginationQuery(options *PaginationRequest) string {
-	if options == nil {
-		return ""
-	}
-
-	query := url.Values{}
-	query.Set("limit", strconv.Itoa(options.Limit))
-	query.Set("offset", strconv.Itoa(options.Offset))
-
-	return query.Encode()
-}
