@@ -6,14 +6,14 @@ import (
 )
 
 type Contact struct {
-	ID            string
-	Href          string
-	MSISDN        string
-	FirstName     string
-	LastName      string
-	CustomDetails map[string]interface{}
-	CreatedAt     *time.Time
-	UpdatedAt     *time.Time
+	ID              string
+	Href            string
+	MSISDN          string
+	FirstName       string
+	LastName        string
+	CustomDetails   map[string]interface{}
+	CreatedDatetime *time.Time
+	UpdatedDatetime *time.Time
 }
 
 // UnmarshalJSON is used to unmarshal the MSISDN to a string rather than an
@@ -21,14 +21,14 @@ type Contact struct {
 // Exposing a json.Number doesn't seem nice.
 func (c *Contact) UnmarshalJSON(data []byte) error {
 	target := struct {
-		ID            string
-		Href          string
-		MSISDN        json.Number
-		FirstName     string
-		LastName      string
-		CustomDetails map[string]interface{}
-		CreatedAt     *time.Time
-		UpdatedAt     *time.Time
+		ID              string
+		Href            string
+		MSISDN          json.Number
+		FirstName       string
+		LastName        string
+		CustomDetails   map[string]interface{}
+		CreatedDatetime *time.Time
+		UpdatedDatetime *time.Time
 	}{}
 
 	if err := json.Unmarshal(data, &target); err != nil {
@@ -53,8 +53,8 @@ func (c *Contact) UnmarshalJSON(data []byte) error {
 		target.FirstName,
 		target.LastName,
 		target.CustomDetails,
-		target.CreatedAt,
-		target.UpdatedAt,
+		target.CreatedDatetime,
+		target.UpdatedDatetime,
 	}
 
 	return nil
