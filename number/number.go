@@ -33,8 +33,8 @@ type Number struct {
 	Status   string
 }
 
-// NumberList provide a list of all purchased phone numbers.
-type NumberList struct {
+// Numbers provide a list of all purchased phone numbers.
+type Numbers struct {
 	Offset     int
 	Limit      int
 	Count      int
@@ -42,26 +42,66 @@ type NumberList struct {
 	Items      []*Number
 }
 
-// NumberSearchingList provide a list of all phone numbers.
+// NumbersSearching provide a list of all phone numbers.
 // that are available for purchase.
-type NumberSearchingList struct {
+type NumbersSearching struct {
 	Items []*Number
 	Limit int
 	Count int
 }
 
-// NumberListParams can be used to set query params in List().
-type NumberListParams struct {
-	Limit         int
-	Offset        int
-	Number        string
-	Country       string
-	Region        string
-	Locality      string
-	Features      []string
-	Type          string
-	Status        string
-	SearchPattern NumberPattern
+// ListRequest can be used to set query params in List().
+type ListRequest struct {
+	Limit                             int
+	Offset                            int
+	Number                            string
+	Country                           string
+	Region                            string
+	Locality                          string
+	Features                          []string // Possible values: sms, voice, mms.
+	Type                              string   // Possible values: landline, mobile, premium_rate and toll_free.
+	Status                            string
+	SearchPattern                     SearchPattern
+	ExcludeNumbersRequireVerification bool // exclude_numbers_require_verification
+	Prices                            bool // exclude_numbers_require_verification
+}
+
+func (lr *ListRequest) QueryParams() string {
+	if lr == nil {
+		return ""
+	}
+
+	query := url.Values{}
+
+	if len(lr.Features) > 0 {
+		paramsForArrays("features", lr.Features, &query)
+	}
+
+	if len(lr.Type) > 0 {
+		query.Set("type", lr.Type)
+	}
+
+	if len(lr.Number) > 0 {
+		query.Set("number", lr.Number)
+	}
+	if len(lr.Country) > 0 {
+		query.Set("country", lr.Country)
+	}
+	if lr.Limit > 0 {
+		query.Set("limit", strconv.Itoa(lr.Limit))
+	}
+	if lr.Offset > 0 {
+		query.Set("offset", strconv.Itoa(lr.Offset))
+	}
+	if lr.SearchPattern != "" {
+		query.Set("search_pattern", string(lr.SearchPattern))
+	}
+
+	if lr.Offset != 0 {
+		query.Set("offset", strconv.Itoa(lr.Offset))
+	}
+
+	return query.Encode()
 }
 
 // NumberUpdateRequest can be used to set tags update.
@@ -76,31 +116,24 @@ type NumberPurchaseRequest struct {
 	BillingIntervalMonths int    `json:"billingIntervalMonths"`
 }
 
-type NumberPattern string
+type SearchPattern string
 
 const (
-	// NumberPatternStart force phone numbers to start with the provided fragment.
-	NumberPatternStart NumberPattern = "start"
+	// SearchPatternStart force phone numbers to start with the provided fragment.
+	SearchPatternStart SearchPattern = "start"
 
-	// NumberPatternEnd phone numbers can be somewhere within the provided fragment.
-	NumberPatternEnd NumberPattern = "end"
+	// SearchPatternEnd phone numbers can be somewhere within the provided fragment.
+	SearchPatternEnd SearchPattern = "end"
 
-	// NumberPatternAnyWhere force phone numbers to end with the provided fragment.
-	NumberPatternAnyWhere NumberPattern = "anywhere"
+	// SearchPatternAnyWhere force phone numbers to end with the provided fragment.
+	SearchPatternAnyWhere SearchPattern = "anywhere"
 )
 
-// request does the exact same thing as Client.Request. It does, however,
-// prefix the path with the Numbers API's root. This ensures the client
-// doesn't "handle" this for us: by default, it uses the REST API.
-func request(c *messagebird.Client, v interface{}, method, path string, data interface{}) error {
-	return c.Request(v, method, fmt.Sprintf("%s/%s", apiRoot, path), data)
-}
-
-// List get all purchased phone numbers
-func List(c *messagebird.Client, listParams *NumberListParams) (*NumberList, error) {
+// List fetch all purchased phone numbers
+func List(c *messagebird.Client, listParams *ListRequest) (*Numbers, error) {
 	uri := getpath(listParams, pathNumbers)
 
-	numberList := &NumberList{}
+	numberList := &Numbers{}
 	if err := request(c, numberList, http.MethodGet, uri, nil); err != nil {
 		return nil, err
 	}
@@ -108,10 +141,10 @@ func List(c *messagebird.Client, listParams *NumberListParams) (*NumberList, err
 }
 
 // Search for phone numbers available for purchase, countryCode needs to be in Alpha-2 country code (example: NL)
-func Search(c *messagebird.Client, countryCode string, listParams *NumberListParams) (*NumberSearchingList, error) {
+func Search(c *messagebird.Client, countryCode string, listParams *ListRequest) (*NumbersSearching, error) {
 	uri := getpath(listParams, pathNumbersAvailable+"/"+countryCode)
 
-	numberList := &NumberSearchingList{}
+	numberList := &NumbersSearching{}
 	if err := request(c, numberList, http.MethodGet, uri, nil); err != nil {
 		return nil, err
 	}
@@ -166,13 +199,13 @@ func Purchase(c *messagebird.Client, numberPurchaseRequest *NumberPurchaseReques
 }
 
 // GetPath get the full path for the request
-func getpath(listParams *NumberListParams, path string) string {
+func getpath(listParams *ListRequest, path string) string {
 	params := paramsForMessageList(listParams)
 	return fmt.Sprintf("%s?%s", path, params.Encode())
 }
 
 // paramsForMessageList build query params
-func paramsForMessageList(params *NumberListParams) *url.Values {
+func paramsForMessageList(params *ListRequest) *url.Values {
 	urlParams := &url.Values{}
 
 	if params == nil {
@@ -213,4 +246,11 @@ func paramsForArrays(field string, values []string, urlParams *url.Values) {
 	for _, value := range values {
 		urlParams.Add(field, value)
 	}
+}
+
+// request does the exact same thing as Client.Request. It does, however,
+// prefix the path with the Numbers API's root. This ensures the client
+// doesn't "handle" this for us: by default, it uses the REST API.
+func request(c *messagebird.Client, v interface{}, method, path string, data interface{}) error {
+	return c.Request(v, method, fmt.Sprintf("%s/%s", apiRoot, path), data)
 }

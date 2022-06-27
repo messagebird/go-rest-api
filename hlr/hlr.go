@@ -8,6 +8,9 @@ import (
 	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
+// path represents the path to the HLR resource.
+const path = "hlr"
+
 // HLR stands for Home Location Register. Contains information about the
 // subscribers identity, telephone number, the associated services and general
 // information about the location of the subscriber.
@@ -37,9 +40,6 @@ type hlrRequest struct {
 	MSISDN    string `json:"msisdn"`
 	Reference string `json:"reference"`
 }
-
-// path represents the path to the HLR resource.
-const path = "hlr"
 
 // Read looks up an existing HLR object for the specified id that was previously
 // created by the NewHLR function.

@@ -17,11 +17,11 @@ func TestSearch(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "numberSearch.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	numLis, err := Search(client, "NL", &NumberListParams{
+	numLis, err := Search(client, "NL", &ListRequest{
 		Limit:         10,
 		Features:      []string{"sms", "voice"},
 		Type:          "mobile",
-		SearchPattern: NumberPatternEnd,
+		SearchPattern: SearchPatternEnd,
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "NL", numLis.Items[0].Country)
@@ -36,7 +36,7 @@ func TestList(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "numberList.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	numLis, err := List(client, &NumberListParams{Limit: 10})
+	numLis, err := List(client, &ListRequest{Limit: 10})
 	assert.NoError(t, err)
 	assert.Equal(t, "NL", numLis.Items[0].Country)
 
