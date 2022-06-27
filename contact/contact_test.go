@@ -1,6 +1,7 @@
 package contact
 
 import (
+	messagebird "github.com/messagebird/go-rest-api/v7"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
@@ -56,18 +57,11 @@ func TestDelete(t *testing.T) {
 	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/contacts/contact-id")
 }
 
-func TestDeleteWithEmptyID(t *testing.T) {
-	client := mbtest.Client(t)
-
-	err := Delete(client, "")
-	assert.Error(t, err)
-}
-
 func TestList(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactListObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	list, err := List(client, DefaultListOptions)
+	list, err := List(client, messagebird.DefaultPagination)
 	assert.NoError(t, err)
 
 	assert.Equal(t, 0, list.Offset)
@@ -87,11 +81,11 @@ func TestListPagination(t *testing.T) {
 
 	tt := []struct {
 		expected string
-		options  *ListOptions
+		options  *messagebird.CommonPaginationRequest
 	}{
-		{"limit=20&offset=0", DefaultListOptions},
-		{"limit=10&offset=25", &ListOptions{10, 25}},
-		{"limit=50&offset=10", &ListOptions{50, 10}},
+		{"limit=20&offset=0", messagebird.DefaultPagination},
+		{"limit=10&offset=25", &messagebird.CommonPaginationRequest{Limit: 10, Offset: 25}},
+		{"limit=50&offset=10", &messagebird.CommonPaginationRequest{Limit: 50, Offset: 10}},
 	}
 
 	for _, tc := range tt {

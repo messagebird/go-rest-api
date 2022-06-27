@@ -25,3 +25,9 @@ func (cpr *CommonPaginationRequest) QueryParams() string {
 
 	return query.Encode()
 }
+
+// DefaultPagination provides reasonable values for List requests.
+var DefaultPagination = &CommonPaginationRequest{
+	Limit:  20,
+	Offset: 0,
+}

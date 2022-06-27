@@ -196,7 +196,7 @@ func addContactsData(contactIDs []string) string {
 }
 
 // ListContacts lists the contacts that are a member of a group.
-func ListContacts(c *messagebird.Client, groupID string, options *ListOptions) (*contact.ContactList, error) {
+func ListContacts(c *messagebird.Client, groupID string, options *ListOptions) (*contact.Contacts, error) {
 	query, err := listQuery(options)
 	if err != nil {
 		return nil, err
@@ -204,7 +204,7 @@ func ListContacts(c *messagebird.Client, groupID string, options *ListOptions) (
 
 	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, query)
 
-	contacts := &contact.ContactList{}
+	contacts := &contact.Contacts{}
 	if err = c.Request(contacts, http.MethodGet, formattedPath, nil); err != nil {
 		return nil, err
 	}
