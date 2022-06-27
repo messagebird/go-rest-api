@@ -1,6 +1,7 @@
 package conversation
 
 import (
+	messagebird "github.com/messagebird/go-rest-api/v7"
 	"net/http"
 	"testing"
 
@@ -42,7 +43,7 @@ func TestListWebhooks(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "webhookListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		webhookList, err := ListWebhooks(client, &PaginationRequest{Limit: 20, Offset: 2})
+		webhookList, err := ListWebhooks(client, &messagebird.CommonPaginationRequest{Limit: 20, Offset: 2})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, webhookList.TotalCount)

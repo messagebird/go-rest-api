@@ -107,12 +107,12 @@ type UpdateRequest struct {
 // ListRequest retrieves all conversations sorted by the lastReceivedDatetime field
 // so that all conversations with new messages appear first.
 type ListRequest struct {
-	PaginationRequest
+	messagebird.CommonPaginationRequest
 	Ids    string
 	Status *ConversationStatus
 }
 
-func (lr *ListRequest) GetParams() string {
+func (lr *ListRequest) QueryParams() string {
 	if lr == nil {
 		return ""
 	}
@@ -133,12 +133,12 @@ func (lr *ListRequest) GetParams() string {
 }
 
 type ListByContactRequest struct {
-	PaginationRequest
+	messagebird.CommonPaginationRequest
 	Id     string
 	Status *ConversationStatus
 }
 
-func (lr *ListByContactRequest) GetParams() string {
+func (lr *ListByContactRequest) QueryParams() string {
 	if lr == nil {
 		return ""
 	}
@@ -161,7 +161,7 @@ func (lr *ListByContactRequest) GetParams() string {
 // List gets a collection of Conversations. Pagination can be set in options.
 func List(c messagebird.ClientInterface, options *ListRequest) (*ConversationList, error) {
 	convList := &ConversationList{}
-	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, options.GetParams()), nil); err != nil {
+	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, options.QueryParams()), nil); err != nil {
 		return nil, err
 	}
 
@@ -169,8 +169,8 @@ func List(c messagebird.ClientInterface, options *ListRequest) (*ConversationLis
 }
 
 // ListByContact fetches a collection of Conversations of a specific MessageBird contact ID.
-func ListByContact(c messagebird.ClientInterface, contactId string, options *PaginationRequest) (*ConversationByContactList, error) {
-	reqPath := fmt.Sprintf("%s/%s/%s?%s", path, contactPath, contactId, options.GetParams())
+func ListByContact(c messagebird.ClientInterface, contactId string, options *messagebird.CommonPaginationRequest) (*ConversationByContactList, error) {
+	reqPath := fmt.Sprintf("%s/%s/%s?%s", path, contactPath, contactId, options.QueryParams())
 
 	conv := &ConversationByContactList{}
 	if err := request(c, conv, http.MethodGet, reqPath, nil); err != nil {

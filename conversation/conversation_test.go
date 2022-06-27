@@ -1,6 +1,7 @@
 package conversation
 
 import (
+	messagebird "github.com/messagebird/go-rest-api/v7"
 	"net/http"
 	"testing"
 	"time"
@@ -14,7 +15,7 @@ func TestList(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "conversationListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		convList, err := List(client, &ListRequest{PaginationRequest{Limit: 10, Offset: 20}, "", nil})
+		convList, err := List(client, &ListRequest{messagebird.CommonPaginationRequest{Limit: 10, Offset: 20}, "", nil})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 20, convList.Offset)
@@ -54,7 +55,7 @@ func TestListByContact(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "conversationListByContact.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		convList, err := ListByContact(client, contactId, &PaginationRequest{Limit: 20, Offset: 2})
+		convList, err := ListByContact(client, contactId, &messagebird.CommonPaginationRequest{Limit: 20, Offset: 2})
 
 		assert.NoError(t, err)
 		assert.Equal(t, 2, convList.Offset)
