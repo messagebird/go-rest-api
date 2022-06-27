@@ -72,6 +72,44 @@ func TestListMessages(t *testing.T) {
 	})
 }
 
+func TestListConversationMessages(t *testing.T) {
+	conversationId := "5f3437fdb8444583aea093a047ac014b"
+
+	t.Run("limit_offset", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
+
+		messageList, err := ListConversationMessages(
+			client,
+			conversationId,
+			&ListConversationMessagesRequest{PaginationRequest{20, 2}, "sms,whatsapp,facebook"},
+		)
+		assert.NoError(t, err)
+		assert.Equal(t, 2, messageList.Offset)
+		assert.Equal(t, 20, messageList.Limit)
+		assert.Equal(t, "mesid", messageList.Items[0].ID)
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/"+conversationId+"/messages")
+
+		query := mbtest.Request.URL.RawQuery
+		assert.Equal(t, "excludePlatforms=sms%2Cwhatsapp%2Cfacebook&limit=20&offset=2", query)
+	})
+
+	t.Run("all", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "allMessageListObject.json", http.StatusOK)
+		client := mbtest.Client(t)
+
+		messageList, err := ListConversationMessages(client, "5f3437fdb8444583aea093a047ac014b", nil)
+		assert.NoError(t, err)
+		assert.Equal(t, 0, messageList.Offset)
+		assert.Equal(t, 10, messageList.Limit)
+		assert.Equal(t, "mesid", messageList.Items[0].ID)
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/"+conversationId+"/messages")
+
+		query := mbtest.Request.URL.RawQuery
+		assert.Equal(t, "", query)
+	})
+}
+
 func TestReadMessage(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
