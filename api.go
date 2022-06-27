@@ -1,10 +1,7 @@
 package messagebird
 
 import (
-	"errors"
-	"log"
 	"net/url"
-	"reflect"
 	"strconv"
 )
 
@@ -33,24 +30,4 @@ func (cpr *CommonPaginationRequest) QueryParams() string {
 var DefaultPagination = &CommonPaginationRequest{
 	Limit:  20,
 	Offset: 0,
-}
-
-func MakeQueryParams(s interface{}) (string, error) {
-	rt := reflect.TypeOf(s)
-
-	if rt.Kind() != reflect.Struct && rt.Elem().Kind() != reflect.Struct {
-		return "", errors.New("unexpected kind of value, expected strcut")
-	}
-
-	//query := url.Values{}
-
-	for i := 0; i < rt.NumField(); i++ {
-		field := rt.Field(i)
-		log.Fatalln(field.Tag)
-		//v := strings.Split(f.Tag.Get(key), ",")[0] // use split to ignore tag "options" like omitempty, etc.
-		//if v == tag {
-		//	return f.Name
-		//}
-	}
-	return "", nil
 }

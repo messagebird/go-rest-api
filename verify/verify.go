@@ -5,24 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
 	messagebird "github.com/messagebird/go-rest-api/v7"
 )
 
-// Verify object represents MessageBird server response.
-type Verify struct {
-	ID                 string
-	HRef               string
-	Reference          string
-	Status             string
-	Messages           map[string]string
-	CreatedDatetime    *time.Time
-	ValidUntilDatetime *time.Time
-	Recipient          string
-}
+const (
+	// path represents the path to the Verify resource.
+	path = "verify"
+
+	emailMessagesPath = path + "/messages/email"
+)
 
 type VerifyMessage struct {
 	ID     string `json:"id"`
@@ -59,13 +53,9 @@ type verifyRequest struct {
 	Subject     string `json:"subject,omitempty"`
 }
 
-// path represents the path to the Verify resource.
-const path = "verify"
-const emailMessagesPath = path + "/messages/email"
-
 // Create generates a new One-Time-Password for one recipient.
 func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, error) {
-	requestData, err := requestDataForVerify(recipient, params)
+	requestData, err := paramsToVerifyRequest(recipient, params)
 	if err != nil {
 		return nil, err
 	}
@@ -96,10 +86,7 @@ func Read(c *messagebird.Client, id string) (*Verify, error) {
 
 // VerifyToken performs token value check against MessageBird API.
 func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
-	params := &url.Values{}
-	params.Set("token", token)
-
-	pathWithParams := path + "/" + id + "?" + params.Encode()
+	pathWithParams := path + "/" + id + "?token=" + token
 
 	verify := &Verify{}
 	if err := c.Request(verify, http.MethodGet, pathWithParams, nil); err != nil {
@@ -110,18 +97,15 @@ func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 }
 
 func ReadVerifyEmailMessage(c *messagebird.Client, id string) (*VerifyMessage, error) {
-
-	messagePath := emailMessagesPath + "/" + id
-
 	verifyMessage := &VerifyMessage{}
-	if err := c.Request(verifyMessage, http.MethodGet, messagePath, nil); err != nil {
+	if err := c.Request(verifyMessage, http.MethodGet, emailMessagesPath+"/"+id, nil); err != nil {
 		return nil, err
 	}
 
 	return verifyMessage, nil
 }
 
-func requestDataForVerify(recipient string, params *Params) (*verifyRequest, error) {
+func paramsToVerifyRequest(recipient string, params *Params) (*verifyRequest, error) {
 	if recipient == "" {
 		return nil, errors.New("recipient is required")
 	}
@@ -149,10 +133,22 @@ func requestDataForVerify(recipient string, params *Params) (*verifyRequest, err
 	return request, nil
 }
 
-/**
-The type of the Verify.Recipient object changed from int to string but the api still returns a recipent numeric value whne sms type is used.
-This was the best way to ensure backward compatibility with the previous versions
-*/
+// Verify object represents MessageBird server response.
+type Verify struct {
+	ID                 string
+	HRef               string
+	Reference          string
+	Status             string
+	Messages           map[string]string
+	CreatedDatetime    *time.Time
+	ValidUntilDatetime *time.Time
+	Recipient          string
+}
+
+// UnmarshalJSON
+// The type of the Verify.Recipient object changed from int to string
+// but the api still returns a recipent numeric value whne sms type is used.
+// This was the best way to ensure backward compatibility with the previous versions.
 func (v *Verify) UnmarshalJSON(b []byte) error {
 	if v == nil {
 		return errors.New("cannot unmarshal to nil pointer")
@@ -184,5 +180,6 @@ func (v *Verify) UnmarshalJSON(b []byte) error {
 	}
 
 	*v = Verify(wrapper.Alias)
+
 	return nil
 }

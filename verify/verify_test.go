@@ -110,7 +110,7 @@ func TestRequestDataForVerify(t *testing.T) {
 		TokenLength: 8,
 	}
 
-	requestData, err := requestDataForVerify("31612345678", verifyParams)
+	requestData, err := paramsToVerifyRequest("31612345678", verifyParams)
 	assert.NoError(t, err)
 	assert.Equal(t, "31612345678", requestData.Recipient)
 	assert.Equal(t, "MSGBIRD", requestData.Originator)
