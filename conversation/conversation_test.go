@@ -47,6 +47,50 @@ func TestList(t *testing.T) {
 	})
 }
 
+func TestListByContact(t *testing.T) {
+	contactId := "ebf6aceed7ae4375b726e247318d3377"
+
+	t.Run("limit_offset", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "conversationListByContact.json", http.StatusOK)
+		client := mbtest.Client(t)
+
+		convList, err := ListByContact(client, contactId, &PaginationRequest{Limit: 20, Offset: 2})
+
+		assert.NoError(t, err)
+		assert.Equal(t, 2, convList.Offset)
+		assert.Equal(t, 20, convList.Limit)
+		assert.Equal(t, 2, convList.TotalCount)
+		assert.Len(t, convList.Items, 2)
+		assert.Equal(t, "0b7c237df609487c9c41437dab502889", *convList.Items[0])
+		assert.Equal(t, "9eaceec9cd244e7a9b374df81aad4349", *convList.Items[1])
+
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/contact/"+contactId)
+
+		query := mbtest.Request.URL.RawQuery
+		assert.Equal(t, "limit=20&offset=2", query)
+	})
+
+	t.Run("all", func(t *testing.T) {
+		mbtest.WillReturnTestdata(t, "conversationListByContact.json", http.StatusOK)
+		client := mbtest.Client(t)
+
+		convList, err := ListByContact(client, contactId, nil)
+
+		assert.NoError(t, err)
+		assert.Equal(t, 2, convList.Offset)
+		assert.Equal(t, 20, convList.Limit)
+		assert.Equal(t, 2, convList.TotalCount)
+		assert.Len(t, convList.Items, 2)
+		assert.Equal(t, "0b7c237df609487c9c41437dab502889", *convList.Items[0])
+		assert.Equal(t, "9eaceec9cd244e7a9b374df81aad4349", *convList.Items[1])
+
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/contact/"+contactId)
+
+		query := mbtest.Request.URL.RawQuery
+		assert.Equal(t, "", query)
+	})
+}
+
 func TestRead(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "conversationObject.json", http.StatusOK)
 	client := mbtest.Client(t)
