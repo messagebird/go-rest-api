@@ -202,7 +202,9 @@ func (lr *ListMessagesRequest) GetParams() string {
 	query := url.Values{}
 
 	query.Set("ids", lr.Ids)
-	query.Set("ids", lr.From.Format(time.RFC3339))
+	if lr.From != nil {
+		query.Set("from", lr.From.Format(time.RFC3339))
+	}
 
 	return query.Encode()
 }
@@ -235,7 +237,7 @@ func ListConversationMessages(c messagebird.ClientInterface, conversationID stri
 // ListMessages gets a collection of messages from a conversation.
 // Pagination can be set in the options.
 func ListMessages(c messagebird.ClientInterface, options *ListMessagesRequest) (*MessageList, error) {
-	uri := fmt.Sprintf("%s/%s?%s", path, messagesPath, options.GetParams())
+	uri := fmt.Sprintf("%s?%s", messagesPath, options.GetParams())
 
 	messageList := &MessageList{}
 	if err := request(c, messageList, http.MethodGet, uri, nil); err != nil {

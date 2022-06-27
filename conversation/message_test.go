@@ -23,6 +23,7 @@ func TestSendMessage(t *testing.T) {
 		Source:    map[string]interface{}{"name": "Valera"},
 	})
 	assert.NoError(t, err)
+	t.Log(message)
 	assert.Equal(t, "2e15efafec384e1c82e9842075e87beb", message.ID)
 	assert.Equal(t, MessageStatusAccepted, message.Status)
 
@@ -34,7 +35,7 @@ func TestListMessages(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "messageListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		messageList, err := ListMessages(client, &ListMessagesRequest{Ids: "123,456"})
+		messageList, err := ListMessages(client, &ListMessagesRequest{Ids: "5f3437fdb8444583aea093a047ac014b,4abc37fdb8444583aea093a047ac014c"})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 2, messageList.Offset)
@@ -43,10 +44,10 @@ func TestListMessages(t *testing.T) {
 
 		assert.Equal(t, "mesid", messageList.Items[0].ID)
 
-		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/convid/messages")
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/messages")
 
 		query := mbtest.Request.URL.RawQuery
-		assert.Equal(t, "limit=20&offset=2", query)
+		assert.Equal(t, "ids=5f3437fdb8444583aea093a047ac014b%2C4abc37fdb8444583aea093a047ac014c", query)
 	})
 
 	t.Run("all", func(t *testing.T) {
@@ -64,7 +65,7 @@ func TestListMessages(t *testing.T) {
 
 		assert.Len(t, messageList.Items, 2)
 
-		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/conversations/convid/messages")
+		mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/messages")
 
 		query := mbtest.Request.URL.RawQuery
 		assert.Equal(t, "", query)

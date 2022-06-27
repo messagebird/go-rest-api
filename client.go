@@ -174,7 +174,7 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 	}
 
 	switch response.StatusCode {
-	case http.StatusOK, http.StatusCreated:
+	case http.StatusOK, http.StatusCreated, http.StatusAccepted:
 		// Status codes 200 and 201 are indicative of being able to convert the
 		// response body to the struct that was specified.
 		if err := json.Unmarshal(responseBody, &v); err != nil {

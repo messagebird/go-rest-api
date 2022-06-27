@@ -78,7 +78,7 @@ func TestUpdate(t *testing.T) {
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/phone-numbers/31612345670")
-	mbtest.AssertTestdata(t, "numberUpdateRequestObject.json", mbtest.Request.Body)
+	mbtest.AssertTestData(t, "numberUpdateRequestObject.json", mbtest.Request.Body)
 
 	if !reflect.DeepEqual(number.Tags, []string{"tag1", "tag2", "tag3"}) {
 		t.Errorf("Unexpected number tags: %s, expected: ['tag1', 'tag2', 'tag3']", number.Tags)
@@ -97,7 +97,7 @@ func TestPurchase(t *testing.T) {
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/phone-numbers")
-	mbtest.AssertTestdata(t, "numberCreateRequestObject.json", mbtest.Request.Body)
+	mbtest.AssertTestData(t, "numberCreateRequestObject.json", mbtest.Request.Body)
 	assert.Equal(t, "31971234567", number.Number)
 	assert.Equal(t, "NL", number.Country)
 }

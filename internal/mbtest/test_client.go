@@ -32,11 +32,11 @@ func MockClient() messagebird.ClientInterface {
 }
 
 // Client initializes a new MessageBird client that uses the
-func Client(t *testing.T) messagebird.ClientInterface {
+func Client(t *testing.T) *messagebird.Client {
 	return newClient(t, "")
 }
 
-func newClient(t *testing.T, accessKey string) messagebird.ClientInterface {
+func newClient(t *testing.T, accessKey string) *messagebird.Client {
 	transport := &http.Transport{
 		DialTLS: func(network, _ string) (net.Conn, error) {
 			addr := server.Listener.Addr().String()

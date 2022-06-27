@@ -106,7 +106,7 @@ func TestStartHSM(t *testing.T) {
 	assert.Equal(t, "convid", conv.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/start")
-	mbtest.AssertTestdata(t, "conversationStartHsmRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestDataJson(t, "conversationStartHsmRequest.json", mbtest.Request.Body)
 }
 
 func mustParseRFC3339(t *testing.T, s string) *time.Time {
@@ -134,7 +134,7 @@ func TestStartMedia(t *testing.T) {
 	assert.Equal(t, "convid", conv.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/start")
-	mbtest.AssertTestdata(t, "conversationStartVideoRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestDataJson(t, "conversationStartVideoRequest.json", mbtest.Request.Body)
 }
 
 func TestStartText(t *testing.T) {
@@ -153,7 +153,7 @@ func TestStartText(t *testing.T) {
 	assert.Equal(t, "convid", conv.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/start")
-	mbtest.AssertTestdata(t, "conversationStartTextRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestDataJson(t, "conversationStartTextRequest.json", mbtest.Request.Body)
 }
 
 func TestReply(t *testing.T) {
@@ -171,7 +171,8 @@ func TestReply(t *testing.T) {
 	assert.Equal(t, "mesid", message.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/conversations/convid/messages")
-	mbtest.AssertTestdata(t, "messageCreateRequest.json", mbtest.Request.Body)
+
+	mbtest.AssertTestDataJson(t, "conversationReplyRequest.json", mbtest.Request.Body)
 }
 
 func TestUpdate(t *testing.T) {
@@ -185,5 +186,5 @@ func TestUpdate(t *testing.T) {
 	assert.Equal(t, ConversationStatusArchived, conv.Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/conversations/id")
-	mbtest.AssertTestdata(t, "conversationUpdateRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestDataJson(t, "conversationUpdateRequest.json", mbtest.Request.Body)
 }
