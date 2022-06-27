@@ -13,12 +13,12 @@ import (
 const (
 	// ConversationStatusActive is returned when the Conversation is active.
 	// Only one active conversation can ever exist for a given contact.
-	ConversationStatusActive ConversationStatus = "active"
+	ConversationStatusActive Status = "active"
 
 	// ConversationStatusArchived is returned when the Conversation is
 	// archived. When this is the case, a new Conversation is created when a
 	// message is received from a contact.
-	ConversationStatusArchived ConversationStatus = "archived"
+	ConversationStatusArchived Status = "archived"
 )
 
 type Conversation struct {
@@ -26,7 +26,7 @@ type Conversation struct {
 	ContactID            string
 	Contact              *Contact
 	Channels             []*Channel
-	Status               ConversationStatus
+	Status               Status
 	CreatedDatetime      time.Time
 	UpdatedDatetime      *time.Time
 	LastReceivedDatetime *time.Time
@@ -50,12 +50,12 @@ type MessagesCount struct {
 	LastMessageId string
 }
 
-// ConversationStatus indicates what state a Conversation is in.
-type ConversationStatus string
+// Status indicates what state a Conversation is in.
+type Status string
 
 type Platform string
 
-type ConversationList struct {
+type Conversations struct {
 	Offset     int
 	Limit      int
 	Count      int
@@ -63,7 +63,7 @@ type ConversationList struct {
 	Items      []*Conversation
 }
 
-type ConversationByContactList struct {
+type ConversationsByContact struct {
 	Offset     int
 	Limit      int
 	Count      int
@@ -101,7 +101,7 @@ type ReplyRequest struct {
 
 // UpdateRequest contains the request data for the Update endpoint.
 type UpdateRequest struct {
-	Status ConversationStatus `json:"status"`
+	Status Status `json:"status"`
 }
 
 // ListRequest retrieves all conversations sorted by the lastReceivedDatetime field
@@ -109,7 +109,7 @@ type UpdateRequest struct {
 type ListRequest struct {
 	messagebird.CommonPaginationRequest
 	Ids    string
-	Status *ConversationStatus
+	Status *Status
 }
 
 func (lr *ListRequest) QueryParams() string {
@@ -135,7 +135,7 @@ func (lr *ListRequest) QueryParams() string {
 type ListByContactRequest struct {
 	messagebird.CommonPaginationRequest
 	Id     string
-	Status *ConversationStatus
+	Status *Status
 }
 
 func (lr *ListByContactRequest) QueryParams() string {
@@ -159,8 +159,8 @@ func (lr *ListByContactRequest) QueryParams() string {
 }
 
 // List gets a collection of Conversations. Pagination can be set in options.
-func List(c messagebird.ClientInterface, options *ListRequest) (*ConversationList, error) {
-	convList := &ConversationList{}
+func List(c messagebird.ClientInterface, options *ListRequest) (*Conversations, error) {
+	convList := &Conversations{}
 	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, options.QueryParams()), nil); err != nil {
 		return nil, err
 	}
@@ -169,10 +169,10 @@ func List(c messagebird.ClientInterface, options *ListRequest) (*ConversationLis
 }
 
 // ListByContact fetches a collection of Conversations of a specific MessageBird contact ID.
-func ListByContact(c messagebird.ClientInterface, contactId string, options *messagebird.CommonPaginationRequest) (*ConversationByContactList, error) {
+func ListByContact(c messagebird.ClientInterface, contactId string, options *messagebird.CommonPaginationRequest) (*ConversationsByContact, error) {
 	reqPath := fmt.Sprintf("%s/%s/%s?%s", path, contactPath, contactId, options.QueryParams())
 
-	conv := &ConversationByContactList{}
+	conv := &ConversationsByContact{}
 	if err := request(c, conv, http.MethodGet, reqPath, nil); err != nil {
 		return nil, err
 	}
