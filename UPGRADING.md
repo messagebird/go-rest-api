@@ -103,3 +103,8 @@ So all imports of `go-rest-api` are replaced as `go-rest-api/v6`.
 ## `v6.1.0` -> `v7.0.0`
 ### Verify Recipient type
 As v7 introduces support for using the Verify API with email recipients, the `Verify.Recipient` field has been changed from to a string type.
+
+## `v7.1.0` -> `v8.0.0`
+### Update SMS API
+Added [missed fields](https://github.com/messagebird/go-rest-api/pull/119/commits/f9331269238f1518dd35d798a0fbf251bb04bb62) in SMS API.
+Updated `sms.Delete` method so now in return only error or nil as result.

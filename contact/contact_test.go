@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
