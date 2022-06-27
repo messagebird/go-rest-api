@@ -13,6 +13,18 @@ import (
 	"github.com/messagebird/go-rest-api/v7/contact"
 )
 
+const (
+	// path represents the path to the Groups resource.
+	path = "groups"
+
+	// contactPath represents the path to the Contacts resource within Groups.
+	contactPath = "contacts"
+
+	// maximumContactsPerRequest is the maxium number of contacts that can be
+	// created in a single request.
+	maximumContactsPerRequest = 50
+)
+
 // Group gets returned by the API.
 type Group struct {
 	ID       string
@@ -26,7 +38,7 @@ type Group struct {
 	UpdatedDatetime *time.Time
 }
 
-type GroupList struct {
+type Groups struct {
 	Offset     int
 	Limit      int
 	Count      int
@@ -40,33 +52,10 @@ type GroupList struct {
 	Items []Group
 }
 
-// ListOptions can be used to set pagination options in List() and ListContacts().
-type ListOptions struct {
-	Limit, Offset int
-}
-
 // Request represents a contact for write operations, e.g. for creating a new
 // group or updating an existing one.
 type Request struct {
 	Name string `json:"name"`
-}
-
-const (
-	// path represents the path to the Groups resource.
-	path = "groups"
-
-	// contactPath represents the path to the Contacts resource within Groups.
-	contactPath = "contacts"
-)
-
-// maximumContactsPerRequest is the maxium number of contacts that can be
-// created in a single request.
-const maximumContactsPerRequest = 50
-
-// DefaultListOptions provides reasonable values for List().
-var DefaultListOptions = &ListOptions{
-	Limit:  10,
-	Offset: 0,
 }
 
 func Create(c *messagebird.Client, request *Request) (*Group, error) {
@@ -98,21 +87,16 @@ func Delete(c *messagebird.Client, id string) error {
 
 // List retrieves a paginated list of groups, based on the options provided.
 // It's worth noting DefaultListOptions.
-func List(c *messagebird.Client, options *ListOptions) (*GroupList, error) {
-	query, err := listQuery(options)
-	if err != nil {
-		return nil, err
-	}
-
-	groupList := &GroupList{}
-	if err := c.Request(groupList, http.MethodGet, path+"?"+query, nil); err != nil {
+func List(c *messagebird.Client, options *messagebird.CommonPaginationRequest) (*Groups, error) {
+	groupList := &Groups{}
+	if err := c.Request(groupList, http.MethodGet, path+"?"+options.QueryParams(), nil); err != nil {
 		return nil, err
 	}
 
 	return groupList, nil
 }
 
-func listQuery(options *ListOptions) (string, error) {
+func listQuery(options *messagebird.CommonPaginationRequest) (string, error) {
 	if options.Limit < 10 {
 		return "", fmt.Errorf("minimum limit is 10, got %d", options.Limit)
 	}
@@ -185,8 +169,7 @@ func validateAddContacts(contactIDs []string) error {
 // intentionally not using url.Values for building the string: the API expects
 // `ids[]=foo&ids[]=bar` format, while url.Values encodes to `ids=foo&ids=bar`.
 func addContactsData(contactIDs []string) string {
-	cap := len(contactIDs)
-	params := make([]string, 0, cap)
+	params := make([]string, 0, len(contactIDs))
 
 	for _, contactID := range contactIDs {
 		params = append(params, "ids[]="+contactID)
@@ -196,16 +179,11 @@ func addContactsData(contactIDs []string) string {
 }
 
 // ListContacts lists the contacts that are a member of a group.
-func ListContacts(c *messagebird.Client, groupID string, options *ListOptions) (*contact.Contacts, error) {
-	query, err := listQuery(options)
-	if err != nil {
-		return nil, err
-	}
-
-	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, query)
+func ListContacts(c *messagebird.Client, groupID string, options *messagebird.CommonPaginationRequest) (*contact.Contacts, error) {
+	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, options.QueryParams())
 
 	contacts := &contact.Contacts{}
-	if err = c.Request(contacts, http.MethodGet, formattedPath, nil); err != nil {
+	if err := c.Request(contacts, http.MethodGet, formattedPath, nil); err != nil {
 		return nil, err
 	}
 
