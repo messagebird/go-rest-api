@@ -2,6 +2,7 @@ package sms
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -129,6 +130,9 @@ func Create(c *messagebird.Client, originator string, recipients []string, body 
 	if err != nil {
 		return nil, err
 	}
+
+	messagebird.MakeQueryParams(requestData)
+	log.Fatalln("asd")
 
 	message := &Message{}
 	if err := c.Request(message, http.MethodPost, path, requestData); err != nil {
