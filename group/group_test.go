@@ -22,7 +22,7 @@ func TestCreate(t *testing.T) {
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/groups")
-	mbtest.AssertTestData(t, "groupRequestCreateObject.json", mbtest.Request.Body)
+	mbtest.AssertTestdata(t, "groupRequestCreateObject.json", mbtest.Request.Body)
 	assert.Equal(t, "Friends", group.Name)
 }
 
@@ -110,7 +110,7 @@ func TestUpdate(t *testing.T) {
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/groups/group-id")
-	mbtest.AssertTestData(t, "groupRequestUpdateObject.json", mbtest.Request.Body)
+	mbtest.AssertTestdata(t, "groupRequestUpdateObject.json", mbtest.Request.Body)
 	assert.Equal(t, "application/json", mbtest.Request.ContentType)
 }
 
@@ -122,7 +122,7 @@ func TestAddContacts(t *testing.T) {
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPut, "/groups/group-id/contacts")
-	mbtest.AssertTestData(t, "groupRequestAddContactsObject.txt", mbtest.Request.Body)
+	mbtest.AssertTestdata(t, "groupRequestAddContactsObject.txt", mbtest.Request.Body)
 	assert.Equal(t, "application/x-www-form-urlencoded", mbtest.Request.ContentType)
 }
 

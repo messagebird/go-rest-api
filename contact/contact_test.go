@@ -34,7 +34,7 @@ func TestCreate(t *testing.T) {
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/contacts")
-	mbtest.AssertTestData(t, "contactRequestObjectCreate.json", mbtest.Request.Body)
+	mbtest.AssertTestdata(t, "contactRequestObjectCreate.json", mbtest.Request.Body)
 
 	assert.Equal(t, int64(31612345678), contact.MSISDN)
 
@@ -161,6 +161,6 @@ func TestUpdate(t *testing.T) {
 		assert.NoError(t, err)
 
 		mbtest.AssertEndpointCalled(t, http.MethodPatch, "/contacts/contact-id")
-		mbtest.AssertTestData(t, tc.expectedTestdata, mbtest.Request.Body)
+		mbtest.AssertTestdata(t, tc.expectedTestdata, mbtest.Request.Body)
 	}
 }
