@@ -202,8 +202,8 @@ func Start(c messagebird.ClientInterface, req *StartRequest) (*Conversation, err
 }
 
 // Reply Send a new message to an existing conversation. In case the conversation is archived, a new conversation is created.
-func Reply(c messagebird.ClientInterface, conversationId string, req *ReplyRequest) (*Message, error) {
-	uri := fmt.Sprintf("%s/%s/%s", path, conversationId, messagesPath)
+func Reply(c messagebird.ClientInterface, conversationID string, req *ReplyRequest) (*Message, error) {
+	uri := fmt.Sprintf("%s/%s/%s", path, conversationID, messagesPath)
 
 	message := &Message{}
 	if err := request(c, message, http.MethodPost, uri, req); err != nil {
