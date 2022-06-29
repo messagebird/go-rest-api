@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 func TestCreateWithEmptyMSISDN(t *testing.T) {
 	client := mbtest.Client(t)
 
-	_, err := Create(client, &Request{})
+	_, err := Create(client, &CreateRequest{})
 	assert.Error(t, err)
 }
 
@@ -25,7 +25,7 @@ func TestCreate(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactObject.json", http.StatusCreated)
 	client := mbtest.Client(t)
 
-	contact, err := Create(client, &Request{
+	contact, err := Create(client, &CreateRequest{
 		MSISDN:    "31612345678",
 		FirstName: "Foo",
 		LastName:  "Bar",
@@ -143,11 +143,11 @@ func TestUpdate(t *testing.T) {
 
 	tt := []struct {
 		expectedTestdata string
-		contactRequest   *Request
+		contactRequest   *CreateRequest
 	}{
-		{"contactRequestObjectUpdateCustom.json", &Request{Custom1: "Foo", Custom4: "Bar"}},
-		{"contactRequestObjectUpdateMSISDN.json", &Request{MSISDN: "31687654321"}},
-		{"contactRequestObjectUpdateName.json", &Request{FirstName: "Message", LastName: "Bird"}},
+		{"contactRequestObjectUpdateCustom.json", &CreateRequest{Custom1: "Foo", Custom4: "Bar"}},
+		{"contactRequestObjectUpdateMSISDN.json", &CreateRequest{MSISDN: "31687654321"}},
+		{"contactRequestObjectUpdateName.json", &CreateRequest{FirstName: "Message", LastName: "Bird"}},
 	}
 
 	for _, tc := range tt {

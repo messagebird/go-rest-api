@@ -8,7 +8,13 @@ import (
 	messagebird "github.com/messagebird/go-rest-api/v8"
 )
 
-const apiRoot = "https://voice.messagebird.com/v1"
+const (
+	apiRoot = "https://voice.messagebird.com/v1"
+
+	callsPath = "calls"
+
+	legsPath = "legs"
+)
 
 type ErrorResponse struct {
 	Errors []Error

@@ -113,7 +113,7 @@ func TestRequestDataForVoiceMessage(t *testing.T) {
 		ScheduledDatetime: currentTime,
 	}
 
-	request, err := requestDataForVoiceMessage([]string{"31612345678"}, "MyBody", voiceParams)
+	request, err := paramsToRequest([]string{"31612345678"}, "MyBody", voiceParams)
 	assert.NoError(t, err)
 	assert.Equal(t, "31612345678", request.Recipients[0])
 	assert.Equal(t, "MyBody", request.Body)

@@ -254,7 +254,7 @@ func TestRequestDataForMessage(t *testing.T) {
 		ShortenURLs:       true,
 	}
 
-	request, err := requestDataForMessage("MSGBIRD", []string{"31612345678"}, "MyBody", messageParams)
+	request, err := paramsToRequest("MSGBIRD", []string{"31612345678"}, "MyBody", messageParams)
 	assert.NoError(t, err)
 	assert.Equal(t, "MSGBIRD", request.Originator)
 	assert.Equal(t, "31612345678", request.Recipients[0])

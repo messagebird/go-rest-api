@@ -83,7 +83,7 @@ func List(c *messagebird.Client) (*VoiceMessageList, error) {
 
 // Create a new voice message for one or more recipients.
 func Create(c *messagebird.Client, recipients []string, body string, params *Params) (*VoiceMessage, error) {
-	requestData, err := requestDataForVoiceMessage(recipients, body, params)
+	requestData, err := paramsToRequest(recipients, body, params)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func Create(c *messagebird.Client, recipients []string, body string, params *Par
 	return message, nil
 }
 
-func requestDataForVoiceMessage(recipients []string, body string, params *Params) (*voiceMessageRequest, error) {
+func paramsToRequest(recipients []string, body string, params *Params) (*voiceMessageRequest, error) {
 	if len(recipients) == 0 {
 		return nil, errors.New("at least 1 recipient is required")
 	}

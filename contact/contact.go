@@ -41,10 +41,10 @@ type Contacts struct {
 	Items             []Contact
 }
 
-// Request represents a contact for write operations, e.g. for creating a new
+// CreateRequest represents a contact for write operations, e.g. for creating a new
 // contact or updating an existing one.
-type Request struct {
-	MSISDN    string `json:"msisdn,omitempty"`
+type CreateRequest struct {
+	MSISDN    string `json:"msisdn"`
 	FirstName string `json:"firstName,omitempty"`
 	LastName  string `json:"lastName,omitempty"`
 	Custom1   string `json:"custom1,omitempty"`
@@ -53,7 +53,12 @@ type Request struct {
 	Custom4   string `json:"custom4,omitempty"`
 }
 
-func Create(c *messagebird.Client, contactRequest *Request) (*Contact, error) {
+type ViewRequest struct {
+	MSISDN string `json:"msisdn,omitempty"`
+	Name   string `json:"firstName,omitempty"`
+}
+
+func Create(c *messagebird.Client, contactRequest *CreateRequest) (*Contact, error) {
 	contact := &Contact{}
 	if err := c.Request(contact, http.MethodPost, path, contactRequest); err != nil {
 		return nil, err
@@ -80,9 +85,9 @@ func List(c *messagebird.Client, options *messagebird.CommonPaginationRequest) (
 }
 
 // Read retrieves the information of an existing contact.
-func Read(c *messagebird.Client, id string) (*Contact, error) {
+func Read(c *messagebird.Client, id string, req *ViewRequest) (*Contact, error) {
 	contact := &Contact{}
-	if err := c.Request(contact, http.MethodGet, path+"/"+id, nil); err != nil {
+	if err := c.Request(contact, http.MethodGet, path+"/"+id, req); err != nil {
 		return nil, err
 	}
 
@@ -91,7 +96,7 @@ func Read(c *messagebird.Client, id string) (*Contact, error) {
 
 // Update updates the record referenced by id with any values set in contactRequest.
 // Do not set any values that should not be updated.
-func Update(c *messagebird.Client, id string, contactRequest *Request) (*Contact, error) {
+func Update(c *messagebird.Client, id string, contactRequest *CreateRequest) (*Contact, error) {
 	contact := &Contact{}
 	if err := c.Request(contact, http.MethodPatch, path+"/"+id, contactRequest); err != nil {
 		return nil, err

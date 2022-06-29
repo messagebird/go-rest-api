@@ -62,7 +62,7 @@ func TestListPagination(t *testing.T) {
 		expected string
 		options  *messagebird.CommonPaginationRequest
 	}{
-		{"limit=10&offset=0", messagebird.DefaultPagination},
+		{"limit=20&offset=0", messagebird.DefaultPagination},
 		{"limit=10&offset=25", &messagebird.CommonPaginationRequest{Limit: 10, Offset: 25}},
 		{"limit=50&offset=10", &messagebird.CommonPaginationRequest{Limit: 50, Offset: 10}},
 	}

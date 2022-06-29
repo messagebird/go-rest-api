@@ -151,7 +151,7 @@ func List(c *messagebird.Client, params *ListParams) (*MessageList, error) {
 
 // Create creates a new message for one or more recipients.
 func Create(c *messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
-	requestData, err := requestDataForMessage(originator, recipients, body, msgParams)
+	requestData, err := paramsToRequest(originator, recipients, body, msgParams)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +164,7 @@ func Create(c *messagebird.Client, originator string, recipients []string, body 
 	return message, nil
 }
 
-func requestDataForMessage(originator string, recipients []string, body string, params *Params) (*messageRequest, error) {
+func paramsToRequest(originator string, recipients []string, body string, params *Params) (*messageRequest, error) {
 	if originator == "" {
 		return nil, errors.New("originator is required")
 	}
