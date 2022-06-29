@@ -59,9 +59,6 @@ Amount: 9
 
 Please see the other examples for a complete overview of all the available API calls.
 
-## More examples
-* [Conversation API](./conversation/readme.md)
-
 Errors
 ------
 When something goes wrong, our APIs can return more than a single error. They are therefore returned by the client as "error responses" that contain a slice of errors.
