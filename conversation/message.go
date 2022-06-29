@@ -175,7 +175,7 @@ type ListConversationMessagesRequest struct {
 	ExcludePlatforms string
 }
 
-func (lr *ListConversationMessagesRequest) GetParams() string {
+func (lr *ListConversationMessagesRequest) QueryParams() string {
 	if lr == nil {
 		return ""
 	}
@@ -194,7 +194,7 @@ type ListMessagesRequest struct {
 	From *time.Time
 }
 
-func (lr *ListMessagesRequest) GetParams() string {
+func (lr *ListMessagesRequest) QueryParams() string {
 	if lr == nil {
 		return ""
 	}
@@ -224,7 +224,7 @@ func SendMessage(c messagebird.ClientInterface, options *SendMessageRequest) (*M
 // ListConversationMessages gets a collection of messages from a conversation.
 // Pagination can be set in the options.
 func ListConversationMessages(c messagebird.ClientInterface, conversationID string, options *ListConversationMessagesRequest) (*MessageList, error) {
-	uri := fmt.Sprintf("%s/%s/%s?%s", path, conversationID, messagesPath, options.GetParams())
+	uri := fmt.Sprintf("%s/%s/%s?%s", path, conversationID, messagesPath, options.QueryParams())
 
 	messageList := &MessageList{}
 	if err := request(c, messageList, http.MethodGet, uri, nil); err != nil {
@@ -237,7 +237,7 @@ func ListConversationMessages(c messagebird.ClientInterface, conversationID stri
 // ListMessages gets a collection of messages from a conversation.
 // Pagination can be set in the options.
 func ListMessages(c messagebird.ClientInterface, options *ListMessagesRequest) (*MessageList, error) {
-	uri := fmt.Sprintf("%s?%s", messagesPath, options.GetParams())
+	uri := fmt.Sprintf("%s?%s", messagesPath, options.QueryParams())
 
 	messageList := &MessageList{}
 	if err := request(c, messageList, http.MethodGet, uri, nil); err != nil {

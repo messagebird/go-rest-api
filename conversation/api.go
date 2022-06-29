@@ -36,7 +36,7 @@ const (
 )
 
 type GetRequest interface {
-	GetParams() string
+	QueryParams() string
 }
 
 // PaginationRequest can be used to set pagination options in List().
@@ -44,7 +44,7 @@ type PaginationRequest struct {
 	Limit, Offset int
 }
 
-func (lro *PaginationRequest) GetParams() string {
+func (lro *PaginationRequest) QueryParams() string {
 	if lro == nil {
 		return ""
 	}
