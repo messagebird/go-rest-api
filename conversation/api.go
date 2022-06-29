@@ -2,7 +2,7 @@ package conversation
 
 import (
 	"fmt"
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v8"
 	"net/url"
 	"strconv"
 )

@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v8"
 )
 
 // TypeDetails is a hash with extra information.
@@ -100,12 +100,8 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 
 // Delete Cancel sending Scheduled Sms.
 // Return true if have been successfully deleted.
-func Delete(c *messagebird.Client, id string) (bool, error) {
-	if err := c.Request(&Message{}, http.MethodDelete, path+"/"+id, nil); err != nil {
-		return false, err
-	}
-
-	return true, nil
+func Delete(c *messagebird.Client, id string) error {
+	return c.Request(&Message{}, http.MethodDelete, path+"/"+id, nil)
 }
 
 // List retrieves all messages of the user represented as a MessageList object.
