@@ -1,8 +1,8 @@
 package conversation
 
 import (
-	messagebird "github.com/messagebird/go-rest-api/v7"
-	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
+	messagebird "github.com/messagebird/go-rest-api/v8"
+	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
