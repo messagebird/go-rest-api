@@ -23,7 +23,6 @@ func TestSendMessage(t *testing.T) {
 		Source:    map[string]interface{}{"name": "Valera"},
 	})
 	assert.NoError(t, err)
-	t.Log(message)
 	assert.Equal(t, "2e15efafec384e1c82e9842075e87beb", message.ID)
 	assert.Equal(t, MessageStatusAccepted, message.Status)
 
