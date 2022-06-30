@@ -199,7 +199,7 @@ func TestReadNotFound(t *testing.T) {
 
 	message, err := Read(client, "6fe65f90454aa61536e6a88b88972670")
 	assert.Nil(t, message)
-	assert.Errorf(t, err, "API errors: message not found")
+	assert.EqualError(t, err, "API errors: message not found")
 }
 
 func TestList(t *testing.T) {
@@ -279,9 +279,9 @@ func TestDelete(t *testing.T) {
 }
 
 func TestDeleteNotFound(t *testing.T) {
-	mbtest.WillReturnOnlyStatus(http.StatusNotFound)
+	mbtest.WillReturnTestdata(t, "messageNotFound.json", http.StatusNotFound)
 	client := mbtest.Client(t)
 
 	err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
-	assert.Errorf(t, err, "API errors: message not found")
+	assert.EqualError(t, err, "API errors: message not found")
 }

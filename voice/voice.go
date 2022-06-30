@@ -32,7 +32,7 @@ func init() {
 	// unmarshal those. Package messagebird must not import the voice package to
 	// safeguard against import cycles, so it can not use voice.ErrorResponse
 	// directly.
-	messagebird.SetVoiceErrorReader(errorReader)
+	messagebird.SetErrorReader(errorReader)
 }
 
 // errorReader takes a []byte representation of a Voice API JSON error and

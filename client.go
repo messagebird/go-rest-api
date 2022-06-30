@@ -33,9 +33,6 @@ const (
 
 	// httpClientTimeout is used to limit http.Client waiting time.
 	httpClientTimeout = 15 * time.Second
-
-	// voiceHost is the host name for the Voice API.
-	voiceHost = "voice.messagebird.com"
 )
 
 var (
@@ -79,7 +76,12 @@ const (
 // errorReader reads the provided byte slice into an appropriate error.
 type errorReader func([]byte) error
 
-var voiceErrorReader errorReader
+var customErrorReader errorReader
+
+// SetErrorReader takes an errorReader that must parse raw JSON errors
+func SetErrorReader(r errorReader) {
+	customErrorReader = r
+}
 
 // New creates a new MessageBird client object.
 func New(accessKey string) *Client {
@@ -90,12 +92,6 @@ func New(accessKey string) *Client {
 		},
 		features: make(map[Feature]bool),
 	}
-}
-
-// SetVoiceErrorReader takes an errorReader that must parse raw JSON errors
-// returned from the Voice API.
-func SetVoiceErrorReader(r errorReader) {
-	voiceErrorReader = r
 }
 
 // EnableFeatures enables a feature.
@@ -192,17 +188,22 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		return ErrUnexpectedResponse
 	default:
 		// Anything else than a 200/201/204/500 should be a JSON error.
-		if uri.Host == voiceHost && voiceErrorReader != nil {
-			return voiceErrorReader(responseBody)
+		if customErrorReader != nil {
+			return customErrorReader(responseBody)
 		}
 
-		var errorResponse ErrorResponse
-		if err := json.Unmarshal(responseBody, &errorResponse); err != nil {
-			return err
-		}
-
-		return errorResponse
+		return defaultErrorReader(responseBody)
 	}
+}
+
+func defaultErrorReader(b []byte) error {
+	var errorResponse ErrorResponse
+
+	if err := json.Unmarshal(b, &errorResponse); err != nil {
+		return err
+	}
+
+	return errorResponse
 }
 
 // prepareRequestBody takes untyped data and attempts constructing a meaningful
