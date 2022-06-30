@@ -20,7 +20,6 @@ import (
 	"net/url"
 	"runtime"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -47,20 +46,15 @@ var (
 type Feature int
 
 type MessageBirdClient interface {
-	EnableFeatures(feature Feature)
-	DisableFeatures(feature Feature)
-	IsFeatureEnabled(feature Feature) bool
 	Request(v interface{}, method, path string, data interface{}) error
 }
 
 // Client is used to access API with a given key.
 // Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
 type Client struct {
-	AccessKey     string           // The API access key.
-	HTTPClient    *http.Client     // The HTTP client to send requests on.
-	DebugLog      *log.Logger      // Optional logger for debugging purposes.
-	features      map[Feature]bool // Enabled features.
-	featuresMutex sync.RWMutex     // Mutex for accessing feature map.
+	AccessKey  string       // The API access key.
+	HTTPClient *http.Client // The HTTP client to send requests on.
+	DebugLog   *log.Logger  // Optional logger for debugging purposes.
 }
 
 type contentType string
@@ -83,7 +77,6 @@ func New(accessKey string) *Client {
 		HTTPClient: &http.Client{
 			Timeout: httpClientTimeout,
 		},
-		features: make(map[Feature]bool),
 	}
 }
 
@@ -91,30 +84,6 @@ func New(accessKey string) *Client {
 // returned from the Voice API.
 func SetVoiceErrorReader(r errorReader) {
 	voiceErrorReader = r
-}
-
-// EnableFeatures enables a feature.
-func (c *Client) EnableFeatures(feature Feature) {
-	c.featuresMutex.Lock()
-	defer c.featuresMutex.Unlock()
-	c.features[feature] = true
-}
-
-// DisableFeatures disables a feature.
-func (c *Client) DisableFeatures(feature Feature) {
-	c.featuresMutex.Lock()
-	defer c.featuresMutex.Unlock()
-	c.features[feature] = false
-}
-
-// IsFeatureEnabled checks if a feature is enabled.
-func (c *Client) IsFeatureEnabled(feature Feature) bool {
-	c.featuresMutex.RLock()
-	defer c.featuresMutex.RUnlock()
-	if enabled, ok := c.features[feature]; ok {
-		return enabled
-	}
-	return false
 }
 
 // Request is for internal use only and unstable.
