@@ -46,11 +46,6 @@ var (
 // A Feature can be enabled
 type Feature int
 
-const (
-	// FeatureConversationsAPIWhatsAppSandbox Enables the WhatsApp sandbox for conversations API.
-	FeatureConversationsAPIWhatsAppSandbox Feature = iota
-)
-
 type MessageBirdClient interface {
 	EnableFeatures(feature Feature)
 	DisableFeatures(feature Feature)
