@@ -122,7 +122,7 @@ type response struct {
 // CallByID fetches a call by it's ID.
 //
 // An error is returned if no such call flow exists or is accessible.
-func CallByID(client *messagebird.Client, id string) (*Call, error) {
+func CallByID(client messagebird.MessageBirdClient, id string) (*Call, error) {
 	var resp response
 
 	if err := client.Request(&resp, http.MethodGet, apiRoot+"/calls/"+id, nil); err != nil {
@@ -133,7 +133,7 @@ func CallByID(client *messagebird.Client, id string) (*Call, error) {
 }
 
 // Calls returns a Paginator which iterates over all Calls.
-func Calls(client *messagebird.Client) *Paginator {
+func Calls(client messagebird.MessageBirdClient) *Paginator {
 	return newPaginator(client, apiRoot+"/calls/", reflect.TypeOf(Call{}))
 }
 
@@ -142,7 +142,7 @@ func Calls(client *messagebird.Client) *Paginator {
 // When placing a call, you pass the source (the caller ID), the destination
 // (the number/address that will be called), and the callFlow (the call flow to
 // execute when the call is answered).
-func InitiateCall(client *messagebird.Client, source, destination string, callflow CallFlow, webhook *Webhook) (*Call, error) {
+func InitiateCall(client messagebird.MessageBirdClient, source, destination string, callflow CallFlow, webhook *Webhook) (*Call, error) {
 	req := createCallRequest{
 		Source:      source,
 		Destination: destination,
@@ -164,11 +164,11 @@ func InitiateCall(client *messagebird.Client, source, destination string, callfl
 // Delete deletes the Call.
 //
 // If the call is in progress, it hangs up all legs.
-func (call *Call) Delete(client *messagebird.Client) error {
+func (call *Call) Delete(client messagebird.MessageBirdClient) error {
 	return client.Request(nil, http.MethodDelete, fmt.Sprintf("%s/%s/%s", apiRoot, callsPath, call.ID), nil)
 }
 
 // Legs returns a paginator over all Legs associated with a call.
-func (call *Call) Legs(client *messagebird.Client) *Paginator {
+func (call *Call) Legs(client messagebird.MessageBirdClient) *Paginator {
 	return newPaginator(client, fmt.Sprintf("%s/%s/%s/%s", apiRoot, callsPath, call.ID, legsPath), reflect.TypeOf(Leg{}))
 }

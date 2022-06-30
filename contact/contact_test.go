@@ -101,7 +101,7 @@ func TestRead(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	contact, err := Read(client, "contact-id")
+	contact, err := Read(client, "contact-id", nil)
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")
@@ -127,7 +127,7 @@ func TestReadWithCustomDetails(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactObjectWithCustomDetails.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	contact, err := Read(client, "contact-id")
+	contact, err := Read(client, "contact-id", nil)
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")

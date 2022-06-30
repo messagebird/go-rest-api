@@ -61,7 +61,7 @@ const hlrPath = "hlr"
 const lookupPath = "lookup"
 
 // Read performs a new lookup for the specified number.
-func Read(c *messagebird.Client, phoneNumber string, params *Params) (*Lookup, error) {
+func Read(c messagebird.MessageBirdClient, phoneNumber string, params *Params) (*Lookup, error) {
 	path := lookupPath + "/" + phoneNumber + "?" + params.QueryParams()
 
 	lookup := &Lookup{}
@@ -73,7 +73,7 @@ func Read(c *messagebird.Client, phoneNumber string, params *Params) (*Lookup, e
 }
 
 // CreateHLR creates a new HLR lookup for the specified number.
-func CreateHLR(c *messagebird.Client, phoneNumber string, params *Params) (*hlr.HLR, error) {
+func CreateHLR(c messagebird.MessageBirdClient, phoneNumber string, params *Params) (*hlr.HLR, error) {
 	requestData := requestDataForLookup(params)
 	path := lookupPath + "/" + phoneNumber + "/" + hlrPath
 
@@ -86,7 +86,7 @@ func CreateHLR(c *messagebird.Client, phoneNumber string, params *Params) (*hlr.
 }
 
 // ReadHLR performs a HLR lookup for the specified number.
-func ReadHLR(c *messagebird.Client, phoneNumber string, params *Params) (*hlr.HLR, error) {
+func ReadHLR(c messagebird.MessageBirdClient, phoneNumber string, params *Params) (*hlr.HLR, error) {
 	path := lookupPath + "/" + phoneNumber + "/" + hlrPath + "?" + params.QueryParams()
 
 	val := &hlr.HLR{}

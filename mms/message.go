@@ -36,7 +36,7 @@ type CreateRequest struct {
 }
 
 // Read retrieves the information of an existing MmsMessage.
-func Read(c *messagebird.Client, id string) (*Message, error) {
+func Read(c messagebird.MessageBirdClient, id string) (*Message, error) {
 	mmsMessage := &Message{}
 	if err := c.Request(mmsMessage, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 
 // Create creates a new MMS message for one or more recipients.
 // Max of 50 recipients can be entered per request.
-func Create(c *messagebird.Client, req *CreateRequest) (*Message, error) {
+func Create(c messagebird.MessageBirdClient, req *CreateRequest) (*Message, error) {
 	mmsMessage := &Message{}
 	if err := c.Request(mmsMessage, http.MethodPost, path, req); err != nil {
 		return nil, err

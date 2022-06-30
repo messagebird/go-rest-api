@@ -54,7 +54,7 @@ type verifyRequest struct {
 }
 
 // Create generates a new One-Time-Password for one recipient.
-func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, error) {
+func Create(c messagebird.MessageBirdClient, recipient string, params *Params) (*Verify, error) {
 	requestData, err := paramsToVerifyRequest(recipient, params)
 	if err != nil {
 		return nil, err
@@ -69,12 +69,12 @@ func Create(c *messagebird.Client, recipient string, params *Params) (*Verify, e
 }
 
 // Delete deletes an existing Verify object by its ID.
-func Delete(c *messagebird.Client, id string) error {
+func Delete(c messagebird.MessageBirdClient, id string) error {
 	return c.Request(nil, http.MethodDelete, path+"/"+id, nil)
 }
 
 // Read retrieves an existing Verify object by its ID.
-func Read(c *messagebird.Client, id string) (*Verify, error) {
+func Read(c messagebird.MessageBirdClient, id string) (*Verify, error) {
 	verify := &Verify{}
 
 	if err := c.Request(verify, http.MethodGet, path+"/"+id, nil); err != nil {
@@ -85,7 +85,7 @@ func Read(c *messagebird.Client, id string) (*Verify, error) {
 }
 
 // VerifyToken performs token value check against MessageBird API.
-func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
+func VerifyToken(c messagebird.MessageBirdClient, id, token string) (*Verify, error) {
 	pathWithParams := path + "/" + id + "?token=" + token
 
 	verify := &Verify{}
@@ -96,7 +96,7 @@ func VerifyToken(c *messagebird.Client, id, token string) (*Verify, error) {
 	return verify, nil
 }
 
-func ReadVerifyEmailMessage(c *messagebird.Client, id string) (*VerifyMessage, error) {
+func ReadVerifyEmailMessage(c messagebird.MessageBirdClient, id string) (*VerifyMessage, error) {
 	verifyMessage := &VerifyMessage{}
 	if err := c.Request(verifyMessage, http.MethodGet, emailMessagesPath+"/"+id, nil); err != nil {
 		return nil, err

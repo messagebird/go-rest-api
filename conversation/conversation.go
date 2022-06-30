@@ -169,7 +169,7 @@ func List(c messagebird.MessageBirdClient, options *ListRequest) (*Conversations
 }
 
 // ListByContact fetches a collection of Conversations of a specific MessageBird contact ID.
-func ListByContact(c messagebird.MessageBirdClient, contactId string, options *PaginationRequest) (*ConversationsByContact, error) {
+func ListByContact(c messagebird.MessageBirdClient, contactId string, options *messagebird.PaginationRequest) (*ConversationsByContact, error) {
 	reqPath := fmt.Sprintf("%s/%s/%s?%s", path, contactPath, contactId, options.QueryParams())
 
 	conv := &ConversationsByContact{}

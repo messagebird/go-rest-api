@@ -44,7 +44,7 @@ type Contacts struct {
 // CreateRequest represents a contact for write operations, e.g. for creating a new
 // contact or updating an existing one.
 type CreateRequest struct {
-	MSISDN    string `json:"msisdn"`
+	MSISDN    string `json:"msisdn,omitempty"`
 	FirstName string `json:"firstName,omitempty"`
 	LastName  string `json:"lastName,omitempty"`
 	Custom1   string `json:"custom1,omitempty"`
@@ -58,7 +58,7 @@ type ViewRequest struct {
 	Name   string `json:"firstName,omitempty"`
 }
 
-func Create(c *messagebird.Client, contactRequest *CreateRequest) (*Contact, error) {
+func Create(c messagebird.MessageBirdClient, contactRequest *CreateRequest) (*Contact, error) {
 	contact := &Contact{}
 	if err := c.Request(contact, http.MethodPost, path, contactRequest); err != nil {
 		return nil, err
@@ -69,13 +69,13 @@ func Create(c *messagebird.Client, contactRequest *CreateRequest) (*Contact, err
 
 // Delete attempts deleting the contact with the provided ID. If nil is returned,
 // the resource was deleted successfully.
-func Delete(c *messagebird.Client, id string) error {
+func Delete(c messagebird.MessageBirdClient, id string) error {
 	return c.Request(nil, http.MethodDelete, path+"/"+id, nil)
 }
 
 // List retrieves a paginated list of contacts, based on the options provided.
 // It's worth noting DefaultListOptions.
-func List(c *messagebird.Client, options *messagebird.PaginationRequest) (*Contacts, error) {
+func List(c messagebird.MessageBirdClient, options *messagebird.PaginationRequest) (*Contacts, error) {
 	contactList := &Contacts{}
 	if err := c.Request(contactList, http.MethodGet, path+"?"+options.QueryParams(), nil); err != nil {
 		return nil, err
@@ -85,7 +85,7 @@ func List(c *messagebird.Client, options *messagebird.PaginationRequest) (*Conta
 }
 
 // Read retrieves the information of an existing contact.
-func Read(c *messagebird.Client, id string, req *ViewRequest) (*Contact, error) {
+func Read(c messagebird.MessageBirdClient, id string, req *ViewRequest) (*Contact, error) {
 	contact := &Contact{}
 	if err := c.Request(contact, http.MethodGet, path+"/"+id, req); err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func Read(c *messagebird.Client, id string, req *ViewRequest) (*Contact, error) 
 
 // Update updates the record referenced by id with any values set in contactRequest.
 // Do not set any values that should not be updated.
-func Update(c *messagebird.Client, id string, contactRequest *CreateRequest) (*Contact, error) {
+func Update(c messagebird.MessageBirdClient, id string, contactRequest *CreateRequest) (*Contact, error) {
 	contact := &Contact{}
 	if err := c.Request(contact, http.MethodPatch, path+"/"+id, contactRequest); err != nil {
 		return nil, err
