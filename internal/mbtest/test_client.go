@@ -27,7 +27,7 @@ func (c *ClientMock) Request(v interface{}, method, path string, data interface{
 }
 
 // MockClient initializes a new mock of MessageBird client
-func MockClient() messagebird.ClientInterface {
+func MockClient() messagebird.MessageBirdClient {
 	return &ClientMock{}
 }
 

@@ -32,7 +32,7 @@ type CallFlow struct {
 }
 
 type jsonCallFlow struct {
-	ID        string         `json:"id,omitempt"`
+	ID        string         `json:"id,omitempty"`
 	Title     string         `json:"title,omitempty"`
 	Steps     []CallFlowStep `json:"steps"`
 	Record    bool           `json:"record"`

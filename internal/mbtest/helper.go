@@ -22,17 +22,17 @@ func Testdata(t *testing.T, relativePath string) []byte {
 	return b
 }
 
-// AssertTestData gets testdata and asserts it equals actual. We start by
+// AssertTestdata gets testdata and asserts it equals actual. We start by
 // slicing off all leading and trailing white space, as defined by Unicode.
-func AssertTestData(t *testing.T, relativePath string, actual []byte) {
+func AssertTestdata(t *testing.T, relativePath string, actual []byte) {
 	expected := bytes.TrimSpace(Testdata(t, relativePath))
 	actual = bytes.TrimSpace(actual)
 
 	assert.Truef(t, bytes.Equal(expected, actual), "expected %s, got %s", expected, actual)
 }
 
-// AssertTestDataJson gets testdata as json and asserts it equals actual.
-func AssertTestDataJson(t *testing.T, relativePath string, actual []byte) {
+// AssertTestdataJson gets testdata as json and asserts it equals actual.
+func AssertTestdataJson(t *testing.T, relativePath string, actual []byte) {
 	expected := bytes.TrimSpace(Testdata(t, relativePath))
 	actual = bytes.TrimSpace(actual)
 

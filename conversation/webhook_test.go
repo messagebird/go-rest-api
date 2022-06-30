@@ -25,7 +25,7 @@ func TestCreateWebhook(t *testing.T) {
 	assert.Equal(t, "whid", webhook.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/webhooks")
-	mbtest.AssertTestDataJson(t, "webhookCreateRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestdataJson(t, "webhookCreateRequest.json", mbtest.Request.Body)
 }
 
 func TestDeleteWebhook(t *testing.T) {
@@ -114,5 +114,5 @@ func TestUpdateWebhook(t *testing.T) {
 	assert.Equal(t, WebhookStatusDisabled, webhook.Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/webhooks/whid")
-	mbtest.AssertTestDataJson(t, "webhookUpdateRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestdataJson(t, "webhookUpdateRequest.json", mbtest.Request.Body)
 }

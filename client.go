@@ -51,7 +51,7 @@ const (
 	FeatureConversationsAPIWhatsAppSandbox Feature = iota
 )
 
-type ClientInterface interface {
+type MessageBirdClient interface {
 	EnableFeatures(feature Feature)
 	DisableFeatures(feature Feature)
 	IsFeatureEnabled(feature Feature) bool
