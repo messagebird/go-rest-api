@@ -75,7 +75,7 @@ func Delete(c *messagebird.Client, id string) error {
 
 // List retrieves a paginated list of contacts, based on the options provided.
 // It's worth noting DefaultListOptions.
-func List(c *messagebird.Client, options *messagebird.CommonPaginationRequest) (*Contacts, error) {
+func List(c *messagebird.Client, options *messagebird.PaginationRequest) (*Contacts, error) {
 	contactList := &Contacts{}
 	if err := c.Request(contactList, http.MethodGet, path+"?"+options.QueryParams(), nil); err != nil {
 		return nil, err

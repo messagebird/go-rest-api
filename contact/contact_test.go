@@ -81,11 +81,11 @@ func TestListPagination(t *testing.T) {
 
 	tt := []struct {
 		expected string
-		options  *messagebird.CommonPaginationRequest
+		options  *messagebird.PaginationRequest
 	}{
 		{"limit=20&offset=0", messagebird.DefaultPagination},
-		{"limit=10&offset=25", &messagebird.CommonPaginationRequest{Limit: 10, Offset: 25}},
-		{"limit=50&offset=10", &messagebird.CommonPaginationRequest{Limit: 50, Offset: 10}},
+		{"limit=10&offset=25", &messagebird.PaginationRequest{Limit: 10, Offset: 25}},
+		{"limit=50&offset=10", &messagebird.PaginationRequest{Limit: 50, Offset: 10}},
 	}
 
 	for _, tc := range tt {

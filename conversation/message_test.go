@@ -82,7 +82,7 @@ func TestListConversationMessages(t *testing.T) {
 		messageList, err := ListConversationMessages(
 			client,
 			conversationId,
-			&ListConversationMessagesRequest{messagebird.CommonPaginationRequest{Limit: 20, Offset: 2}, "sms,whatsapp,facebook"},
+			&ListConversationMessagesRequest{messagebird.PaginationRequest{Limit: 20, Offset: 2}, "sms,whatsapp,facebook"},
 		)
 		assert.NoError(t, err)
 		assert.Equal(t, 2, messageList.Offset)

@@ -87,7 +87,7 @@ func Delete(c *messagebird.Client, id string) error {
 
 // List retrieves a paginated list of groups, based on the options provided.
 // It's worth noting DefaultListOptions.
-func List(c *messagebird.Client, options *messagebird.CommonPaginationRequest) (*Groups, error) {
+func List(c *messagebird.Client, options *messagebird.PaginationRequest) (*Groups, error) {
 	groupList := &Groups{}
 	if err := c.Request(groupList, http.MethodGet, path+"?"+options.QueryParams(), nil); err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func List(c *messagebird.Client, options *messagebird.CommonPaginationRequest) (
 	return groupList, nil
 }
 
-func listQuery(options *messagebird.CommonPaginationRequest) (string, error) {
+func listQuery(options *messagebird.PaginationRequest) (string, error) {
 	if options.Limit < 10 {
 		return "", fmt.Errorf("minimum limit is 10, got %d", options.Limit)
 	}
@@ -179,7 +179,7 @@ func addContactsData(contactIDs []string) string {
 }
 
 // ListContacts lists the contacts that are a member of a group.
-func ListContacts(c *messagebird.Client, groupID string, options *messagebird.CommonPaginationRequest) (*contact.Contacts, error) {
+func ListContacts(c *messagebird.Client, groupID string, options *messagebird.PaginationRequest) (*contact.Contacts, error) {
 	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, options.QueryParams())
 
 	contacts := &contact.Contacts{}

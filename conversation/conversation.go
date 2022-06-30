@@ -107,7 +107,7 @@ type UpdateRequest struct {
 // ListRequest retrieves all conversations sorted by the lastReceivedDatetime field
 // so that all conversations with new messages appear first.
 type ListRequest struct {
-	messagebird.CommonPaginationRequest
+	messagebird.PaginationRequest
 	Ids    string
 	Status *Status
 }
@@ -133,7 +133,7 @@ func (lr *ListRequest) QueryParams() string {
 }
 
 type ListByContactRequest struct {
-	messagebird.CommonPaginationRequest
+	messagebird.PaginationRequest
 	Id     string
 	Status *Status
 }
@@ -159,7 +159,7 @@ func (lr *ListByContactRequest) QueryParams() string {
 }
 
 // List gets a collection of Conversations. Pagination can be set in options.
-func List(c messagebird.MessageBirdClient, options *ListRequest) (*ConversationList, error) {
+func List(c messagebird.MessageBirdClient, options *ListRequest) (*Conversations, error) {
 	convList := &Conversations{}
 	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, options.QueryParams()), nil); err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ func List(c messagebird.MessageBirdClient, options *ListRequest) (*ConversationL
 }
 
 // ListByContact fetches a collection of Conversations of a specific MessageBird contact ID.
-func ListByContact(c messagebird.MessageBirdClient, contactId string, options *PaginationRequest) (*ConversationByContactList, error) {
+func ListByContact(c messagebird.MessageBirdClient, contactId string, options *PaginationRequest) (*ConversationsByContact, error) {
 	reqPath := fmt.Sprintf("%s/%s/%s?%s", path, contactPath, contactId, options.QueryParams())
 
 	conv := &ConversationsByContact{}

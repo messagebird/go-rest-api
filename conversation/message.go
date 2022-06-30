@@ -171,7 +171,7 @@ type SendMessageRequest struct {
 }
 
 type ListConversationMessagesRequest struct {
-	messagebird.CommonPaginationRequest
+	messagebird.PaginationRequest
 	ExcludePlatforms string
 }
 

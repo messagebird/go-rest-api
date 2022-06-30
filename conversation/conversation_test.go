@@ -15,7 +15,7 @@ func TestList(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "conversationListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		convList, err := List(client, &ListRequest{messagebird.CommonPaginationRequest{Limit: 10, Offset: 20}, "", nil})
+		convList, err := List(client, &ListRequest{messagebird.PaginationRequest{Limit: 10, Offset: 20}, "", nil})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 20, convList.Offset)
@@ -55,7 +55,7 @@ func TestListByContact(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "conversationListByContact.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		convList, err := ListByContact(client, contactId, &messagebird.CommonPaginationRequest{Limit: 20, Offset: 2})
+		convList, err := ListByContact(client, contactId, &messagebird.PaginationRequest{Limit: 20, Offset: 2})
 
 		assert.NoError(t, err)
 		assert.Equal(t, 2, convList.Offset)

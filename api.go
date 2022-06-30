@@ -5,16 +5,12 @@ import (
 	"strconv"
 )
 
-type PaginationRequest interface {
-	QueryParams() string
-}
-
-// CommonPaginationRequest can be used to set pagination options in List().
-type CommonPaginationRequest struct {
+// PaginationRequest can be used to set pagination options in List().
+type PaginationRequest struct {
 	Limit, Offset int
 }
 
-func (cpr *CommonPaginationRequest) QueryParams() string {
+func (cpr *PaginationRequest) QueryParams() string {
 	if cpr == nil {
 		return ""
 	}
@@ -27,7 +23,7 @@ func (cpr *CommonPaginationRequest) QueryParams() string {
 }
 
 // DefaultPagination provides reasonable values for List requests.
-var DefaultPagination = &CommonPaginationRequest{
+var DefaultPagination = &PaginationRequest{
 	Limit:  20,
 	Offset: 0,
 }
