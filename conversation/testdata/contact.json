@@ -1,0 +1,15 @@
+{
+    "id": "9354647c5b144a2b4c99f2n42497249",
+    "href": "https://rest.messagebird.com/1/contacts/9354647c5b144a2b4c99f2n42497249",
+    "msisdn": 316123456789,
+    "firstName": "Jen",
+    "lastName": "Smith",
+    "customDetails": {
+        "custom1": null,
+        "custom2": null,
+        "custom3": null,
+        "custom4": null
+    },
+    "createdDatetime": "2022-06-03T20:06:03Z",
+    "updatedDatetime": null
+}

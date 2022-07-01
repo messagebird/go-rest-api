@@ -108,3 +108,11 @@ As v7 introduces support for using the Verify API with email recipients, the `Ve
 ### Update SMS API
 Added [missed fields](https://github.com/messagebird/go-rest-api/pull/119/commits/f9331269238f1518dd35d798a0fbf251bb04bb62) in SMS API.
 Updated `sms.Delete` method so now in return only error or nil as result.
+
+## `v8.0.0` -> `v8.1.0`
+### Update Conversations API
+* Replaced `conversations.CreateMessage` with `conversations.Reply` which send a new message to an existing conversation.
+* Replaced `conversations.ListMessages` with `conversations.ListConversationMessages` which fetch messages in indicated conversation.
+* Added `conversations.SendMessage` to send a message to a specific recipient in a specific platform.
+* Added `conversations.ListByContact` to retrieves the list of conversation IDs of a specific contact ID.
+* Now `conversations.ListMessages` retrieves a list of messages given a list of message IDs or a timestamp (not both).
