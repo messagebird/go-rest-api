@@ -1,0 +1,14 @@
+{
+    "limit": 1,
+    "offset": 0,
+    "count": 1,
+    "totalCount": 5,
+    "items": [
+        {
+            "name": "myPool",
+            "service": "randomcli",
+            "createdAt": "2021-12-16T15:27:04.342Z",
+            "numbersCount": 10
+        }
+    ]
+}

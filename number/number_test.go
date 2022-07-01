@@ -17,7 +17,7 @@ func TestSearch(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "numberSearch.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	numLis, err := Search(client, "NL", &ListRequest{
+	numLis, err := Search(client, "NL", &SearchRequest{
 		Limit:         10,
 		Features:      []string{"sms", "voice"},
 		Type:          "mobile",
@@ -29,7 +29,7 @@ func TestSearch(t *testing.T) {
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/v1/available-phone-numbers/NL")
 
 	query := mbtest.Request.URL.RawQuery
-	assert.Equal(t, "features=sms&features=voice&limit=10&search_pattern=end&type=mobile", query)
+	assert.Equal(t, "exclude_numbers_require_verification=false&features=sms&features=voice&limit=10&prices=false&search_pattern=end&type=mobile", query)
 }
 
 func TestList(t *testing.T) {
@@ -72,7 +72,7 @@ func TestUpdate(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "numberUpdatedObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	number, err := Update(client, "31612345670", &NumberUpdateRequest{
+	number, err := Update(client, "31612345670", &UpdateRequest{
 		Tags: []string{"tag1", "tag2", "tag3"},
 	})
 	assert.NoError(t, err)
@@ -89,7 +89,7 @@ func TestPurchase(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "numberCreateObject.json", http.StatusCreated)
 	client := mbtest.Client(t)
 
-	number, err := Purchase(client, &NumberPurchaseRequest{
+	number, err := Purchase(client, &PurchaseRequest{
 		Number:                "31971234567",
 		Country:               "NL",
 		BillingIntervalMonths: 1,

@@ -1,14 +1,25 @@
 {
-  "items": [
-    {
-      "number": "3197010260188",
-      "country": "NL",
-      "region": "",
-      "locality": "",
-      "features": ["sms", "voice"],
-      "type": "mobile"
-    }
-  ],
-  "limit": 20,
-  "count": 1
+    "items": [
+        {
+            "number": "3197010260188",
+            "country": "NL",
+            "region": "",
+            "locality": "",
+            "features": [
+                "sms",
+                "voice"
+            ],
+            "type": "mobile",
+            "verificationRequired": true,
+            "initialContractDuration": 2,
+            "inboundCallsOnly": false,
+            "monthlyPrice": 1,
+            "currency": "EUR",
+            "conditions": [
+                "Proof of in region address (max 3 months old)"
+            ]
+        }
+    ],
+    "limit": 20,
+    "count": 1
 }
