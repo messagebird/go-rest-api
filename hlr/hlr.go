@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 // path represents the path to the HLR resource.

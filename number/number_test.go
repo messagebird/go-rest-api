@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 

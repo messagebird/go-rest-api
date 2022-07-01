@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 // CallStatus enumerates all valid values for a call status.

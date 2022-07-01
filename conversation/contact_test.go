@@ -2,7 +2,7 @@ package conversation
 
 import (
 	"encoding/json"
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

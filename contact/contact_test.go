@@ -1,13 +1,13 @@
 package contact
 
 import (
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {

@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 const (

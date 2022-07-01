@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
-	"github.com/messagebird/go-rest-api/v8/contact"
+	messagebird "github.com/messagebird/go-rest-api/v9"
+	"github.com/messagebird/go-rest-api/v9/contact"
 )
 
 const (

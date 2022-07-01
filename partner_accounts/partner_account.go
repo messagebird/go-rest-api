@@ -3,7 +3,7 @@ package partner_accounts
 import (
 	"encoding/json"
 	"fmt"
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"net/http"
 )
 

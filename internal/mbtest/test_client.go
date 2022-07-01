@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"testing"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 type ClientMock struct {

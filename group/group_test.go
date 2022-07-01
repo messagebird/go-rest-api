@@ -1,12 +1,12 @@
 package group
 
 import (
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 

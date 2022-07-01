@@ -1,7 +1,7 @@
 package partner_accounts
 
 import (
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
