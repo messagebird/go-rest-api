@@ -79,39 +79,3 @@ func TestRead(t *testing.T) {
 	_, ok := err.(messagebird.ErrorResponse)
 	assert.False(t, ok)
 }
-
-//func TestCreateError(t *testing.T) {
-//	mbtest.WillReturnAccessKeyError()
-//	client := mbtest.Client(t)
-//
-//	scheduledDateTime := time.Now()
-//
-//	req := &CreateRequest{
-//		Body:              "Hello World",
-//		ScheduledDatetime: &scheduledDateTime,
-//	}
-//
-//	_, err := Create(client, req)
-//
-//	errorResponse, ok := err.(messagebird.ErrorResponse)
-//	assert.True(t, ok)
-//	assert.Len(t, errorResponse.Errors, 1)
-//	assert.Equal(t, 2, errorResponse.Errors[0].Code)
-//	assert.Equal(t, "access_key", errorResponse.Errors[0].Parameter)
-//}
-
-//func TestCreateWithEmptyParams(t *testing.T) {
-//	client := mbtest.Client(t)
-//
-//	scheduledDateTime := time.Now()
-//
-//	params := &CreateRequest{
-//		Body:              "",
-//		Subject:           "",
-//		Reference:         "",
-//		ScheduledDatetime: &scheduledDateTime,
-//	}
-//
-//	_, err := Create(client, "TestName", []string{"31612345678"}, params)
-//	assert.EqualError(t, err, "Body or MediaUrls is required")
-//}
