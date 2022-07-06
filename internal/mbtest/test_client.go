@@ -27,16 +27,16 @@ func (c *ClientMock) Request(v interface{}, method, path string, data interface{
 }
 
 // MockClient initializes a new mock of MessageBird client
-func MockClient() messagebird.MessageBirdClient {
+func MockClient() messagebird.Client {
 	return &ClientMock{}
 }
 
 // Client initializes a new MessageBird client that uses the
-func Client(t *testing.T) *messagebird.Client {
+func Client(t *testing.T) *messagebird.BasicClient {
 	return newClient(t, "")
 }
 
-func newClient(t *testing.T, accessKey string) *messagebird.Client {
+func newClient(t *testing.T, accessKey string) *messagebird.BasicClient {
 	transport := &http.Transport{
 		DialTLS: func(network, _ string) (net.Conn, error) {
 			addr := server.Listener.Addr().String()

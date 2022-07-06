@@ -60,7 +60,7 @@ type CreateBackorderEndUserDetailRequest struct {
 	Country      string
 }
 
-func PlaceBackorder(c messagebird.MessageBirdClient, req *PlaceBackorderRequest) (BackOrderID, error) {
+func PlaceBackorder(c messagebird.Client, req *PlaceBackorderRequest) (BackOrderID, error) {
 	resp := &struct {
 		Id string `json:"id"`
 	}{}
@@ -72,7 +72,7 @@ func PlaceBackorder(c messagebird.MessageBirdClient, req *PlaceBackorderRequest)
 	return BackOrderID(resp.Id), nil
 }
 
-func ReadBackorder(c messagebird.MessageBirdClient, backOrderID string) (*Backorder, error) {
+func ReadBackorder(c messagebird.Client, backOrderID string) (*Backorder, error) {
 	uri := fmt.Sprintf("%s/%s", pathBackorders, backOrderID)
 
 	bo := &Backorder{}
@@ -83,7 +83,7 @@ func ReadBackorder(c messagebird.MessageBirdClient, backOrderID string) (*Backor
 	return bo, nil
 }
 
-func ListBackorderDocuments(c messagebird.MessageBirdClient, backOrderID string) (*BackorderDocuments, error) {
+func ListBackorderDocuments(c messagebird.Client, backOrderID string) (*BackorderDocuments, error) {
 	uri := fmt.Sprintf("%s/%s/%s", pathBackorders, backOrderID, pathDocuments)
 
 	bd := &BackorderDocuments{}
@@ -94,13 +94,13 @@ func ListBackorderDocuments(c messagebird.MessageBirdClient, backOrderID string)
 	return bd, nil
 }
 
-func CreateBackorderDocument(c messagebird.MessageBirdClient, backOrderID string, req *CreateBackorderDocumentRequest) error {
+func CreateBackorderDocument(c messagebird.Client, backOrderID string, req *CreateBackorderDocumentRequest) error {
 	uri := fmt.Sprintf("%s/%s/%s", pathBackorders, backOrderID, pathDocuments)
 
 	return request(c, nil, http.MethodPost, uri, req)
 }
 
-func ListBackorderEndUserDetails(c messagebird.MessageBirdClient, backOrderID string) (*EndUserDetails, error) {
+func ListBackorderEndUserDetails(c messagebird.Client, backOrderID string) (*EndUserDetails, error) {
 	uri := fmt.Sprintf("%s/%s/%s", pathBackorders, backOrderID, pathEndUserDetails)
 
 	eud := &EndUserDetails{}
@@ -111,7 +111,7 @@ func ListBackorderEndUserDetails(c messagebird.MessageBirdClient, backOrderID st
 	return eud, nil
 }
 
-func CreateBackorderEndUserDetail(c messagebird.MessageBirdClient, backOrderID string, req *CreateBackorderEndUserDetailRequest) error {
+func CreateBackorderEndUserDetail(c messagebird.Client, backOrderID string, req *CreateBackorderEndUserDetailRequest) error {
 	uri := fmt.Sprintf("%s/%s/%s", pathBackorders, backOrderID, pathEndUserDetails)
 
 	return request(c, nil, http.MethodPost, uri, req)

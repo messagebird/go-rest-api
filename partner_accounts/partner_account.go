@@ -65,7 +65,7 @@ type createChildAccountRequest struct {
 	name string
 }
 
-func CreateChildAccount(c messagebird.MessageBirdClient, name string) (*Account, error) {
+func CreateChildAccount(c messagebird.Client, name string) (*Account, error) {
 	a := &Account{}
 
 	req := &createChildAccountRequest{name}
@@ -77,7 +77,7 @@ func CreateChildAccount(c messagebird.MessageBirdClient, name string) (*Account,
 	return a, nil
 }
 
-func UpdateChildAccount(c messagebird.MessageBirdClient, id, name string) (*Account, error) {
+func UpdateChildAccount(c messagebird.Client, id, name string) (*Account, error) {
 	a := &Account{}
 
 	req := &createChildAccountRequest{name}
@@ -89,7 +89,7 @@ func UpdateChildAccount(c messagebird.MessageBirdClient, id, name string) (*Acco
 	return a, nil
 }
 
-func ReadChildAccount(c messagebird.MessageBirdClient, id string) (*Account, error) {
+func ReadChildAccount(c messagebird.Client, id string) (*Account, error) {
 	a := &Account{}
 
 	if err := c.Request(a, http.MethodGet, apiRoot+"/"+childAccountsPath+"/"+id, nil); err != nil {
@@ -100,7 +100,7 @@ func ReadChildAccount(c messagebird.MessageBirdClient, id string) (*Account, err
 }
 
 // ListChildAccount fetch all the Child Accounts
-func ListChildAccount(c messagebird.MessageBirdClient) (*Accounts, error) {
+func ListChildAccount(c messagebird.Client) (*Accounts, error) {
 	a := &Accounts{}
 
 	if err := c.Request(a, http.MethodGet, apiRoot+"/"+childAccountsPath, nil); err != nil {
@@ -110,6 +110,6 @@ func ListChildAccount(c messagebird.MessageBirdClient) (*Accounts, error) {
 	return a, nil
 }
 
-func DeleteChildAccount(c messagebird.MessageBirdClient, id string) error {
+func DeleteChildAccount(c messagebird.Client, id string) error {
 	return c.Request(nil, http.MethodDelete, apiRoot+"/"+childAccountsPath+"/"+id, nil)
 }

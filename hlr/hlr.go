@@ -43,7 +43,7 @@ type hlrRequest struct {
 
 // Read looks up an existing HLR object for the specified id that was previously
 // created by the NewHLR function.
-func Read(c messagebird.MessageBirdClient, id string) (*HLR, error) {
+func Read(c messagebird.Client, id string) (*HLR, error) {
 	hlr := &HLR{}
 	if err := c.Request(hlr, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func Read(c messagebird.MessageBirdClient, id string) (*HLR, error) {
 }
 
 // List all HLR objects that were previously created by the Create function.
-func List(c messagebird.MessageBirdClient) (*HLRList, error) {
+func List(c messagebird.Client) (*HLRList, error) {
 	hlrList := &HLRList{}
 	if err := c.Request(hlrList, http.MethodGet, path, nil); err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func List(c messagebird.MessageBirdClient) (*HLRList, error) {
 }
 
 // Create creates a new HLR object.
-func Create(c messagebird.MessageBirdClient, msisdn string, reference string) (*HLR, error) {
+func Create(c messagebird.Client, msisdn string, reference string) (*HLR, error) {
 	requestData, err := requestDataForHLR(msisdn, reference)
 	if err != nil {
 		return nil, err

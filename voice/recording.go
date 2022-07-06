@@ -67,7 +67,7 @@ type jsonRecording struct {
 }
 
 // ReadRecording fetches a single Recording based on its call ID, leg ID and the recording ID.
-func ReadRecording(c messagebird.MessageBirdClient, callID, legID, id string) (*Recording, error) {
+func ReadRecording(c messagebird.Client, callID, legID, id string) (*Recording, error) {
 	json := new(struct {
 		Data []*Recording `json:"data"`
 	})
@@ -81,7 +81,7 @@ func ReadRecording(c messagebird.MessageBirdClient, callID, legID, id string) (*
 }
 
 // Recordings returns a Paginator which iterates over Recordings.
-func Recordings(c messagebird.MessageBirdClient, callID, legID string) *Paginator {
+func Recordings(c messagebird.Client, callID, legID string) *Paginator {
 	return newPaginator(c, fmt.Sprintf("%s/calls/%s/legs/%s/recordings", apiRoot, callID,
 		legID), reflect.TypeOf(Recording{}))
 }
@@ -104,18 +104,18 @@ func (rec *Recording) UnmarshalJSON(data []byte) error {
 }
 
 // Transcriptions returns a paginator for retrieving all Transcription objects.
-func (rec *Recording) Transcriptions(client messagebird.MessageBirdClient, callID string) *Paginator {
+func (rec *Recording) Transcriptions(client messagebird.Client, callID string) *Paginator {
 	path := apiRoot + rec.Links["self"] + "/transcriptions"
 	return newPaginator(client, path, reflect.TypeOf(Transcription{}))
 }
 
 // Delete deletes a recording.
-func Delete(client messagebird.MessageBirdClient, callID, legID, recordingID string) error {
+func Delete(client messagebird.Client, callID, legID, recordingID string) error {
 	return client.Request(nil, http.MethodDelete, fmt.Sprintf("%s/calls/%s/legs/%s/recordings/%s", apiRoot, callID, legID, recordingID), nil)
 }
 
 // DownloadFile streams the recorded WAV file.
-func (rec *Recording) DownloadFile(client *messagebird.Client) (io.ReadCloser, error) {
+func (rec *Recording) DownloadFile(client *messagebird.BasicClient) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodGet, apiRoot+rec.Links["file"], nil)
 	if err != nil {
 		return nil, err

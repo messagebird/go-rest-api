@@ -113,7 +113,7 @@ func (callflow *CallFlow) UnmarshalJSON(data []byte) error {
 // CallFlowByID fetches a callflow by it's ID.
 //
 // An error is returned if no such call flow exists or is accessible.
-func CallFlowByID(client messagebird.MessageBirdClient, id string) (*CallFlow, error) {
+func CallFlowByID(client messagebird.Client, id string) (*CallFlow, error) {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
@@ -124,14 +124,14 @@ func CallFlowByID(client messagebird.MessageBirdClient, id string) (*CallFlow, e
 }
 
 // CallFlows returns a Paginator which iterates over all CallFlows.
-func CallFlows(client messagebird.MessageBirdClient) *Paginator {
+func CallFlows(client messagebird.Client) *Paginator {
 	return newPaginator(client, apiRoot+"/call-flows/", reflect.TypeOf(CallFlow{}))
 }
 
 // Create creates the callflow remotely.
 //
 // The callflow is updated in-place.
-func (callflow *CallFlow) Create(client messagebird.MessageBirdClient) error {
+func (callflow *CallFlow) Create(client messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
@@ -145,7 +145,7 @@ func (callflow *CallFlow) Create(client messagebird.MessageBirdClient) error {
 // Update updates the call flow by overwriting it.
 //
 // An error is returned if no such call flow exists or is accessible.
-func (callflow *CallFlow) Update(client messagebird.MessageBirdClient) error {
+func (callflow *CallFlow) Update(client messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
@@ -157,7 +157,7 @@ func (callflow *CallFlow) Update(client messagebird.MessageBirdClient) error {
 }
 
 // Delete deletes the CallFlow.
-func (callflow *CallFlow) Delete(client messagebird.MessageBirdClient) error {
+func (callflow *CallFlow) Delete(client messagebird.Client) error {
 	return client.Request(nil, http.MethodDelete, apiRoot+"/call-flows/"+callflow.ID, nil)
 }
 

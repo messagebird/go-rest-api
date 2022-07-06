@@ -31,9 +31,9 @@ const (
 	webhooksPath = "webhooks"
 )
 
-// request does the exact same thing as Client.Request. It does, however,
+// request does the exact same thing as BasicClient.Request. It does, however,
 // prefix the path with the Conversation API's root. This ensures the client
 // doesn't "handle" this for us: by default, it uses the REST API.
-func request(c messagebird.MessageBirdClient, v interface{}, method, path string, data interface{}) error {
+func request(c messagebird.Client, v interface{}, method, path string, data interface{}) error {
 	return c.Request(v, method, fmt.Sprintf("%s/%s", apiRoot, path), data)
 }

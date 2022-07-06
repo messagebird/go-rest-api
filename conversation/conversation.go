@@ -159,7 +159,7 @@ func (lr *ListByContactRequest) QueryParams() string {
 }
 
 // List gets a collection of Conversations. Pagination can be set in options.
-func List(c messagebird.MessageBirdClient, options *ListRequest) (*Conversations, error) {
+func List(c messagebird.Client, options *ListRequest) (*Conversations, error) {
 	convList := &Conversations{}
 	if err := request(c, convList, http.MethodGet, fmt.Sprintf("%s?%s", path, options.QueryParams()), nil); err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ func List(c messagebird.MessageBirdClient, options *ListRequest) (*Conversations
 }
 
 // ListByContact fetches a collection of Conversations of a specific MessageBird contact ID.
-func ListByContact(c messagebird.MessageBirdClient, contactId string, options *messagebird.PaginationRequest) (*ConversationsByContact, error) {
+func ListByContact(c messagebird.Client, contactId string, options *messagebird.PaginationRequest) (*ConversationsByContact, error) {
 	reqPath := fmt.Sprintf("%s/%s/%s?%s", path, contactPath, contactId, options.QueryParams())
 
 	conv := &ConversationsByContact{}
@@ -181,7 +181,7 @@ func ListByContact(c messagebird.MessageBirdClient, contactId string, options *m
 }
 
 // Read fetches a single Conversation based on its ID.
-func Read(c messagebird.MessageBirdClient, id string) (*Conversation, error) {
+func Read(c messagebird.Client, id string) (*Conversation, error) {
 	conv := &Conversation{}
 	if err := request(c, conv, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -192,7 +192,7 @@ func Read(c messagebird.MessageBirdClient, id string) (*Conversation, error) {
 
 // Start creates a conversation by sending an initial message. If an active
 // conversation exists for the recipient, it is resumed.
-func Start(c messagebird.MessageBirdClient, req *StartRequest) (*Conversation, error) {
+func Start(c messagebird.Client, req *StartRequest) (*Conversation, error) {
 	conv := &Conversation{}
 	if err := request(c, conv, http.MethodPost, path+"/"+startConversationPath, req); err != nil {
 		return nil, err
@@ -202,7 +202,7 @@ func Start(c messagebird.MessageBirdClient, req *StartRequest) (*Conversation, e
 }
 
 // Reply Send a new message to an existing conversation. In case the conversation is archived, a new conversation is created.
-func Reply(c messagebird.MessageBirdClient, conversationID string, req *ReplyRequest) (*Message, error) {
+func Reply(c messagebird.Client, conversationID string, req *ReplyRequest) (*Message, error) {
 	uri := fmt.Sprintf("%s/%s/%s", path, conversationID, messagesPath)
 
 	message := &Message{}
@@ -215,7 +215,7 @@ func Reply(c messagebird.MessageBirdClient, conversationID string, req *ReplyReq
 
 // Update changes the conversation's status, so this can be used to (un)archive
 // conversations.
-func Update(c messagebird.MessageBirdClient, id string, req *UpdateRequest) (*Conversation, error) {
+func Update(c messagebird.Client, id string, req *UpdateRequest) (*Conversation, error) {
 	conv := &Conversation{}
 	if err := request(c, conv, http.MethodPatch, path+"/"+id, req); err != nil {
 		return nil, err

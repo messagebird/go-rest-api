@@ -17,7 +17,7 @@ const path = "balance"
 
 // Read returns the balance information for the account that is associated with
 // the access key.
-func Read(c messagebird.MessageBirdClient) (*Balance, error) {
+func Read(c messagebird.Client) (*Balance, error) {
 	balance := &Balance{}
 	if err := c.Request(balance, http.MethodGet, path, nil); err != nil {
 		return nil, err

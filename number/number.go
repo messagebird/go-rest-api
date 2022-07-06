@@ -236,7 +236,7 @@ type PurchaseRequest struct {
 }
 
 // List fetches all purchased phone numbers
-func List(c messagebird.MessageBirdClient, params *ListRequest) (*Numbers, error) {
+func List(c messagebird.Client, params *ListRequest) (*Numbers, error) {
 	uri := fmt.Sprintf("%s?%s", pathPhoneNumbers, params.QueryParams())
 
 	numberList := &Numbers{}
@@ -248,7 +248,7 @@ func List(c messagebird.MessageBirdClient, params *ListRequest) (*Numbers, error
 }
 
 // Search for phone numbers available for purchase, countryCode needs to be in Alpha-2 country code (example: NL)
-func Search(c messagebird.MessageBirdClient, countryCode string, params *SearchRequest) (*NumbersSearching, error) {
+func Search(c messagebird.Client, countryCode string, params *SearchRequest) (*NumbersSearching, error) {
 	uri := fmt.Sprintf("%s/%s?%s", pathNumbersAvailable, countryCode, params.QueryParams())
 
 	numberList := &NumbersSearching{}
@@ -260,7 +260,7 @@ func Search(c messagebird.MessageBirdClient, countryCode string, params *SearchR
 }
 
 // Read get a purchased phone number
-func Read(c messagebird.MessageBirdClient, phoneNumber string) (*Number, error) {
+func Read(c messagebird.Client, phoneNumber string) (*Number, error) {
 	if len(phoneNumber) < 5 {
 		return nil, fmt.Errorf("a phoneNumber is too short")
 	}
@@ -276,14 +276,14 @@ func Read(c messagebird.MessageBirdClient, phoneNumber string) (*Number, error) 
 }
 
 // Delete a purchased phone number
-func Delete(c messagebird.MessageBirdClient, phoneNumber string) error {
+func Delete(c messagebird.Client, phoneNumber string) error {
 	uri := fmt.Sprintf("%s/%s", pathPhoneNumbers, phoneNumber)
 	return request(c, nil, http.MethodDelete, uri, nil)
 }
 
 // Update updates a purchased phone number.
 // Only updating *tags* is supported at the moment.
-func Update(c messagebird.MessageBirdClient, phoneNumber string, req *UpdateRequest) (*Number, error) {
+func Update(c messagebird.Client, phoneNumber string, req *UpdateRequest) (*Number, error) {
 	uri := fmt.Sprintf("%s/%s", pathPhoneNumbers, phoneNumber)
 
 	number := &Number{}
@@ -295,7 +295,7 @@ func Update(c messagebird.MessageBirdClient, phoneNumber string, req *UpdateRequ
 }
 
 // Purchase purchases a phone number.
-func Purchase(c messagebird.MessageBirdClient, numberPurchaseRequest *PurchaseRequest) (*Number, error) {
+func Purchase(c messagebird.Client, numberPurchaseRequest *PurchaseRequest) (*Number, error) {
 	number := &Number{}
 	if err := request(c, number, http.MethodPost, pathPhoneNumbers, numberPurchaseRequest); err != nil {
 		return nil, err
@@ -311,9 +311,9 @@ func paramsForArrays(field string, values []string, urlParams *url.Values) {
 	}
 }
 
-// request does the exact same thing as Client.Request. It does, however,
+// request does the exact same thing as BasicClient.Request. It does, however,
 // prefix the path with the Numbers API's root. This ensures the client
 // doesn't "handle" this for us: by default, it uses the REST API.
-func request(c messagebird.MessageBirdClient, v interface{}, method, path string, data interface{}) error {
+func request(c messagebird.Client, v interface{}, method, path string, data interface{}) error {
 	return c.Request(v, method, fmt.Sprintf("%s/%s", apiRoot, path), data)
 }

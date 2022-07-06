@@ -17,7 +17,7 @@ type Paginator struct {
 	endpoint   string
 	nextPage   int
 	structType reflect.Type
-	client     messagebird.MessageBirdClient
+	client     messagebird.Client
 }
 
 // newPaginator creates a new paginator.
@@ -26,7 +26,7 @@ type Paginator struct {
 // available.
 //
 // typ is the non-pointer type of a single element returned by a page.
-func newPaginator(client messagebird.MessageBirdClient, endpoint string, typ reflect.Type) *Paginator {
+func newPaginator(client messagebird.Client, endpoint string, typ reflect.Type) *Paginator {
 	return &Paginator{
 		endpoint:   endpoint,
 		nextPage:   1, // Page indices start at 1.

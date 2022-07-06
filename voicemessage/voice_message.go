@@ -62,7 +62,7 @@ type voiceMessageRequest struct {
 const path = "voicemessages"
 
 // Read retrieves the information of an existing VoiceMessage.
-func Read(c messagebird.MessageBirdClient, id string) (*VoiceMessage, error) {
+func Read(c messagebird.Client, id string) (*VoiceMessage, error) {
 	message := &VoiceMessage{}
 	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func Read(c messagebird.MessageBirdClient, id string) (*VoiceMessage, error) {
 }
 
 // List retrieves all VoiceMessages of the user.
-func List(c messagebird.MessageBirdClient) (*VoiceMessageList, error) {
+func List(c messagebird.Client) (*VoiceMessageList, error) {
 	messageList := &VoiceMessageList{}
 	if err := c.Request(messageList, http.MethodGet, path, nil); err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func List(c messagebird.MessageBirdClient) (*VoiceMessageList, error) {
 }
 
 // Create a new voice message for one or more recipients.
-func Create(c messagebird.MessageBirdClient, recipients []string, body string, params *Params) (*VoiceMessage, error) {
+func Create(c messagebird.Client, recipients []string, body string, params *Params) (*VoiceMessage, error) {
 	requestData, err := paramsToRequest(recipients, body, params)
 	if err != nil {
 		return nil, err

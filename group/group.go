@@ -58,7 +58,7 @@ type Request struct {
 	Name string `json:"name"`
 }
 
-func Create(c messagebird.MessageBirdClient, request *Request) (*Group, error) {
+func Create(c messagebird.Client, request *Request) (*Group, error) {
 	if err := validateCreate(request); err != nil {
 		return nil, err
 	}
@@ -81,13 +81,13 @@ func validateCreate(request *Request) error {
 
 // Delete attempts deleting the group with the provided ID. If nil is returned,
 // the resource was deleted successfully.
-func Delete(c messagebird.MessageBirdClient, id string) error {
+func Delete(c messagebird.Client, id string) error {
 	return c.Request(nil, http.MethodDelete, path+"/"+id, nil)
 }
 
 // List retrieves a paginated list of groups, based on the options provided.
 // It's worth noting DefaultListOptions.
-func List(c messagebird.MessageBirdClient, options *messagebird.PaginationRequest) (*Groups, error) {
+func List(c messagebird.Client, options *messagebird.PaginationRequest) (*Groups, error) {
 	groupList := &Groups{}
 	if err := c.Request(groupList, http.MethodGet, path+"?"+options.QueryParams(), nil); err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func listQuery(options *messagebird.PaginationRequest) (string, error) {
 }
 
 // Read retrieves the information of an existing group.
-func Read(c messagebird.MessageBirdClient, id string) (*Group, error) {
+func Read(c messagebird.Client, id string) (*Group, error) {
 	group := &Group{}
 	if err := c.Request(group, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func Read(c messagebird.MessageBirdClient, id string) (*Group, error) {
 }
 
 // Update overrides the group with any values provided in request.
-func Update(c messagebird.MessageBirdClient, id string, request *Request) error {
+func Update(c messagebird.Client, id string, request *Request) error {
 	if err := validateUpdate(request); err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func validateUpdate(request *Request) error {
 }
 
 // AddContacts adds a maximum of 50 contacts to the group.
-func AddContacts(c messagebird.MessageBirdClient, groupID string, contactIDs []string) error {
+func AddContacts(c messagebird.Client, groupID string, contactIDs []string) error {
 	if err := validateAddContacts(contactIDs); err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func addContactsData(contactIDs []string) string {
 }
 
 // ListContacts lists the contacts that are a member of a group.
-func ListContacts(c messagebird.MessageBirdClient, groupID string, options *messagebird.PaginationRequest) (*contact.Contacts, error) {
+func ListContacts(c messagebird.Client, groupID string, options *messagebird.PaginationRequest) (*contact.Contacts, error) {
 	formattedPath := fmt.Sprintf("%s/%s/%s?%s", path, groupID, contactPath, options.QueryParams())
 
 	contacts := &contact.Contacts{}
@@ -192,7 +192,7 @@ func ListContacts(c messagebird.MessageBirdClient, groupID string, options *mess
 
 // RemoveContact removes the contact from a group. If nil is returned, the
 // operation was successful.
-func RemoveContact(c messagebird.MessageBirdClient, groupID, contactID string) error {
+func RemoveContact(c messagebird.Client, groupID, contactID string) error {
 	formattedPath := fmt.Sprintf("%s/%s/contacts/%s", path, groupID, contactID)
 
 	return c.Request(nil, http.MethodDelete, formattedPath, nil)

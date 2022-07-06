@@ -82,7 +82,7 @@ func (req *ProductsRequest) QueryParams() string {
 }
 
 // SearchProducts searches for unified communication phone numbers that are available for you to back order.
-func SearchProducts(c messagebird.MessageBirdClient, params *ProductsRequest) (*Products, error) {
+func SearchProducts(c messagebird.Client, params *ProductsRequest) (*Products, error) {
 	uri := fmt.Sprintf("%s?%s", pathProducts, params.QueryParams())
 
 	pr := &Products{}
@@ -94,7 +94,7 @@ func SearchProducts(c messagebird.MessageBirdClient, params *ProductsRequest) (*
 }
 
 // ReadProduct get a purchased phone number
-func ReadProduct(c messagebird.MessageBirdClient, productID string) (*Product, error) {
+func ReadProduct(c messagebird.Client, productID string) (*Product, error) {
 	uri := fmt.Sprintf("%s/%s", pathProducts, productID)
 
 	pr := &Product{}

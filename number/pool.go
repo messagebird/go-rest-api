@@ -65,7 +65,7 @@ type ListPoolNumbersRequest struct {
 	Offset int    `json:"offset,omitempty"`
 }
 
-func CreatePool(c messagebird.MessageBirdClient, req *CreatePoolRequest) (*Pool, error) {
+func CreatePool(c messagebird.Client, req *CreatePoolRequest) (*Pool, error) {
 	p := &Pool{}
 	if err := request(c, p, http.MethodPost, pathPools, req); err != nil {
 		return nil, err
@@ -74,7 +74,7 @@ func CreatePool(c messagebird.MessageBirdClient, req *CreatePoolRequest) (*Pool,
 	return p, nil
 }
 
-func ReadPool(c messagebird.MessageBirdClient, poolName string) (*Pool, error) {
+func ReadPool(c messagebird.Client, poolName string) (*Pool, error) {
 	uri := fmt.Sprintf("%s/%s", pathPools, poolName)
 
 	p := &Pool{}
@@ -85,7 +85,7 @@ func ReadPool(c messagebird.MessageBirdClient, poolName string) (*Pool, error) {
 	return p, nil
 }
 
-func UpdatePool(c messagebird.MessageBirdClient, poolName string, req *UpdatePoolRequest) (*Pool, error) {
+func UpdatePool(c messagebird.Client, poolName string, req *UpdatePoolRequest) (*Pool, error) {
 	uri := fmt.Sprintf("%s/%s", pathPools, poolName)
 
 	p := &Pool{}
@@ -96,13 +96,13 @@ func UpdatePool(c messagebird.MessageBirdClient, poolName string, req *UpdatePoo
 	return p, nil
 }
 
-func DeletePool(c messagebird.MessageBirdClient, poolName string) error {
+func DeletePool(c messagebird.Client, poolName string) error {
 	uri := fmt.Sprintf("%s/%s", pathPools, poolName)
 
 	return request(c, nil, http.MethodDelete, uri, nil)
 }
 
-func ListPool(c messagebird.MessageBirdClient, req *ListPoolRequest) (*Pools, error) {
+func ListPool(c messagebird.Client, req *ListPoolRequest) (*Pools, error) {
 	p := &Pools{}
 	if err := request(c, p, http.MethodGet, pathPools, req); err != nil {
 		return nil, err
@@ -111,7 +111,7 @@ func ListPool(c messagebird.MessageBirdClient, req *ListPoolRequest) (*Pools, er
 	return p, nil
 }
 
-func ListPoolNumbers(c messagebird.MessageBirdClient, poolName string, req *ListPoolNumbersRequest) (*PoolNumbers, error) {
+func ListPoolNumbers(c messagebird.Client, poolName string, req *ListPoolNumbersRequest) (*PoolNumbers, error) {
 	uri := fmt.Sprintf("%s/%s/%s", pathPools, poolName, pathNumbers)
 
 	p := &PoolNumbers{}
@@ -122,7 +122,7 @@ func ListPoolNumbers(c messagebird.MessageBirdClient, poolName string, req *List
 	return p, nil
 }
 
-func AddNumberToPool(c messagebird.MessageBirdClient, poolName string, numbers []string) (*AddNumberToPollResult, error) {
+func AddNumberToPool(c messagebird.Client, poolName string, numbers []string) (*AddNumberToPollResult, error) {
 	uri := fmt.Sprintf("%s/%s/%s", pathPools, poolName, pathNumbers)
 
 	req := &struct {
@@ -137,7 +137,7 @@ func AddNumberToPool(c messagebird.MessageBirdClient, poolName string, numbers [
 	return p, nil
 }
 
-func DeleteNumberFromPool(c messagebird.MessageBirdClient, poolName string, numbers []string) error {
+func DeleteNumberFromPool(c messagebird.Client, poolName string, numbers []string) error {
 	uri := fmt.Sprintf("%s/%s/%s", pathPools, poolName, pathNumbers)
 
 	req := &struct {

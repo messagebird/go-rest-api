@@ -123,7 +123,7 @@ type messageRequest struct {
 const path = "messages"
 
 // Read retrieves the information of an existing Message.
-func Read(c messagebird.MessageBirdClient, id string) (*Message, error) {
+func Read(c messagebird.Client, id string) (*Message, error) {
 	message := &Message{}
 	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -134,12 +134,12 @@ func Read(c messagebird.MessageBirdClient, id string) (*Message, error) {
 
 // Delete Cancel sending Scheduled Sms.
 // Return true if have been successfully deleted.
-func Delete(c messagebird.MessageBirdClient, id string) error {
+func Delete(c messagebird.Client, id string) error {
 	return c.Request(&Message{}, http.MethodDelete, path+"/"+id, nil)
 }
 
 // List retrieves all messages of the user represented as a MessageList object.
-func List(c messagebird.MessageBirdClient, params *ListParams) (*MessageList, error) {
+func List(c messagebird.Client, params *ListParams) (*MessageList, error) {
 	messageList := &MessageList{}
 
 	if err := c.Request(messageList, http.MethodGet, path+"?"+params.QueryParams(), nil); err != nil {
@@ -150,7 +150,7 @@ func List(c messagebird.MessageBirdClient, params *ListParams) (*MessageList, er
 }
 
 // Create creates a new message for one or more recipients.
-func Create(c messagebird.MessageBirdClient, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
+func Create(c messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
 	requestData, err := paramsToRequest(originator, recipients, body, msgParams)
 	if err != nil {
 		return nil, err

@@ -65,13 +65,13 @@ func (wh *Webhook) UnmarshalJSON(data []byte) error {
 }
 
 // Webhooks returns a paginator over all webhooks.
-func Webhooks(client messagebird.MessageBirdClient) *Paginator {
+func Webhooks(client messagebird.Client) *Paginator {
 	return newPaginator(client, apiRoot+"/webhooks/", reflect.TypeOf(Webhook{}))
 }
 
 // CreateWebHook creates a new webhook the specified url that will be called
 // and security token.
-func CreateWebHook(client messagebird.MessageBirdClient, url, token string) (*Webhook, error) {
+func CreateWebHook(client messagebird.Client, url, token string) (*Webhook, error) {
 	data := struct {
 		URL   string `json:"url"`
 		Token string `json:"token,omitempty"`
@@ -89,7 +89,7 @@ func CreateWebHook(client messagebird.MessageBirdClient, url, token string) (*We
 }
 
 // Update syncs hte local state of a webhook to the MessageBird API.
-func (wh *Webhook) Update(client messagebird.MessageBirdClient) error {
+func (wh *Webhook) Update(client messagebird.Client) error {
 	var data struct {
 		Data []Webhook `json:"data"`
 	}
@@ -101,6 +101,6 @@ func (wh *Webhook) Update(client messagebird.MessageBirdClient) error {
 }
 
 // Delete deletes a webhook.
-func (wh *Webhook) Delete(client messagebird.MessageBirdClient) error {
+func (wh *Webhook) Delete(client messagebird.Client) error {
 	return client.Request(nil, http.MethodDelete, apiRoot+"/webhooks/"+wh.ID, nil)
 }
