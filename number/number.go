@@ -311,7 +311,7 @@ func paramsForArrays(field string, values []string, urlParams *url.Values) {
 	}
 }
 
-// request does the exact same thing as BasicClient.Request. It does, however,
+// request does the exact same thing as DefaultClient.Request. It does, however,
 // prefix the path with the Numbers API's root. This ensures the client
 // doesn't "handle" this for us: by default, it uses the REST API.
 func request(c messagebird.Client, v interface{}, method, path string, data interface{}) error {

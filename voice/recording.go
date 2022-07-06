@@ -115,7 +115,7 @@ func Delete(client messagebird.Client, callID, legID, recordingID string) error 
 }
 
 // DownloadFile streams the recorded WAV file.
-func (rec *Recording) DownloadFile(client *messagebird.BasicClient) (io.ReadCloser, error) {
+func (rec *Recording) DownloadFile(client *messagebird.DefaultClient) (io.ReadCloser, error) {
 	req, err := http.NewRequest(http.MethodGet, apiRoot+rec.Links["file"], nil)
 	if err != nil {
 		return nil, err

@@ -12,7 +12,7 @@ import (
 	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
-func testRequest(status int, body []byte) (*messagebird.BasicClient, func()) {
+func testRequest(status int, body []byte) (*messagebird.DefaultClient, func()) {
 	mbServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(status)
@@ -33,12 +33,12 @@ func testRequest(status int, body []byte) (*messagebird.BasicClient, func()) {
 	return mbClient, func() { mbServer.Close() }
 }
 
-func testClient(t *testing.T) (*messagebird.BasicClient, bool) {
+func testClient(t *testing.T) (*messagebird.DefaultClient, bool) {
 	key, ok := os.LookupEnv("MB_TEST_KEY")
 	if !ok {
 		return nil, false
 	}
-	client := &messagebird.BasicClient{
+	client := &messagebird.DefaultClient{
 		AccessKey:  key,
 		HTTPClient: &http.Client{},
 		DebugLog:   log.New(testWriter{T: t}, "", 0),

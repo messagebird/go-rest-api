@@ -46,9 +46,9 @@ type Client interface {
 	Request(v interface{}, method, path string, data interface{}) error
 }
 
-// BasicClient is used to access API with a given key.
+// DefaultClient is used to access API with a given key.
 // Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
-type BasicClient struct {
+type DefaultClient struct {
 	AccessKey  string       // The API access key.
 	HTTPClient *http.Client // The HTTP client to send requests on.
 	DebugLog   *log.Logger  // Optional logger for debugging purposes.
@@ -73,8 +73,8 @@ func SetErrorReader(r errorReader) {
 }
 
 // New creates a new MessageBird client object.
-func New(accessKey string) *BasicClient {
-	return &BasicClient{
+func New(accessKey string) *DefaultClient {
+	return &DefaultClient{
 		AccessKey: accessKey,
 		HTTPClient: &http.Client{
 			Timeout: httpClientTimeout,
@@ -83,7 +83,7 @@ func New(accessKey string) *BasicClient {
 }
 
 // Request is for internal use only and unstable.
-func (c *BasicClient) Request(v interface{}, method, path string, data interface{}) error {
+func (c *DefaultClient) Request(v interface{}, method, path string, data interface{}) error {
 	if !strings.HasPrefix(path, "https://") && !strings.HasPrefix(path, "http://") {
 		path = fmt.Sprintf("%s/%s", Endpoint, path)
 	}

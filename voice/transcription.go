@@ -70,7 +70,7 @@ func (trans *Transcription) UnmarshalJSON(data []byte) error {
 // Contents gets the transcription file.
 //
 // This is a plain text file.
-func (trans *Transcription) Contents(client *messagebird.BasicClient) (string, error) {
+func (trans *Transcription) Contents(client *messagebird.DefaultClient) (string, error) {
 	req, err := http.NewRequest(http.MethodGet, apiRoot+trans.links["file"], nil)
 	if err != nil {
 		return "", err
