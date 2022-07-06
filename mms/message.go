@@ -1,6 +1,7 @@
 package mms
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -48,10 +49,26 @@ func Read(c messagebird.Client, id string) (*Message, error) {
 // Create creates a new MMS message for one or more recipients.
 // Max of 50 recipients can be entered per request.
 func Create(c messagebird.Client, req *CreateRequest) (*Message, error) {
+	if err := validateCreateRequest(req); err != nil {
+		return nil, err
+	}
+
 	mmsMessage := &Message{}
 	if err := c.Request(mmsMessage, http.MethodPost, path, req); err != nil {
 		return nil, err
 	}
 
 	return mmsMessage, nil
+}
+
+func validateCreateRequest(req *CreateRequest) error {
+	if req == nil {
+		return fmt.Errorf("create request should not be nil")
+	}
+
+	if req.Body == "" && len(req.MediaUrls) == 0 {
+		return fmt.Errorf("body or mediaUrls is required")
+	}
+
+	return nil
 }
