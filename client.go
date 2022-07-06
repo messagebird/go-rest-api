@@ -164,7 +164,7 @@ func defaultErrorReader(b []byte) error {
 	var errorResponse ErrorResponse
 
 	if err := json.Unmarshal(b, &errorResponse); err != nil {
-		return err
+		return fmt.Errorf("failed to unmarshal response json %s, error: %v", string(b), err)
 	}
 
 	return errorResponse
