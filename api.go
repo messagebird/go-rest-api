@@ -16,8 +16,12 @@ func (cpr *PaginationRequest) QueryParams() string {
 	}
 
 	query := url.Values{}
-	query.Set("limit", strconv.Itoa(cpr.Limit))
-	query.Set("offset", strconv.Itoa(cpr.Offset))
+	if cpr.Limit > 0 {
+		query.Set("limit", strconv.Itoa(cpr.Limit))
+	}
+	if cpr.Offset >= 0 {
+		query.Set("offset", strconv.Itoa(cpr.Offset))
+	}
 
 	return query.Encode()
 }
