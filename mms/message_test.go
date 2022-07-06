@@ -52,6 +52,36 @@ func TestCreate(t *testing.T) {
 	assert.False(t, ok)
 }
 
+func TestCreateNilRequest(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "mmsMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	message, err := Create(client, nil)
+
+	assert.Nil(t, message)
+	assert.Error(t, err)
+	assert.EqualError(t, err, "create request should not be nil")
+}
+
+func TestCreateWithoutBodyAndMediaUrls(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "mmsMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	scheduledDateTime := time.Now()
+
+	req := &CreateRequest{
+		Subject:           "TestSubject",
+		Reference:         "TestReference",
+		ScheduledDatetime: &scheduledDateTime,
+	}
+
+	message, err := Create(client, req)
+
+	assert.Nil(t, message)
+	assert.Error(t, err)
+	assert.EqualError(t, err, "body or mediaUrls is required")
+}
+
 func TestRead(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "mmsMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
