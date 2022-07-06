@@ -112,7 +112,7 @@ Updated `sms.Delete` method so now in return only error or nil as result.
 ## `v8.0.0` -> `v9.0.0`
 ### General
 * New `PaginationRequest` instead of many in APIs.
-* Interface `messagebird.MessageBirdClient` instead of `messagebird.Client` and new `MockClient` for better testing.
+* New interface `messagebird.Client` and `messagebird.DefaultClient` instead of old implementation `messagebird.Client` and new `MockClient` for better testing.
 * List structures now have a plural ending instead of using word "List". Example: `ContactList` -> `Contacts`.
 * `conversations.ConversationStatus` replaced by `conversations.Status`.
 * `number.NumberPattern` replaced by `number.SearchPattern`.
