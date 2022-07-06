@@ -1,0 +1,56 @@
+{
+    "country": "GB",
+    "numberType": "bv",
+    "backOrderLeadTime": "5 - 10 Business days",
+    "reachableFromNationalFixed": true,
+    "reachableFromNationalMobile": true,
+    "reachableFromPayPhone": true,
+    "verificationRequired": true,
+    "initialContractDuration": "1 year",
+    "prefixes": [
+        {
+            "prefix": "44113",
+            "city": "Leeds",
+            "stateProv": "",
+            "prefixType": "Geographic"
+        },
+        {
+            "prefix": "44114",
+            "city": "Sheffield",
+            "stateProv": "",
+            "prefixType": "Geographic"
+        },
+        {
+            "prefix": "44115",
+            "city": "Nottingham",
+            "stateProv": "",
+            "prefixType": "Geographic"
+        }
+    ],
+    "remarks": [
+        "Customer support is NOT allowed on a PRS number",
+        "The session pricing on your price list will reflect the number cost."
+    ],
+    "conditions": [
+        "Business use: VAT number",
+        "Service description required",
+        "Outbound calling not permitted",
+        "Business use : Name &amp; Address",
+        "Entertainment Services",
+        "A native speaking helpdesk is mandatory",
+        "Customer support email",
+        "URL content-provider &amp; URL content",
+        "Customer support national phone number"
+    ],
+    "endUserData": [
+        "End user name",
+        "End user address",
+        "VAT number",
+        "Content description",
+        "Customer care phone",
+        "Customer care e-mail"
+    ],
+    "forbiddenContent": [
+        "Adult content"
+    ]
+}

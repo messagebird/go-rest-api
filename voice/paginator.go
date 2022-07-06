@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 // A Paginator is used to stream the contents of a collection of some type from
@@ -17,7 +17,7 @@ type Paginator struct {
 	endpoint   string
 	nextPage   int
 	structType reflect.Type
-	client     *messagebird.Client
+	client     messagebird.Client
 }
 
 // newPaginator creates a new paginator.
@@ -26,7 +26,7 @@ type Paginator struct {
 // available.
 //
 // typ is the non-pointer type of a single element returned by a page.
-func newPaginator(client *messagebird.Client, endpoint string, typ reflect.Type) *Paginator {
+func newPaginator(client messagebird.Client, endpoint string, typ reflect.Type) *Paginator {
 	return &Paginator{
 		endpoint:   endpoint,
 		nextPage:   1, // Page indices start at 1.

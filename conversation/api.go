@@ -2,9 +2,7 @@ package conversation
 
 import (
 	"fmt"
-	messagebird "github.com/messagebird/go-rest-api/v8"
-	"net/url"
-	"strconv"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 const (
@@ -33,26 +31,9 @@ const (
 	webhooksPath = "webhooks"
 )
 
-// PaginationRequest can be used to set pagination options in List().
-type PaginationRequest struct {
-	Limit, Offset int
-}
-
-func (lro *PaginationRequest) QueryParams() string {
-	if lro == nil {
-		return ""
-	}
-
-	query := url.Values{}
-	query.Set("limit", strconv.Itoa(lro.Limit))
-	query.Set("offset", strconv.Itoa(lro.Offset))
-
-	return query.Encode()
-}
-
-// request does the exact same thing as Client.Request. It does, however,
+// request does the exact same thing as DefaultClient.Request. It does, however,
 // prefix the path with the Conversation API's root. This ensures the client
 // doesn't "handle" this for us: by default, it uses the REST API.
-func request(c messagebird.MessageBirdClient, v interface{}, method, path string, data interface{}) error {
+func request(c messagebird.Client, v interface{}, method, path string, data interface{}) error {
 	return c.Request(v, method, fmt.Sprintf("%s/%s", apiRoot, path), data)
 }

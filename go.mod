@@ -1,4 +1,4 @@
-module github.com/messagebird/go-rest-api/v8
+module github.com/messagebird/go-rest-api/v9
 
 go 1.16
 

@@ -1,10 +1,11 @@
 package conversation
 
 import (
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"net/http"
 	"testing"
 
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -81,7 +82,7 @@ func TestListConversationMessages(t *testing.T) {
 		messageList, err := ListConversationMessages(
 			client,
 			conversationId,
-			&ListConversationMessagesRequest{PaginationRequest{20, 2}, "sms,whatsapp,facebook"},
+			&ListConversationMessagesRequest{messagebird.PaginationRequest{Limit: 20, Offset: 2}, "sms,whatsapp,facebook"},
 		)
 		assert.NoError(t, err)
 		assert.Equal(t, 2, messageList.Offset)

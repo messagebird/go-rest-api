@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	messagebird "github.com/messagebird/go-rest-api/v9"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -199,7 +199,7 @@ func TestReadNotFound(t *testing.T) {
 
 	message, err := Read(client, "6fe65f90454aa61536e6a88b88972670")
 	assert.Nil(t, message)
-	assert.Errorf(t, err, "API errors: message not found")
+	assert.EqualError(t, err, "API errors: message not found")
 }
 
 func TestList(t *testing.T) {
@@ -254,7 +254,7 @@ func TestRequestDataForMessage(t *testing.T) {
 		ShortenURLs:       true,
 	}
 
-	request, err := requestDataForMessage("MSGBIRD", []string{"31612345678"}, "MyBody", messageParams)
+	request, err := paramsToRequest("MSGBIRD", []string{"31612345678"}, "MyBody", messageParams)
 	assert.NoError(t, err)
 	assert.Equal(t, "MSGBIRD", request.Originator)
 	assert.Equal(t, "31612345678", request.Recipients[0])
@@ -279,9 +279,9 @@ func TestDelete(t *testing.T) {
 }
 
 func TestDeleteNotFound(t *testing.T) {
-	mbtest.WillReturnOnlyStatus(http.StatusNotFound)
+	mbtest.WillReturnTestdata(t, "messageNotFound.json", http.StatusNotFound)
 	client := mbtest.Client(t)
 
 	err := Delete(client, "6fe65f90454aa61536e6a88b88972670")
-	assert.Errorf(t, err, "API errors: message not found")
+	assert.EqualError(t, err, "API errors: message not found")
 }

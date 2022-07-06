@@ -1,0 +1,18 @@
+{
+    "id": 6249799,
+    "name": "Partner Account 3 Sub 1",
+    "accessKeys": [
+        {
+            "id": "6912036c-dd42-489b-8588-8c430aec37ef",
+            "key": "Hb85uQhmgvXXlHK9h3SHaAC4V",
+            "mode": "live"
+        },
+        {
+            "id": "cc620896-33fb-415c-9af1-909123937321",
+            "key": "idG2gFSMayEiFRftcStmBxc71",
+            "mode": "test"
+        }
+    ],
+    "signingKey": "7qxJg4lsDKLAEBXAdxyarcwwvDn7YB00",
+    "invoiceAggregation": true
+}

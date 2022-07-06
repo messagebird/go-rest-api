@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"testing"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 type ClientMock struct {
@@ -27,16 +27,16 @@ func (c *ClientMock) Request(v interface{}, method, path string, data interface{
 }
 
 // MockClient initializes a new mock of MessageBird client
-func MockClient() messagebird.MessageBirdClient {
+func MockClient() messagebird.Client {
 	return &ClientMock{}
 }
 
 // Client initializes a new MessageBird client that uses the
-func Client(t *testing.T) *messagebird.Client {
+func Client(t *testing.T) *messagebird.DefaultClient {
 	return newClient(t, "")
 }
 
-func newClient(t *testing.T, accessKey string) *messagebird.Client {
+func newClient(t *testing.T, accessKey string) *messagebird.DefaultClient {
 	transport := &http.Transport{
 		DialTLS: func(network, _ string) (net.Conn, error) {
 			addr := server.Listener.Addr().String()

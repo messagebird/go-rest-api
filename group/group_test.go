@@ -1,11 +1,12 @@
 package group
 
 import (
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v8/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,13 +27,6 @@ func TestCreate(t *testing.T) {
 	assert.Equal(t, "Friends", group.Name)
 }
 
-func TestCreateWithEmptyName(t *testing.T) {
-	client := mbtest.Client(t)
-
-	_, err := Create(client, &Request{""})
-	assert.Error(t, err)
-}
-
 func TestDelete(t *testing.T) {
 	mbtest.WillReturn([]byte(""), http.StatusNoContent)
 	client := mbtest.Client(t)
@@ -47,7 +41,7 @@ func TestList(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "groupListObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	list, err := List(client, DefaultListOptions)
+	list, err := List(client, messagebird.DefaultPagination)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, list.Offset)
 	assert.Equal(t, 10, list.Limit)
@@ -66,11 +60,11 @@ func TestListPagination(t *testing.T) {
 
 	tt := []struct {
 		expected string
-		options  *ListOptions
+		options  *messagebird.PaginationRequest
 	}{
-		{"limit=10&offset=0", DefaultListOptions},
-		{"limit=10&offset=25", &ListOptions{10, 25}},
-		{"limit=50&offset=10", &ListOptions{50, 10}},
+		{"limit=20&offset=0", messagebird.DefaultPagination},
+		{"limit=10&offset=25", &messagebird.PaginationRequest{Limit: 10, Offset: 25}},
+		{"limit=50&offset=10", &messagebird.PaginationRequest{Limit: 50, Offset: 10}},
 	}
 
 	for _, tc := range tt {
@@ -156,7 +150,7 @@ func TestListContacts(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "groupContactListObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	list, err := ListContacts(client, "group-id", DefaultListOptions)
+	list, err := ListContacts(client, "group-id", messagebird.DefaultPagination)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, list.Offset)
 	assert.Equal(t, 20, list.Limit)

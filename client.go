@@ -25,16 +25,13 @@ import (
 
 const (
 	// ClientVersion is used in User-Agent request header to provide server with API level.
-	ClientVersion = "8.1.0"
+	ClientVersion = "9.0.0"
 
 	// Endpoint points you to MessageBird REST API.
 	Endpoint = "https://rest.messagebird.com"
 
 	// httpClientTimeout is used to limit http.Client waiting time.
 	httpClientTimeout = 15 * time.Second
-
-	// voiceHost is the host name for the Voice API.
-	voiceHost = "voice.messagebird.com"
 )
 
 var (
@@ -45,13 +42,13 @@ var (
 // A Feature can be enabled
 type Feature int
 
-type MessageBirdClient interface {
+type Client interface {
 	Request(v interface{}, method, path string, data interface{}) error
 }
 
-// Client is used to access API with a given key.
+// DefaultClient is used to access API with a given key.
 // Uses standard lib HTTP client internally, so should be reused instead of created as needed and it is safe for concurrent use.
-type Client struct {
+type DefaultClient struct {
 	AccessKey  string       // The API access key.
 	HTTPClient *http.Client // The HTTP client to send requests on.
 	DebugLog   *log.Logger  // Optional logger for debugging purposes.
@@ -68,11 +65,16 @@ const (
 // errorReader reads the provided byte slice into an appropriate error.
 type errorReader func([]byte) error
 
-var voiceErrorReader errorReader
+var customErrorReader errorReader
+
+// SetErrorReader takes an errorReader that must parse raw JSON errors
+func SetErrorReader(r errorReader) {
+	customErrorReader = r
+}
 
 // New creates a new MessageBird client object.
-func New(accessKey string) *Client {
-	return &Client{
+func New(accessKey string) *DefaultClient {
+	return &DefaultClient{
 		AccessKey: accessKey,
 		HTTPClient: &http.Client{
 			Timeout: httpClientTimeout,
@@ -80,14 +82,8 @@ func New(accessKey string) *Client {
 	}
 }
 
-// SetVoiceErrorReader takes an errorReader that must parse raw JSON errors
-// returned from the Voice API.
-func SetVoiceErrorReader(r errorReader) {
-	voiceErrorReader = r
-}
-
 // Request is for internal use only and unstable.
-func (c *Client) Request(v interface{}, method, path string, data interface{}) error {
+func (c *DefaultClient) Request(v interface{}, method, path string, data interface{}) error {
 	if !strings.HasPrefix(path, "https://") && !strings.HasPrefix(path, "http://") {
 		path = fmt.Sprintf("%s/%s", Endpoint, path)
 	}
@@ -156,17 +152,22 @@ func (c *Client) Request(v interface{}, method, path string, data interface{}) e
 		return ErrUnexpectedResponse
 	default:
 		// Anything else than a 200/201/204/500 should be a JSON error.
-		if uri.Host == voiceHost && voiceErrorReader != nil {
-			return voiceErrorReader(responseBody)
+		if customErrorReader != nil {
+			return customErrorReader(responseBody)
 		}
 
-		var errorResponse ErrorResponse
-		if err := json.Unmarshal(responseBody, &errorResponse); err != nil {
-			return err
-		}
-
-		return errorResponse
+		return defaultErrorReader(responseBody)
 	}
+}
+
+func defaultErrorReader(b []byte) error {
+	var errorResponse ErrorResponse
+
+	if err := json.Unmarshal(b, &errorResponse); err != nil {
+		return fmt.Errorf("failed to unmarshal response json %s, error: %v", string(b), err)
+	}
+
+	return errorResponse
 }
 
 // prepareRequestBody takes untyped data and attempts constructing a meaningful

@@ -1,0 +1,11 @@
+{
+    "id": "726db88c-0fd6-44e8-8f0d-9ce2b2a5e16f",
+    "name": "myPool",
+    "service": "randomcli",
+    "createdAt": "2021-12-15T13:40:38.617645742Z",
+    "updatedAt": "2021-12-16T13:40:38.617645742Z",
+    "numbersCount": 0,
+    "configuration": {
+        "byCountry": false
+    }
+}

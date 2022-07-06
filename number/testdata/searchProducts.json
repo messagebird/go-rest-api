@@ -1,0 +1,14 @@
+{
+    "limit": 10,
+    "count": 1,
+    "items": [
+        {
+            "numberType": "bv",
+            "verificationRequired": true,
+            "country": "GB",
+            "id": 1993,
+            "currency": "EUR",
+            "price": 1
+        }
+    ]
+}

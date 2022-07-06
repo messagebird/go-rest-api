@@ -109,8 +109,15 @@ As v7 introduces support for using the Verify API with email recipients, the `Ve
 Added [missed fields](https://github.com/messagebird/go-rest-api/pull/119/commits/f9331269238f1518dd35d798a0fbf251bb04bb62) in SMS API.
 Updated `sms.Delete` method so now in return only error or nil as result.
 
-## `v8.0.0` -> `v8.1.0`
-### Update Conversations API
+## `v8.0.0` -> `v9.0.0`
+### General
+* New `PaginationRequest` instead of many in APIs.
+* Interface `messagebird.MessageBirdClient` instead of `messagebird.Client` and new `MockClient` for better testing.
+* List structures now have a plural ending instead of using word "List". Example: `ContactList` -> `Contacts`.
+* `conversations.ConversationStatus` replaced by `conversations.Status`.
+* `number.NumberPattern` replaced by `number.SearchPattern`.
+* Added [Partner Accounts API](https://developers.messagebird.com/api/partner/).
+### Conversations API
 * Replaced `conversations.CreateMessage` with `conversations.Reply` which send a new message to an existing conversation.
 * Replaced `conversations.ListMessages` with `conversations.ListConversationMessages` which fetch messages in indicated conversation.
 * Added `conversations.SendMessage` to send a message to a specific recipient in a specific platform.

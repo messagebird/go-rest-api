@@ -1,0 +1,28 @@
+{
+    "items": [
+        {
+            "id": "CompanyName",
+            "label": "Company name"
+        },
+        {
+            "id": "Street",
+            "label": "Street"
+        },
+        {
+            "id": "StreetNumber",
+            "label": "Street number"
+        },
+        {
+            "id": "ZipCode",
+            "label": "Zip code"
+        },
+        {
+            "id": "City",
+            "label": "City"
+        },
+        {
+            "id": "Country",
+            "label": "Country"
+        }
+    ]
+}

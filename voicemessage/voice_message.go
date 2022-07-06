@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 // VoiceMessage wraps data needed to transform text messages into voice messages.
@@ -62,7 +62,7 @@ type voiceMessageRequest struct {
 const path = "voicemessages"
 
 // Read retrieves the information of an existing VoiceMessage.
-func Read(c *messagebird.Client, id string) (*VoiceMessage, error) {
+func Read(c messagebird.Client, id string) (*VoiceMessage, error) {
 	message := &VoiceMessage{}
 	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func Read(c *messagebird.Client, id string) (*VoiceMessage, error) {
 }
 
 // List retrieves all VoiceMessages of the user.
-func List(c *messagebird.Client) (*VoiceMessageList, error) {
+func List(c messagebird.Client) (*VoiceMessageList, error) {
 	messageList := &VoiceMessageList{}
 	if err := c.Request(messageList, http.MethodGet, path, nil); err != nil {
 		return nil, err
@@ -82,8 +82,8 @@ func List(c *messagebird.Client) (*VoiceMessageList, error) {
 }
 
 // Create a new voice message for one or more recipients.
-func Create(c *messagebird.Client, recipients []string, body string, params *Params) (*VoiceMessage, error) {
-	requestData, err := requestDataForVoiceMessage(recipients, body, params)
+func Create(c messagebird.Client, recipients []string, body string, params *Params) (*VoiceMessage, error) {
+	requestData, err := paramsToRequest(recipients, body, params)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func Create(c *messagebird.Client, recipients []string, body string, params *Par
 	return message, nil
 }
 
-func requestDataForVoiceMessage(recipients []string, body string, params *Params) (*voiceMessageRequest, error) {
+func paramsToRequest(recipients []string, body string, params *Params) (*voiceMessageRequest, error) {
 	if len(recipients) == 0 {
 		return nil, errors.New("at least 1 recipient is required")
 	}

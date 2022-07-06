@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v8"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 type WebhookCreateRequest struct {
@@ -69,7 +69,7 @@ const (
 
 // CreateWebhook registers a webhook that is invoked when something interesting
 // happens.
-func CreateWebhook(c messagebird.MessageBirdClient, req *WebhookCreateRequest) (*Webhook, error) {
+func CreateWebhook(c messagebird.Client, req *WebhookCreateRequest) (*Webhook, error) {
 	webhook := &Webhook{}
 	if err := request(c, webhook, http.MethodPost, webhooksPath, req); err != nil {
 		return nil, err
@@ -80,12 +80,12 @@ func CreateWebhook(c messagebird.MessageBirdClient, req *WebhookCreateRequest) (
 
 // DeleteWebhook ensures an existing webhook is deleted and no longer
 // triggered. If the error is nil, the deletion was successful.
-func DeleteWebhook(c messagebird.MessageBirdClient, id string) error {
+func DeleteWebhook(c messagebird.Client, id string) error {
 	return request(c, nil, http.MethodDelete, webhooksPath+"/"+id, nil)
 }
 
 // ListWebhooks gets a collection of webhooks. Pagination can be set in options.
-func ListWebhooks(c messagebird.MessageBirdClient, options *PaginationRequest) (*WebhookList, error) {
+func ListWebhooks(c messagebird.Client, options *messagebird.PaginationRequest) (*WebhookList, error) {
 	webhookList := &WebhookList{}
 	if err := request(c, webhookList, http.MethodGet, webhooksPath+"?"+options.QueryParams(), nil); err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func ListWebhooks(c messagebird.MessageBirdClient, options *PaginationRequest) (
 }
 
 // ReadWebhook gets a single webhook based on its ID.
-func ReadWebhook(c messagebird.MessageBirdClient, id string) (*Webhook, error) {
+func ReadWebhook(c messagebird.Client, id string) (*Webhook, error) {
 	webhook := &Webhook{}
 	if err := request(c, webhook, http.MethodGet, webhooksPath+"/"+id, nil); err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func ReadWebhook(c messagebird.MessageBirdClient, id string) (*Webhook, error) {
 
 // UpdateWebhook updates a single webhook based on its ID with any values set in WebhookUpdateRequest.
 // Do not set any values that should not be updated.
-func UpdateWebhook(c messagebird.MessageBirdClient, id string, req *WebhookUpdateRequest) (*Webhook, error) {
+func UpdateWebhook(c messagebird.Client, id string, req *WebhookUpdateRequest) (*Webhook, error) {
 	webhook := &Webhook{}
 	if err := request(c, webhook, http.MethodPatch, webhooksPath+"/"+id, req); err != nil {
 		return nil, err
