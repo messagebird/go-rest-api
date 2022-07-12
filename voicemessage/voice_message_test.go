@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v9"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
@@ -130,7 +130,7 @@ func TestRequestDataForVoiceMessageZeroScheduledDatetime(t *testing.T) {
 		// ScheduledDatetime will default to zero-time
 	}
 
-	request, err := requestDataForVoiceMessage([]string{"31612345678"}, "MyBody", voiceParams)
+	request, err := paramsToRequest([]string{"31612345678"}, "MyBody", voiceParams)
 	assert.NoError(t, err)
 	assert.Equal(t, "", request.ScheduledDatetime, "Uninitialized ScheduledDatetime should default to empty string")
 }
