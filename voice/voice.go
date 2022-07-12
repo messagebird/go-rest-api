@@ -5,10 +5,16 @@ import (
 	"fmt"
 	"strings"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
-const apiRoot = "https://voice.messagebird.com/v1"
+const (
+	apiRoot = "https://voice.messagebird.com/v1"
+
+	callsPath = "calls"
+
+	legsPath = "legs"
+)
 
 type ErrorResponse struct {
 	Errors []Error
@@ -26,7 +32,7 @@ func init() {
 	// unmarshal those. Package messagebird must not import the voice package to
 	// safeguard against import cycles, so it can not use voice.ErrorResponse
 	// directly.
-	messagebird.SetVoiceErrorReader(errorReader)
+	messagebird.SetErrorReader(errorReader)
 }
 
 // errorReader takes a []byte representation of a Voice API JSON error and

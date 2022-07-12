@@ -37,3 +37,21 @@ func TestError(t *testing.T) {
 		assert.Error(t, errRes)
 	})
 }
+
+func TestErrorWithEmptyErrors(t *testing.T) {
+	errRes := ErrorResponse{}
+	assert.Error(t, errRes)
+	assert.Equal(t, "API errors: ", errRes.Error())
+}
+
+func TestErrorWithOneEmptyError(t *testing.T) {
+	errRes := ErrorResponse{Errors: []Error{
+		{
+			Code:        11,
+			Description: "",
+			Parameter:   "",
+		},
+	}}
+	assert.Error(t, errRes)
+	assert.Equal(t, "API errors: ", errRes.Error())
+}

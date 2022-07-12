@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 // A CallFlow describes the flow of operations (steps) to be executed when
@@ -33,7 +33,7 @@ type CallFlow struct {
 
 type jsonCallFlow struct {
 	ID        string         `json:"id,omitempty"`
-	Title     string         `json:"title"`
+	Title     string         `json:"title,omitempty"`
 	Steps     []CallFlowStep `json:"steps"`
 	Record    bool           `json:"record"`
 	CreatedAt string         `json:"createdAt"`
@@ -113,7 +113,7 @@ func (callflow *CallFlow) UnmarshalJSON(data []byte) error {
 // CallFlowByID fetches a callflow by it's ID.
 //
 // An error is returned if no such call flow exists or is accessible.
-func CallFlowByID(client *messagebird.Client, id string) (*CallFlow, error) {
+func CallFlowByID(client messagebird.Client, id string) (*CallFlow, error) {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
@@ -124,14 +124,14 @@ func CallFlowByID(client *messagebird.Client, id string) (*CallFlow, error) {
 }
 
 // CallFlows returns a Paginator which iterates over all CallFlows.
-func CallFlows(client *messagebird.Client) *Paginator {
+func CallFlows(client messagebird.Client) *Paginator {
 	return newPaginator(client, apiRoot+"/call-flows/", reflect.TypeOf(CallFlow{}))
 }
 
 // Create creates the callflow remotely.
 //
 // The callflow is updated in-place.
-func (callflow *CallFlow) Create(client *messagebird.Client) error {
+func (callflow *CallFlow) Create(client messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
@@ -145,7 +145,7 @@ func (callflow *CallFlow) Create(client *messagebird.Client) error {
 // Update updates the call flow by overwriting it.
 //
 // An error is returned if no such call flow exists or is accessible.
-func (callflow *CallFlow) Update(client *messagebird.Client) error {
+func (callflow *CallFlow) Update(client messagebird.Client) error {
 	var data struct {
 		Data []CallFlow `json:"data"`
 	}
@@ -157,7 +157,7 @@ func (callflow *CallFlow) Update(client *messagebird.Client) error {
 }
 
 // Delete deletes the CallFlow.
-func (callflow *CallFlow) Delete(client *messagebird.Client) error {
+func (callflow *CallFlow) Delete(client messagebird.Client) error {
 	return client.Request(nil, http.MethodDelete, apiRoot+"/call-flows/"+callflow.ID, nil)
 }
 

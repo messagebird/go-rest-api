@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 // TypeDetails is a hash with extra information.
@@ -46,6 +46,7 @@ type MessageList struct {
 
 // Params provide additional message send options and used in URL as params.
 type Params struct {
+	GroupIds          []string
 	Type              string
 	Reference         string
 	Validity          int
@@ -67,10 +68,45 @@ type ListParams struct {
 	Offset     int
 }
 
+func (lp *ListParams) QueryParams() string {
+	if lp == nil {
+		return ""
+	}
+
+	query := url.Values{}
+
+	if len(lp.Originator) > 0 {
+		query.Set("originator", lp.Originator)
+	}
+
+	if len(lp.Direction) > 0 {
+		query.Set("direction", lp.Direction)
+	}
+
+	if len(lp.Type) > 0 {
+		query.Set("type", lp.Type)
+	}
+
+	if len(lp.Status) > 0 {
+		query.Set("status", lp.Status)
+	}
+
+	if lp.Limit > 0 {
+		query.Set("limit", strconv.Itoa(lp.Limit))
+	}
+
+	if lp.Offset > 0 {
+		query.Set("offset", strconv.Itoa(lp.Offset))
+	}
+
+	return query.Encode()
+}
+
 type messageRequest struct {
 	Originator        string      `json:"originator"`
 	Body              string      `json:"body"`
 	Recipients        []string    `json:"recipients"`
+	GroupIds          []string    `json:"groupIds"`
 	Type              string      `json:"type,omitempty"`
 	Reference         string      `json:"reference,omitempty"`
 	Validity          int         `json:"validity,omitempty"`
@@ -78,16 +114,16 @@ type messageRequest struct {
 	TypeDetails       TypeDetails `json:"typeDetails,omitempty"`
 	DataCoding        string      `json:"datacoding,omitempty"`
 	MClass            int         `json:"mclass,omitempty"`
+	ShortenURLs       bool        `json:"shortenUrls"`
 	ReportURL         string      `json:"reportUrl,omitempty"`
 	ScheduledDatetime string      `json:"scheduledDatetime,omitempty"`
-	ShortenURLs       bool        `json:"shortenUrls"`
 }
 
 // path represents the path to the Message resource.
 const path = "messages"
 
 // Read retrieves the information of an existing Message.
-func Read(c *messagebird.Client, id string) (*Message, error) {
+func Read(c messagebird.Client, id string) (*Message, error) {
 	message := &Message{}
 	if err := c.Request(message, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -96,25 +132,17 @@ func Read(c *messagebird.Client, id string) (*Message, error) {
 	return message, nil
 }
 
-// Cancel sending Scheduled Sms.
-func Delete(c *messagebird.Client, id string) (*Message, error) {
-	message := &Message{}
-	if err := c.Request(message, http.MethodDelete, path+"/"+id, nil); err != nil {
-		return nil, err
-	}
-
-	return message, nil
+// Delete Cancel sending Scheduled Sms.
+// Return true if have been successfully deleted.
+func Delete(c messagebird.Client, id string) error {
+	return c.Request(&Message{}, http.MethodDelete, path+"/"+id, nil)
 }
 
 // List retrieves all messages of the user represented as a MessageList object.
-func List(c *messagebird.Client, msgListParams *ListParams) (*MessageList, error) {
+func List(c messagebird.Client, params *ListParams) (*MessageList, error) {
 	messageList := &MessageList{}
-	params, err := paramsForMessageList(msgListParams)
-	if err != nil {
-		return messageList, err
-	}
 
-	if err := c.Request(messageList, http.MethodGet, path+"?"+params.Encode(), nil); err != nil {
+	if err := c.Request(messageList, http.MethodGet, path+"?"+params.QueryParams(), nil); err != nil {
 		return nil, err
 	}
 
@@ -122,8 +150,8 @@ func List(c *messagebird.Client, msgListParams *ListParams) (*MessageList, error
 }
 
 // Create creates a new message for one or more recipients.
-func Create(c *messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
-	requestData, err := requestDataForMessage(originator, recipients, body, msgParams)
+func Create(c messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, error) {
+	requestData, err := paramsToRequest(originator, recipients, body, msgParams)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +164,7 @@ func Create(c *messagebird.Client, originator string, recipients []string, body 
 	return message, nil
 }
 
-func requestDataForMessage(originator string, recipients []string, body string, params *Params) (*messageRequest, error) {
+func paramsToRequest(originator string, recipients []string, body string, params *Params) (*messageRequest, error) {
 	if originator == "" {
 		return nil, errors.New("originator is required")
 	}
@@ -168,6 +196,7 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 		request.ScheduledDatetime = params.ScheduledDatetime.Format(time.RFC3339)
 	}
 
+	request.GroupIds = params.GroupIds
 	request.Reference = params.Reference
 	request.Validity = params.Validity
 	request.Gateway = params.Gateway
@@ -177,30 +206,4 @@ func requestDataForMessage(originator string, recipients []string, body string, 
 	request.ShortenURLs = params.ShortenURLs
 
 	return request, nil
-}
-
-// paramsForMessageList converts the specified MessageListParams struct to a
-// url.Values pointer and returns it.
-func paramsForMessageList(params *ListParams) (*url.Values, error) {
-	urlParams := &url.Values{}
-
-	if params == nil {
-		return urlParams, nil
-	}
-
-	if params.Direction != "" {
-		urlParams.Set("direction", params.Direction)
-	}
-	if params.Originator != "" {
-		urlParams.Set("originator", params.Originator)
-	}
-	if params.Status != "" {
-		urlParams.Set("status", params.Status)
-	}
-	if params.Limit != 0 {
-		urlParams.Set("limit", strconv.Itoa(params.Limit))
-	}
-	urlParams.Set("offset", strconv.Itoa(params.Offset))
-
-	return urlParams, nil
 }

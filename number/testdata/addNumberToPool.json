@@ -1,0 +1,12 @@
+{
+    "success": [
+        "31612345678",
+        "31612345679"
+    ],
+    "fail": [
+        {
+            "number": "31612345670",
+            "error": "number is not verified"
+        }
+    ]
+}

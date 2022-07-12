@@ -1,0 +1,12 @@
+{
+    "limit": 20,
+    "count": 1,
+    "items": [
+        {
+            "id": 62,
+            "name": "Proof of in region address (max 3 months old)",
+            "description": "The number-user must provide proof that he has an address within the region of the prefix.",
+            "status": "missing"
+        }
+    ]
+}

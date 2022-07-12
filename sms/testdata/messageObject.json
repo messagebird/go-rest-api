@@ -1,6 +1,6 @@
 {
     "body": "Hello World",
-    "createdDatetime": "2015-01-05T10:02:59+00:00",
+    "createdDatetime": "2022-01-05T10:02:59+00:00",
     "datacoding": "plain",
     "direction": "mt",
     "gateway": 239,
@@ -13,7 +13,8 @@
             {
                 "recipient": 31612345678,
                 "status": "sent",
-                "statusDatetime": "2015-01-05T10:02:59+00:00"
+                "statusDatetime": "2022-01-05T10:02:59+00:00",
+                "messagePartCount": 1
             }
         ],
         "totalCount": 1,

@@ -1,12 +1,13 @@
 package contact
 
 import (
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 )
 
 func TestMain(m *testing.M) {
@@ -16,7 +17,7 @@ func TestMain(m *testing.M) {
 func TestCreateWithEmptyMSISDN(t *testing.T) {
 	client := mbtest.Client(t)
 
-	_, err := Create(client, &Request{})
+	_, err := Create(client, &CreateRequest{})
 	assert.Error(t, err)
 }
 
@@ -24,7 +25,7 @@ func TestCreate(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactObject.json", http.StatusCreated)
 	client := mbtest.Client(t)
 
-	contact, err := Create(client, &Request{
+	contact, err := Create(client, &CreateRequest{
 		MSISDN:    "31612345678",
 		FirstName: "Foo",
 		LastName:  "Bar",
@@ -56,18 +57,11 @@ func TestDelete(t *testing.T) {
 	mbtest.AssertEndpointCalled(t, http.MethodDelete, "/contacts/contact-id")
 }
 
-func TestDeleteWithEmptyID(t *testing.T) {
-	client := mbtest.Client(t)
-
-	err := Delete(client, "")
-	assert.Error(t, err)
-}
-
 func TestList(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactListObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	list, err := List(client, DefaultListOptions)
+	list, err := List(client, messagebird.DefaultPagination)
 	assert.NoError(t, err)
 
 	assert.Equal(t, 0, list.Offset)
@@ -87,11 +81,11 @@ func TestListPagination(t *testing.T) {
 
 	tt := []struct {
 		expected string
-		options  *ListOptions
+		options  *messagebird.PaginationRequest
 	}{
-		{"limit=20&offset=0", DefaultListOptions},
-		{"limit=10&offset=25", &ListOptions{10, 25}},
-		{"limit=50&offset=10", &ListOptions{50, 10}},
+		{"limit=20&offset=0", messagebird.DefaultPagination},
+		{"limit=10&offset=25", &messagebird.PaginationRequest{Limit: 10, Offset: 25}},
+		{"limit=50&offset=10", &messagebird.PaginationRequest{Limit: 50, Offset: 10}},
 	}
 
 	for _, tc := range tt {
@@ -107,7 +101,7 @@ func TestRead(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactObject.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	contact, err := Read(client, "contact-id")
+	contact, err := Read(client, "contact-id", nil)
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")
@@ -133,7 +127,7 @@ func TestReadWithCustomDetails(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "contactObjectWithCustomDetails.json", http.StatusOK)
 	client := mbtest.Client(t)
 
-	contact, err := Read(client, "contact-id")
+	contact, err := Read(client, "contact-id", nil)
 	assert.NoError(t, err)
 
 	mbtest.AssertEndpointCalled(t, http.MethodGet, "/contacts/contact-id")
@@ -149,11 +143,11 @@ func TestUpdate(t *testing.T) {
 
 	tt := []struct {
 		expectedTestdata string
-		contactRequest   *Request
+		contactRequest   *CreateRequest
 	}{
-		{"contactRequestObjectUpdateCustom.json", &Request{Custom1: "Foo", Custom4: "Bar"}},
-		{"contactRequestObjectUpdateMSISDN.json", &Request{MSISDN: "31687654321"}},
-		{"contactRequestObjectUpdateName.json", &Request{FirstName: "Message", LastName: "Bird"}},
+		{"contactRequestObjectUpdateCustom.json", &CreateRequest{Custom1: "Foo", Custom4: "Bar"}},
+		{"contactRequestObjectUpdateMSISDN.json", &CreateRequest{MSISDN: "31687654321"}},
+		{"contactRequestObjectUpdateName.json", &CreateRequest{FirstName: "Message", LastName: "Bird"}},
 	}
 
 	for _, tc := range tt {

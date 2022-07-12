@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
 
 // A Transcription is a textual representation of a recording as text.
@@ -70,7 +70,7 @@ func (trans *Transcription) UnmarshalJSON(data []byte) error {
 // Contents gets the transcription file.
 //
 // This is a plain text file.
-func (trans *Transcription) Contents(client *messagebird.Client) (string, error) {
+func (trans *Transcription) Contents(client *messagebird.DefaultClient) (string, error) {
 	req, err := http.NewRequest(http.MethodGet, apiRoot+trans.links["file"], nil)
 	if err != nil {
 		return "", err
@@ -93,7 +93,7 @@ func (trans *Transcription) Contents(client *messagebird.Client) (string, error)
 }
 
 // CreateTranscription creates a transcription request for an existing recording
-func CreateTranscription(client *messagebird.Client, callID string, legID string, recordingID string) (trans *Transcription, err error) {
+func CreateTranscription(client messagebird.Client, callID string, legID string, recordingID string) (trans *Transcription, err error) {
 	var body struct{}
 	path := fmt.Sprintf("/calls/%s/legs/%s/recordings/%s/transcriptions", callID, legID, recordingID)
 	var resp struct {

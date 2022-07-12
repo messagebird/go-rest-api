@@ -5,8 +5,11 @@ import (
 	"net/http"
 	"time"
 
-	messagebird "github.com/messagebird/go-rest-api/v7"
+	messagebird "github.com/messagebird/go-rest-api/v9"
 )
+
+// path represents the path to the HLR resource.
+const path = "hlr"
 
 // HLR stands for Home Location Register. Contains information about the
 // subscribers identity, telephone number, the associated services and general
@@ -38,12 +41,9 @@ type hlrRequest struct {
 	Reference string `json:"reference"`
 }
 
-// path represents the path to the HLR resource.
-const path = "hlr"
-
 // Read looks up an existing HLR object for the specified id that was previously
 // created by the NewHLR function.
-func Read(c *messagebird.Client, id string) (*HLR, error) {
+func Read(c messagebird.Client, id string) (*HLR, error) {
 	hlr := &HLR{}
 	if err := c.Request(hlr, http.MethodGet, path+"/"+id, nil); err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func Read(c *messagebird.Client, id string) (*HLR, error) {
 }
 
 // List all HLR objects that were previously created by the Create function.
-func List(c *messagebird.Client) (*HLRList, error) {
+func List(c messagebird.Client) (*HLRList, error) {
 	hlrList := &HLRList{}
 	if err := c.Request(hlrList, http.MethodGet, path, nil); err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func List(c *messagebird.Client) (*HLRList, error) {
 }
 
 // Create creates a new HLR object.
-func Create(c *messagebird.Client, msisdn string, reference string) (*HLR, error) {
+func Create(c messagebird.Client, msisdn string, reference string) (*HLR, error) {
 	requestData, err := requestDataForHLR(msisdn, reference)
 	if err != nil {
 		return nil, err

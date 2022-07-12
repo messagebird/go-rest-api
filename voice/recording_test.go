@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 

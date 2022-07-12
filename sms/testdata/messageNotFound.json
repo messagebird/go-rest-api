@@ -1,0 +1,9 @@
+{
+    "errors": [
+        {
+            "code": 20,
+            "description": "message not found",
+            "parameter": null
+        }
+    ]
+}

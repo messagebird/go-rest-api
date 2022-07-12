@@ -167,6 +167,7 @@ func TestValidSignature(t *testing.T) {
 		assert.Equal(t, tt.e, r)
 	}
 }
+
 func TestValidate(t *testing.T) {
 	var cases = []struct {
 		name string

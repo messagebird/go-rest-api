@@ -1,1 +1,7 @@
-{"channelid":"chid","content":{"text":"Hello world"},"type":"text"}
+{
+    "type": "text",
+    "content": {
+        "text": "Hello world"
+    },
+    "channelid": "chid"
+}

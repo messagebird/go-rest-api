@@ -15,7 +15,6 @@ func TestInitiateCall(t *testing.T) {
 
 	source, destination := "31000000000", "31000000000"
 	callflow := CallFlow{
-		Title: "Say test",
 		Steps: []CallFlowStep{
 			&CallFlowSayStep{
 				Voice:    "male",
@@ -40,7 +39,6 @@ func TestCallByID(t *testing.T) {
 
 	source, destination := "31000000000", "31000000000"
 	callflow := CallFlow{
-		Title: "Say test",
 		Steps: []CallFlowStep{
 			&CallFlowSayStep{
 				Voice:    "male",

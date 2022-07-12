@@ -1,0 +1,11 @@
+{
+    "id": "48f6057c21de42d4bbf73fb86caaf361",
+    "productID": 1993,
+    "country": "GB",
+    "prefix": "44113",
+    "status": "blocked",
+    "reasonCodes": [
+        "MISSING_KYC",
+        "MISSING_EUD"
+    ]
+}

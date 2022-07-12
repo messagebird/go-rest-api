@@ -1,12 +1,12 @@
 {
     "body": "Hello World",
-    "createdDatetime": "2017-10-20T12:50:28+00:00",
+    "createdDatetime": "2022-05-20T12:50:28+00:00",
     "direction": "mt",
     "href": "https://rest.messagebird.com/mms/6d9e7100b1f9406c81a3c303c30ccf05",
     "id": "6d9e7100b1f9406c81a3c303c30ccf05",
     "mediaUrls": [
-        "http://w3.org/1.gif",
-        "http://w3.org/2.gif"
+        "https://media.giphy.com/media/Vuw9m5wXviFIQ/giphy.gif",
+        "https://media.giphy.com/media/pxy9QQUMF0glq/giphy.gif"
     ],
     "originator": "TestName",
     "recipients": {
@@ -14,7 +14,7 @@
             {
                 "recipient": 31612345678,
                 "status": "sent",
-                "statusDatetime": "2017-10-20T12:50:28+00:00"
+                "statusDatetime": "2022-05-20T12:50:28+00:00"
             }
         ],
         "totalCount": 1,

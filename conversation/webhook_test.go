@@ -1,10 +1,11 @@
 package conversation
 
 import (
+	messagebird "github.com/messagebird/go-rest-api/v9"
 	"net/http"
 	"testing"
 
-	"github.com/messagebird/go-rest-api/v7/internal/mbtest"
+	"github.com/messagebird/go-rest-api/v9/internal/mbtest"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,7 +25,7 @@ func TestCreateWebhook(t *testing.T) {
 	assert.Equal(t, "whid", webhook.ID)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPost, "/v1/webhooks")
-	mbtest.AssertTestdata(t, "webhookCreateRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestdataJson(t, "webhookCreateRequest.json", mbtest.Request.Body)
 }
 
 func TestDeleteWebhook(t *testing.T) {
@@ -42,7 +43,7 @@ func TestListWebhooks(t *testing.T) {
 		mbtest.WillReturnTestdata(t, "webhookListObject.json", http.StatusOK)
 		client := mbtest.Client(t)
 
-		webhookList, err := ListWebhooks(client, &ListOptions{Limit: 20, Offset: 2})
+		webhookList, err := ListWebhooks(client, &messagebird.PaginationRequest{Limit: 20, Offset: 2})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 1, webhookList.TotalCount)
@@ -113,5 +114,5 @@ func TestUpdateWebhook(t *testing.T) {
 	assert.Equal(t, WebhookStatusDisabled, webhook.Status)
 
 	mbtest.AssertEndpointCalled(t, http.MethodPatch, "/v1/webhooks/whid")
-	mbtest.AssertTestdata(t, "webhookUpdateRequest.json", mbtest.Request.Body)
+	mbtest.AssertTestdataJson(t, "webhookUpdateRequest.json", mbtest.Request.Body)
 }

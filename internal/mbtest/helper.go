@@ -31,6 +31,14 @@ func AssertTestdata(t *testing.T, relativePath string, actual []byte) {
 	assert.Truef(t, bytes.Equal(expected, actual), "expected %s, got %s", expected, actual)
 }
 
+// AssertTestdataJson gets testdata as json and asserts it equals actual.
+func AssertTestdataJson(t *testing.T, relativePath string, actual []byte) {
+	expected := bytes.TrimSpace(Testdata(t, relativePath))
+	actual = bytes.TrimSpace(actual)
+
+	assert.JSONEqf(t, string(expected), string(actual), "expected %s, got %s")
+}
+
 // AssertEndpointCalled fails the test if the last request was not made to the
 // provided endpoint (e.g. combination of HTTP method and path).
 func AssertEndpointCalled(t *testing.T, method, path string) {
