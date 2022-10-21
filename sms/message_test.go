@@ -62,7 +62,7 @@ func assertExtendedMessageObject(t *testing.T, message *Message) {
 
 	assert.Nil(t, message.Recipients.Items[0].StatusErrorCode)
 	assert.NotNil(t, message.Recipients.Items[0].Price)
-	assert.Equal(t, 22, message.Recipients.Items[0].Price.Amount)
+	assert.Equal(t, 0.075, message.Recipients.Items[0].Price.Amount)
 	assert.Equal(t, "UAH", message.Recipients.Items[0].Price.Currency)
 }
 
