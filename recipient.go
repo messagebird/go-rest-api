@@ -21,7 +21,7 @@ type Recipient struct {
 }
 
 type Price struct {
-	Amount   int
+	Amount   float64
 	Currency string
 }
 

@@ -43,7 +43,7 @@
                         "statusErrorCode": null,
                         "statusReason": "successfully delivered",
                         "price": {
-                            "amount": 22,
+                            "amount": 0.075,
                             "currency": "UAH"
                         },
                         "mccmnc": "25506",
@@ -86,7 +86,7 @@
                         "statusErrorCode": null,
                         "statusReason": "successfully delivered",
                         "price": {
-                            "amount": 22,
+                            "amount": 5,
                             "currency": "UAH"
                         },
                         "mccmnc": "20408",
