@@ -44,6 +44,7 @@ type Feature int
 
 type Client interface {
 	Request(v interface{}, method, path string, data interface{}) error
+	RequestV2(v interface{}, method, path string, data interface{}) (*http.Response, error)
 }
 
 // DefaultClient is used to access API with a given key.
@@ -84,22 +85,28 @@ func New(accessKey string) *DefaultClient {
 
 // Request is for internal use only and unstable.
 func (c *DefaultClient) Request(v interface{}, method, path string, data interface{}) error {
+	_, err := c.RequestV2(v, method, path, data)
+	return err
+}
+
+// Request is for internal use only and unstable.
+func (c *DefaultClient) RequestV2(v interface{}, method, path string, data interface{}) (*http.Response, error) {
 	if !strings.HasPrefix(path, "https://") && !strings.HasPrefix(path, "http://") {
 		path = fmt.Sprintf("%s/%s", Endpoint, path)
 	}
 	uri, err := url.Parse(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	body, contentType, err := prepareRequestBody(data)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	request, err := http.NewRequest(method, uri.String(), bytes.NewBuffer(body))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	request.Header.Set("Accept", "application/json")
@@ -119,14 +126,14 @@ func (c *DefaultClient) Request(v interface{}, method, path string, data interfa
 
 	response, err := c.HTTPClient.Do(request)
 	if err != nil {
-		return err
+		return response, err
 	}
 
 	defer response.Body.Close()
 
 	responseBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return err
+		return response, err
 	}
 
 	if c.DebugLog != nil {
@@ -138,25 +145,25 @@ func (c *DefaultClient) Request(v interface{}, method, path string, data interfa
 		// Status codes 200 and 201 are indicative of being able to convert the
 		// response body to the struct that was specified.
 		if err := json.Unmarshal(responseBody, &v); err != nil {
-			return fmt.Errorf("could not decode response JSON, %s: %v", string(responseBody), err)
+			return response, fmt.Errorf("could not decode response JSON, %s: %v", string(responseBody), err)
 		}
 
-		return nil
+		return response, nil
 	case http.StatusNoContent:
 		// Status code 204 is returned for successful DELETE requests. Don't try to
 		// unmarshal the body: that would return errors.
-		return nil
+		return response, nil
 	case http.StatusInternalServerError:
 		// Status code 500 is a server error and means nothing can be done at this
 		// point.
-		return ErrUnexpectedResponse
+		return response, ErrUnexpectedResponse
 	default:
 		// Anything else than a 200/201/204/500 should be a JSON error.
 		if customErrorReader != nil {
-			return customErrorReader(responseBody)
+			return response, customErrorReader(responseBody)
 		}
 
-		return defaultErrorReader(responseBody)
+		return response, defaultErrorReader(responseBody)
 	}
 }
 
