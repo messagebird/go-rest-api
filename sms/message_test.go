@@ -76,6 +76,18 @@ func TestCreate(t *testing.T) {
 	assertMessageObject(t, message, "sent")
 }
 
+func TestCreateV2(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "messageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	message, resp, err := CreateV2(client, "TestName", []string{"31612345678"}, "Hello World", nil)
+	assert.NoError(t, err)
+
+	assertMessageObject(t, message, "sent")
+	assert.NotNil(t, resp)
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+}
+
 func TestCreateError(t *testing.T) {
 	mbtest.WillReturnAccessKeyError()
 	client := mbtest.Client(t)
@@ -87,6 +99,33 @@ func TestCreateError(t *testing.T) {
 	assert.Equal(t, 1, len(errorResponse.Errors))
 	assert.Equal(t, 2, errorResponse.Errors[0].Code)
 	assert.Equal(t, "access_key", errorResponse.Errors[0].Parameter)
+}
+
+func TestCreateV2Error(t *testing.T) {
+	mbtest.WillReturnAccessKeyError()
+	client := mbtest.Client(t)
+
+	_, resp, err := CreateV2(client, "TestName", []string{"31612345678"}, "Hello World", nil)
+
+	errorResponse, ok := err.(messagebird.ErrorResponse)
+	assert.True(t, ok)
+	assert.Equal(t, 1, len(errorResponse.Errors))
+	assert.Equal(t, 2, errorResponse.Errors[0].Code)
+	assert.Equal(t, "access_key", errorResponse.Errors[0].Parameter)
+	assert.NotNil(t, resp)
+	assert.Equal(t, resp.StatusCode, http.StatusUnauthorized)
+}
+
+func TestCreateV2ErrorInvalidParams(t *testing.T) {
+	mbtest.WillReturnAccessKeyError()
+	client := mbtest.Client(t)
+
+	message, resp, err := CreateV2(client, "", []string{"31612345678"}, "Hello World", nil)
+
+	_, ok := err.(messagebird.ErrorResponse)
+	assert.False(t, ok)
+	assert.Nil(t, resp)
+	assert.Nil(t, message)
 }
 
 func TestCreateWithParams(t *testing.T) {
@@ -110,6 +149,29 @@ func TestCreateWithParams(t *testing.T) {
 	assert.Equal(t, "unicode", message.DataCoding)
 }
 
+func TestCreateV2WithParams(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "messageWithParamsObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	params := &Params{
+		Type:       "sms",
+		Reference:  "TestReference",
+		Validity:   13,
+		Gateway:    10,
+		DataCoding: "unicode",
+	}
+
+	message, resp, err := CreateV2(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	assert.NoError(t, err)
+	assert.Equal(t, "sms", message.Type)
+	assert.Equal(t, "TestReference", message.Reference)
+	assert.Equal(t, 13, *message.Validity)
+	assert.Equal(t, 10, message.Gateway)
+	assert.Equal(t, "unicode", message.DataCoding)
+	assert.NotNil(t, resp)
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+}
+
 func TestCreateWithBinaryType(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "binaryMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
@@ -124,6 +186,24 @@ func TestCreateWithBinaryType(t *testing.T) {
 	assert.Equal(t, "binary", message.Type)
 	assert.Len(t, message.TypeDetails, 1)
 	assert.Equal(t, "050003340201", message.TypeDetails["udh"])
+}
+
+func TestCreateV2WithBinaryType(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "binaryMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	params := &Params{
+		Type:        "binary",
+		TypeDetails: TypeDetails{"udh": "050003340201"},
+	}
+
+	message, resp, err := CreateV2(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	assert.NoError(t, err)
+	assert.Equal(t, "binary", message.Type)
+	assert.Len(t, message.TypeDetails, 1)
+	assert.Equal(t, "050003340201", message.TypeDetails["udh"])
+	assert.NotNil(t, resp)
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
 }
 
 func TestCreateWithPremiumType(t *testing.T) {
@@ -144,6 +224,26 @@ func TestCreateWithPremiumType(t *testing.T) {
 	assert.Equal(t, "RESTAPI", message.TypeDetails["keyword"])
 }
 
+func TestCreateV2WithPremiumType(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "premiumMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	params := &Params{
+		Type:        "premium",
+		TypeDetails: TypeDetails{"keyword": "RESTAPI", "shortcode": 1008, "tariff": 150},
+	}
+
+	message, resp, err := CreateV2(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	assert.NoError(t, err)
+	assert.Equal(t, "premium", message.Type)
+	assert.Equal(t, 3, len(message.TypeDetails))
+	assert.Equal(t, 150.0, message.TypeDetails["tariff"])
+	assert.Equal(t, 1008.0, message.TypeDetails["shortcode"])
+	assert.Equal(t, "RESTAPI", message.TypeDetails["keyword"])
+	assert.NotNil(t, resp)
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
+}
+
 func TestCreateWithFlashType(t *testing.T) {
 	mbtest.WillReturnTestdata(t, "flashMessageObject.json", http.StatusOK)
 	client := mbtest.Client(t)
@@ -153,6 +253,19 @@ func TestCreateWithFlashType(t *testing.T) {
 	message, err := Create(client, "TestName", []string{"31612345678"}, "Hello World", params)
 	assert.NoError(t, err)
 	assert.Equal(t, "flash", message.Type)
+}
+
+func TestCreateV2WithFlashType(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "flashMessageObject.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	params := &Params{Type: "flash"}
+
+	message, resp, err := CreateV2(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	assert.NoError(t, err)
+	assert.Equal(t, "flash", message.Type)
+	assert.NotNil(t, resp)
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
 }
 
 func TestCreateWithScheduledDatetime(t *testing.T) {
@@ -171,6 +284,26 @@ func TestCreateWithScheduledDatetime(t *testing.T) {
 	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
 	assert.Equal(t, "scheduled", message.Recipients.Items[0].Status)
 	assert.Nil(t, message.Recipients.Items[0].StatusDatetime)
+}
+
+func TestCreateV2WithScheduledDatetime(t *testing.T) {
+	mbtest.WillReturnTestdata(t, "messageObjectWithScheduledDatetime.json", http.StatusOK)
+	client := mbtest.Client(t)
+
+	scheduledDatetime, _ := time.Parse(time.RFC3339, "2022-01-05T10:03:59+00:00")
+
+	params := &Params{ScheduledDatetime: scheduledDatetime}
+
+	message, resp, err := CreateV2(client, "TestName", []string{"31612345678"}, "Hello World", params)
+	assert.NoError(t, err)
+	assert.Equal(t, scheduledDatetime.Format(time.RFC3339), message.ScheduledDatetime.Format(time.RFC3339))
+	assert.Equal(t, 1, message.Recipients.TotalCount)
+	assert.Equal(t, 0, message.Recipients.TotalSentCount)
+	assert.Equal(t, int64(31612345678), message.Recipients.Items[0].Recipient)
+	assert.Equal(t, "scheduled", message.Recipients.Items[0].Status)
+	assert.Nil(t, message.Recipients.Items[0].StatusDatetime)
+	assert.NotNil(t, resp)
+	assert.Equal(t, resp.StatusCode, http.StatusOK)
 }
 
 func TestRead(t *testing.T) {

@@ -164,6 +164,22 @@ func Create(c messagebird.Client, originator string, recipients []string, body s
 	return message, nil
 }
 
+// CreateV2 creates a new message for one or more recipients and returns http response of the request
+func CreateV2(c messagebird.Client, originator string, recipients []string, body string, msgParams *Params) (*Message, *http.Response, error) {
+	requestData, err := paramsToRequest(originator, recipients, body, msgParams)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	message := &Message{}
+	resp, err := c.RequestV2(message, http.MethodPost, path, requestData)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return message, resp, nil
+}
+
 func paramsToRequest(originator string, recipients []string, body string, params *Params) (*messageRequest, error) {
 	if originator == "" {
 		return nil, errors.New("originator is required")

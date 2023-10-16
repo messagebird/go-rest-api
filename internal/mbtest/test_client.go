@@ -2,11 +2,12 @@ package mbtest
 
 import (
 	"crypto/tls"
-	"github.com/stretchr/testify/mock"
 	"log"
 	"net"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 
 	messagebird "github.com/messagebird/go-rest-api/v9"
 )
@@ -24,6 +25,10 @@ func (c *ClientMock) IsFeatureEnabled(feature messagebird.Feature) bool {
 }
 func (c *ClientMock) Request(v interface{}, method, path string, data interface{}) error {
 	return nil
+}
+
+func (c *ClientMock) RequestV2(v interface{}, method, path string, data interface{}) (*http.Response, error) {
+	return nil, nil
 }
 
 // MockClient initializes a new mock of MessageBird client
