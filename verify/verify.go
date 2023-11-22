@@ -36,6 +36,7 @@ type Params struct {
 	Timeout     int
 	TokenLength int
 	Subject     string
+	MaxAttempts int
 }
 
 type verifyRequest struct {
@@ -51,6 +52,7 @@ type verifyRequest struct {
 	Timeout     int    `json:"timeout,omitempty"`
 	TokenLength int    `json:"tokenLength,omitempty"`
 	Subject     string `json:"subject,omitempty"`
+	MaxAttempts int    `json:"maxAttempts,omitempty"`
 }
 
 // Create generates a new One-Time-Password for one recipient.
@@ -129,6 +131,7 @@ func paramsToVerifyRequest(recipient string, params *Params) (*verifyRequest, er
 	request.Timeout = params.Timeout
 	request.TokenLength = params.TokenLength
 	request.Subject = params.Subject
+	request.MaxAttempts = params.MaxAttempts
 
 	return request, nil
 }

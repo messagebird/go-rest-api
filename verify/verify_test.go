@@ -108,6 +108,7 @@ func TestRequestDataForVerify(t *testing.T) {
 		Language:    "en-gb",
 		Timeout:     20,
 		TokenLength: 8,
+		MaxAttempts: 3,
 	}
 
 	requestData, err := paramsToVerifyRequest("31612345678", verifyParams)
@@ -122,4 +123,5 @@ func TestRequestDataForVerify(t *testing.T) {
 	assert.Equal(t, "en-gb", requestData.Language)
 	assert.Equal(t, 20, requestData.Timeout)
 	assert.Equal(t, 8, requestData.TokenLength)
+	assert.Equal(t, 3, requestData.MaxAttempts)
 }
